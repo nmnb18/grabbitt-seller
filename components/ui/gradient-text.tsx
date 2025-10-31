@@ -1,4 +1,4 @@
-import { AppStyles } from '@/constants/theme';
+import { AppStyles } from '@/utils/theme';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';

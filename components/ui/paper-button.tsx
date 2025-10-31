@@ -1,7 +1,6 @@
-// components/ui/grabbitt-button.tsx
 import { ThemedText } from '@/components/themed-text';
-import { AppStyles } from '@/constants/theme';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import { AppStyles } from '@/utils/theme';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import {
@@ -11,12 +10,12 @@ import {
     View,
 } from 'react-native';
 
-export type GrabbittButtonProps = {
+export type ButtonProps = {
     children: string;
     onPress: () => void;
     loading?: boolean;
     disabled?: boolean;
-    variant?: 'contained' | 'outlined';
+    variant?: 'contained' | 'outlined' | 'text';
     size?: 'medium' | 'large';
     fullWidth?: boolean;
 };
@@ -29,11 +28,14 @@ export function Button({
     variant = 'contained',
     size = 'medium',
     fullWidth = false,
-}: GrabbittButtonProps) {
+}: ButtonProps) {
     const backgroundColor = useThemeColor({}, 'background');
     const textColor = useThemeColor({}, 'text');
+    const primaryColor = useThemeColor({}, 'primary');
 
     const isContained = variant === 'contained';
+    const isOutlined = variant === 'outlined';
+    const isText = variant === 'text';
     const isLarge = size === 'large';
 
     if (isContained) {
@@ -76,43 +78,72 @@ export function Button({
         );
     }
 
-    // Outline variant with exact website styling
+    if (isOutlined) {
+        // Outline variant with exact website styling
+        return (
+            <TouchableOpacity
+                onPress={onPress}
+                disabled={disabled || loading}
+                style={[
+                    styles.outlineContainer,
+                    fullWidth && styles.fullWidth,
+                    (disabled || loading) && styles.disabledButton,
+                ]}
+            >
+                <LinearGradient
+                    colors={AppStyles.gradients.primary}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={styles.outlineGradientBorder}
+                >
+                    <View style={[
+                        styles.outlineButtonInner,
+                        { backgroundColor },
+                        isLarge && styles.largeOutlineButton,
+                    ]}>
+                        {loading ? (
+                            <ActivityIndicator size="small" color={textColor} />
+                        ) : (
+                            <ThemedText
+                                style={[
+                                    styles.outlineButtonText,
+                                    { color: textColor },
+                                    isLarge && styles.largeButtonText,
+                                ]}
+                            >
+                                {children}
+                            </ThemedText>
+                        )}
+                    </View>
+                </LinearGradient>
+            </TouchableOpacity>
+        );
+    }
+
+    // Text variant - simple text button with primary color
     return (
         <TouchableOpacity
             onPress={onPress}
             disabled={disabled || loading}
             style={[
-                styles.outlineContainer,
+                styles.textButtonContainer,
                 fullWidth && styles.fullWidth,
                 (disabled || loading) && styles.disabledButton,
             ]}
         >
-            <LinearGradient
-                colors={AppStyles.gradients.primary}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={styles.outlineGradientBorder}
-            >
-                <View style={[
-                    styles.outlineButtonInner,
-                    { backgroundColor },
-                    isLarge && styles.largeOutlineButton,
-                ]}>
-                    {loading ? (
-                        <ActivityIndicator size="small" color={textColor} />
-                    ) : (
-                        <ThemedText
-                            style={[
-                                styles.outlineButtonText,
-                                { color: textColor },
-                                isLarge && styles.largeButtonText,
-                            ]}
-                        >
-                            {children}
-                        </ThemedText>
-                    )}
-                </View>
-            </LinearGradient>
+            {loading ? (
+                <ActivityIndicator size="small" color={primaryColor} />
+            ) : (
+                <ThemedText
+                    style={[
+                        styles.textButtonText,
+                        { color: primaryColor },
+                        isLarge && styles.largeButtonText,
+                    ]}
+                >
+                    {children}
+                </ThemedText>
+            )}
         </TouchableOpacity>
     );
 }
@@ -146,6 +177,13 @@ const styles = StyleSheet.create({
         paddingVertical: 14,
         minHeight: 48,
     },
+    textButtonContainer: {
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: 40,
+    },
     gradientBackground: {
         paddingVertical: 12,
         paddingHorizontal: 24,
@@ -170,6 +208,11 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     outlineButtonText: {
+        fontSize: 16,
+        fontWeight: '500',
+        textAlign: 'center',
+    },
+    textButtonText: {
         fontSize: 16,
         fontWeight: '500',
         textAlign: 'center',

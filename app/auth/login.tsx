@@ -1,16 +1,18 @@
+
 import { GradientText } from '@/components/ui/gradient-text';
 import { Button } from '@/components/ui/paper-button';
-import { AppStyles } from '@/constants/theme';
 import { useTheme, useThemeColor } from '@/hooks/use-theme-color';
+import { AppStyles } from '@/utils/theme';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
     Alert,
+    Image,
     KeyboardAvoidingView,
     Platform,
     ScrollView,
     StyleSheet,
-    View,
+    View
 } from 'react-native';
 import {
     Surface,
@@ -59,20 +61,19 @@ export default function SellerLogin() {
             >
                 <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
                     <View style={styles.header}>
-                        <Surface style={[styles.iconCircle, { backgroundColor: surfaceVariantColor, borderColor: outlineColor }]} elevation={2}>
-                            <Text style={styles.iconEmoji}>🏪</Text>
-                        </Surface>
-
-                        <GradientText style={styles.gradientTitle}>
-                            Seller Login
-                        </GradientText>
-
-                        <Text style={[styles.subtitle, { color: accentColor }]}>
-                            Welcome back to Grabbitt!
+                        <Image
+                            source={require('@/assets/images/logo.png')}
+                            style={styles.logo}
+                        />
+                        <Text style={[styles.subtitle]}>
+                            For Business
                         </Text>
                     </View>
 
                     <Surface style={[styles.formCard, { backgroundColor: theme.colors.surface, borderColor: outlineColor }]} elevation={2}>
+                        <GradientText style={styles.gradientTitle}>
+                            Login
+                        </GradientText>
                         <View style={styles.form}>
                             <TextInput
                                 label="Email"
@@ -82,7 +83,7 @@ export default function SellerLogin() {
                                 keyboardType="email-address"
                                 autoCapitalize="none"
                                 style={[styles.input, { backgroundColor: theme.colors.surface }]}
-                                left={<TextInput.Icon icon="email" color={accentColor} />}
+                                left={<TextInput.Icon icon="email" />}
                                 outlineColor={outlineColor}
                                 activeOutlineColor={accentColor}
                                 theme={theme}
@@ -95,11 +96,10 @@ export default function SellerLogin() {
                                 mode="outlined"
                                 secureTextEntry={!showPassword}
                                 style={[styles.input, { backgroundColor: theme.colors.surface }]}
-                                left={<TextInput.Icon icon="lock" color={accentColor} />}
+                                left={<TextInput.Icon icon="lock" />}
                                 right={
                                     <TextInput.Icon
                                         icon={showPassword ? 'eye-off' : 'eye'}
-                                        color={accentColor}
                                         onPress={() => setShowPassword(!showPassword)}
                                     />
                                 }
@@ -123,7 +123,7 @@ export default function SellerLogin() {
                             {/* Outline button example */}
                             <Button
                                 onPress={() => router.push('/auth/register')}
-                                variant="outlined"
+                                variant="text"
                                 size="medium"
                                 fullWidth
                             >
@@ -145,34 +145,27 @@ const styles = StyleSheet.create({
     keyboardView: {
         flex: 1
     },
+    logo: {
+        width: 400,
+        height: 150,
+        alignSelf: 'center',
+    },
     scrollContent: {
         flexGrow: 1,
         paddingHorizontal: AppStyles.spacing.lg,
-        paddingTop: AppStyles.spacing.xxl,
+        paddingTop: AppStyles.spacing.xxxl,
         paddingBottom: AppStyles.spacing.xl,
     },
     header: {
         alignItems: 'center',
         marginBottom: AppStyles.spacing.xl
     },
-    iconCircle: {
-        width: 80,
-        height: 80,
-        borderRadius: 40,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: AppStyles.spacing.lg,
-        borderWidth: 2,
-    },
-    iconEmoji: {
-        fontSize: 40
-    },
     gradientTitle: {
         fontFamily: 'Poppins',
         fontSize: 24,
         fontWeight: '600',
         textAlign: 'center',
-        marginBottom: AppStyles.spacing.sm,
+        marginBottom: AppStyles.spacing.lg,
     },
     subtitle: {
         textAlign: 'center',
