@@ -1,40 +1,41 @@
-import React, { useState, useEffect } from 'react';
-import {
-  View,
-  StyleSheet,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
-  Alert,
-} from 'react-native';
-import { useRouter } from 'expo-router';
-import { useAuthStore } from '../../store/authStore';
-import { 
-  Text, 
-  TextInput,
-  Button,
-  Card,
-  ActivityIndicator,
-  SegmentedButtons,
-  Divider,
-} from 'react-native-paper';
-import { LinearGradient } from 'expo-linear-gradient';
+import { useTheme } from '@/hooks/use-theme-color';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { sellerTheme } from '../../constants/sellerTheme';
 import axios from 'axios';
 import Constants from 'expo-constants';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import {
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
+import {
+  ActivityIndicator,
+  Button,
+  Card,
+  Divider,
+  SegmentedButtons,
+  Text,
+  TextInput,
+} from 'react-native-paper';
+import { useAuthStore } from '../../store/authStore';
 
 const API_URL = Constants.expoConfig?.extra?.EXPO_PUBLIC_BACKEND_URL || process.env.EXPO_PUBLIC_BACKEND_URL;
 
 const categories = ['Food', 'Shopping', 'Services', 'Entertainment', 'Health', 'Other'];
 
 export default function SellerProfileSetup() {
+  const sellerTheme = useTheme();
   const { user } = useAuthStore();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [isNewProfile, setIsNewProfile] = useState(true);
-  
+
   const [shopName, setShopName] = useState('');
   const [category, setCategory] = useState('Food');
   const [description, setDescription] = useState('');
@@ -52,7 +53,7 @@ export default function SellerProfileSetup() {
       const response = await axios.get(`${API_URL}/api/sellers/profile`, {
         headers: { Authorization: `Bearer ${user?.token}` }
       });
-      
+
       const profile = response.data;
       setShopName(profile.shop_name);
       setCategory(profile.category || 'Food');
@@ -94,7 +95,7 @@ export default function SellerProfileSetup() {
           headers: { Authorization: `Bearer ${user?.token}` }
         });
         Alert.alert('Success', 'Profile created successfully!', [
-          { text: 'OK', onPress: () => router.replace('/seller/dashboard') }
+          { text: 'OK', onPress: () => router.replace('/(tabs)/dashboard') }
         ]);
       } else {
         await axios.put(`${API_URL}/api/sellers/profile`, profileData, {
@@ -132,11 +133,11 @@ export default function SellerProfileSetup() {
         </Text>
       </LinearGradient>
 
-      <KeyboardAvoidingView 
+      <KeyboardAvoidingView
         style={styles.keyboardView}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <ScrollView 
+        <ScrollView
           style={styles.content}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
@@ -159,8 +160,8 @@ export default function SellerProfileSetup() {
               />
 
               <Text variant="labelLarge" style={styles.label}>Category</Text>
-              <ScrollView 
-                horizontal 
+              <ScrollView
+                horizontal
                 showsHorizontalScrollIndicator={false}
                 style={styles.categoryScroll}
               >
@@ -317,13 +318,11 @@ export default function SellerProfileSetup() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: sellerTheme.colors.background,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: sellerTheme.colors.background,
   },
   header: {
     paddingTop: 60,
@@ -357,7 +356,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   cardTitle: {
-    color: sellerTheme.colors.onBackground,
     fontWeight: '600',
     marginBottom: 12,
   },
@@ -369,7 +367,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   label: {
-    color: sellerTheme.colors.onBackground,
     marginBottom: 8,
   },
   categoryScroll: {
@@ -386,7 +383,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   previewCard: {
-    backgroundColor: sellerTheme.colors.surfaceVariant,
     elevation: 0,
   },
   previewContent: {
@@ -396,25 +392,19 @@ const styles = StyleSheet.create({
   },
   previewText: {
     flex: 1,
-    color: sellerTheme.colors.onBackground,
   },
   tierCard: {
     marginTop: 12,
-    backgroundColor: sellerTheme.colors.surfaceVariant,
     elevation: 0,
   },
   tierCardActive: {
-    backgroundColor: `${sellerTheme.colors.primary}20`,
     borderWidth: 2,
-    borderColor: sellerTheme.colors.primary,
   },
   tierTitle: {
-    color: sellerTheme.colors.onBackground,
     fontWeight: '600',
     marginBottom: 8,
   },
   tierDescription: {
-    color: sellerTheme.colors.secondaryContainer,
   },
   saveButton: {
     marginTop: 8,

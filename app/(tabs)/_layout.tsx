@@ -1,9 +1,10 @@
-import React from 'react';
-import { Tabs } from 'expo-router';
+import { useTheme } from '@/hooks/use-theme-color';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { sellerTheme } from '../../constants/sellerTheme';
+import { Tabs } from 'expo-router';
+import React from 'react';
 
 export default function SellerLayout() {
+  const sellerTheme = useTheme();
   return (
     <Tabs
       screenOptions={{
@@ -24,12 +25,6 @@ export default function SellerLayout() {
         },
       }}
     >
-      <Tabs.Screen
-        name="auth"
-        options={{
-          href: null, // Completely hide from tabs and navigation
-        }}
-      />
       <Tabs.Screen
         name="dashboard"
         options={{

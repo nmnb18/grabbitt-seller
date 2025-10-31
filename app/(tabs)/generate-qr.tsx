@@ -1,28 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import {
-  View,
-  StyleSheet,
-  ScrollView,
-  Alert,
-  Share,
-} from 'react-native';
-import { useAuthStore } from '../../store/authStore';
-import { 
-  Text, 
-  Card,
-  Button,
-  SegmentedButtons,
-  ActivityIndicator,
-  Divider,
-  TextInput,
-  Chip,
-} from 'react-native-paper';
-import { LinearGradient } from 'expo-linear-gradient';
+import { useTheme } from '@/hooks/use-theme-color';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { sellerTheme } from '../../constants/sellerTheme';
 import axios from 'axios';
 import Constants from 'expo-constants';
-import { Image } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import React, { useState } from 'react';
+import {
+  Alert,
+  Image,
+  ScrollView,
+  Share,
+  StyleSheet,
+  View,
+} from 'react-native';
+import {
+  Button,
+  Card,
+  Chip,
+  Divider,
+  SegmentedButtons,
+  Text,
+  TextInput
+} from 'react-native-paper';
+import { useAuthStore } from '../../store/authStore';
 
 const API_URL = Constants.expoConfig?.extra?.EXPO_PUBLIC_BACKEND_URL || process.env.EXPO_PUBLIC_BACKEND_URL;
 
@@ -36,6 +35,7 @@ export default function SellerGenerateQR() {
   const [expiryMinutes, setExpiryMinutes] = useState('60');
   const [qrImage, setQrImage] = useState<string | null>(null);
   const [qrData, setQrData] = useState<any>(null);
+  const sellerTheme = useTheme();
 
   const handleGenerateQR = async () => {
     if (qrMode === 'static_with_code' && !hiddenCode) {
@@ -65,7 +65,7 @@ export default function SellerGenerateQR() {
 
       setQrImage(response.data.qr_image);
       setQrData(response.data);
-      
+
       Alert.alert('Success', 'QR code generated successfully!');
     } catch (error: any) {
       Alert.alert('Error', error.response?.data?.detail || 'Failed to generate QR code');
@@ -76,7 +76,7 @@ export default function SellerGenerateQR() {
 
   const handleShare = async () => {
     if (!qrImage) return;
-    
+
     try {
       await Share.share({
         message: `Scan this QR code to earn loyalty points!`,
@@ -115,7 +115,7 @@ export default function SellerGenerateQR() {
         </Text>
       </LinearGradient>
 
-      <ScrollView 
+      <ScrollView
         style={styles.content}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
@@ -157,10 +157,10 @@ export default function SellerGenerateQR() {
 
             <Card style={styles.infoCard}>
               <Card.Content style={styles.infoContent}>
-                <MaterialCommunityIcons 
-                  name="information" 
-                  size={20} 
-                  color={sellerTheme.colors.primary} 
+                <MaterialCommunityIcons
+                  name="information"
+                  size={20}
+                  color={sellerTheme.colors.primary}
                 />
                 <Text variant="bodySmall" style={styles.infoText}>
                   {getModeDescription()}
@@ -230,10 +230,10 @@ export default function SellerGenerateQR() {
                   resizeMode="contain"
                 />
               </View>
-              
+
               <View style={styles.qrInfo}>
-                <Chip 
-                  icon="check-circle" 
+                <Chip
+                  icon="check-circle"
                   style={styles.qrChip}
                   textStyle={styles.qrChipText}
                 >
@@ -262,7 +262,7 @@ export default function SellerGenerateQR() {
               <Button onPress={handleShare} icon="share-variant">
                 Share
               </Button>
-              <Button 
+              <Button
                 onPress={() => {
                   setQrImage(null);
                   setQrData(null);
@@ -334,7 +334,6 @@ export default function SellerGenerateQR() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: sellerTheme.colors.background,
   },
   header: {
     paddingTop: 60,
@@ -365,7 +364,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   cardTitle: {
-    color: sellerTheme.colors.onBackground,
     fontWeight: '600',
     marginBottom: 12,
   },
@@ -376,7 +374,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   infoCard: {
-    backgroundColor: sellerTheme.colors.surfaceVariant,
     elevation: 0,
   },
   infoContent: {
@@ -386,7 +383,6 @@ const styles = StyleSheet.create({
   },
   infoText: {
     flex: 1,
-    color: sellerTheme.colors.onBackground,
   },
   input: {
     marginBottom: 16,
@@ -446,7 +442,6 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: sellerTheme.colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -457,7 +452,6 @@ const styles = StyleSheet.create({
   },
   instructionText: {
     flex: 1,
-    color: sellerTheme.colors.onBackground,
   },
   bottomSpacer: {
     height: 80,

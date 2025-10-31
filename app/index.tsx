@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { useRouter } from 'expo-router';
-import { useAuthStore } from '../store/authStore';
-import { ActivityIndicator, Text } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
+import React, { useEffect } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Text } from 'react-native-paper';
+import { useAuthStore } from '../store/authStore';
 
 export default function Index() {
   const router = useRouter();
@@ -23,7 +23,7 @@ export default function Index() {
         if (user && user.role === 'seller') {
           router.replace('/(tabs)/dashboard');
         } else {
-          router.replace('/auth');
+          router.replace('/auth/login');
         }
       }, 500);
       

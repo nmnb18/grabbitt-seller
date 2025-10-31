@@ -1,27 +1,25 @@
+import { useTheme } from '@/hooks/use-theme-color';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import Constants from 'expo-constants';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-  View,
-  StyleSheet,
-  ScrollView,
-  RefreshControl,
   Alert,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  View,
 } from 'react-native';
-import { useRouter } from 'expo-router';
-import { useAuthStore } from '../../store/authStore';
-import { 
-  Text, 
-  Card, 
-  Button,
+import {
   ActivityIndicator,
+  Card,
+  Chip,
   IconButton,
   Surface,
-  Chip
+  Text
 } from 'react-native-paper';
-import { LinearGradient } from 'expo-linear-gradient';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { sellerTheme, sellerStyles } from '../../constants/sellerTheme';
-import axios from 'axios';
-import Constants from 'expo-constants';
+import { useAuthStore } from '../../store/authStore';
 
 const API_URL = Constants.expoConfig?.extra?.EXPO_PUBLIC_BACKEND_URL || process.env.EXPO_PUBLIC_BACKEND_URL;
 
@@ -74,41 +72,45 @@ const ActionCard = ({ icon, title, subtitle, onPress, iconColor }: ActionCardPro
 );
 
 export default function SellerDashboard() {
-  const { user, logout } = useAuthStore();
+  const { user, logout, } = useAuthStore();
   const router = useRouter();
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [profile, setProfile] = useState<any>(null);
+  const sellerTheme = useTheme();
 
   useEffect(() => {
     loadData();
   }, []);
 
   const loadData = async () => {
-    try {
-      // Load profile
-      const profileRes = await axios.get(`${API_URL}/api/sellers/profile`, {
-        headers: { Authorization: `Bearer ${user?.token}` }
-      });
-      setProfile(profileRes.data);
-
-      // Load stats
-      const statsRes = await axios.get(`${API_URL}/api/sellers/stats`, {
-        headers: { Authorization: `Bearer ${user?.token}` }
-      });
-      setStats(statsRes.data);
-    } catch (error: any) {
-      if (error.response?.status === 404) {
-        // No profile yet, redirect to setup
-        router.push('/seller/profile-setup');
-      } else {
-        console.error('Load error:', error);
-      }
-    } finally {
+    setTimeout(() => {
       setLoading(false);
-      setRefreshing(false);
-    }
+    }, 2000)
+    // try {
+    //   // Load profile
+    //   const profileRes = await axios.get(`${API_URL}/api/sellers/profile`, {
+    //     headers: { Authorization: `Bearer ${user?.token}` }
+    //   });
+    //   setProfile(profileRes.data);
+
+    //   // Load stats
+    //   const statsRes = await axios.get(`${API_URL}/api/sellers/stats`, {
+    //     headers: { Authorization: `Bearer ${user?.token}` }
+    //   });
+    //   setStats(statsRes.data);
+    // } catch (error: any) {
+    //   if (error.response?.status === 404) {
+    //     // No profile yet, redirect to setup
+    //     router.push('/seller/profile-setup');
+    //   } else {
+    //     console.error('Load error:', error);
+    //   }
+    // } finally {
+    //   setLoading(false);
+    //   setRefreshing(false);
+    // }
   };
 
   const onRefresh = () => {
@@ -122,8 +124,8 @@ export default function SellerDashboard() {
       {
         text: 'Logout',
         onPress: async () => {
-          await logout();
-          router.replace('/role-select');
+          await logout(user?.uid ?? '');
+          router.replace('/auth/login');
         },
       },
     ]);
@@ -137,9 +139,9 @@ export default function SellerDashboard() {
     );
   }
 
-  if (!profile) {
-    return null;
-  }
+  // if (!profile) {
+  //   return null;
+  // }
 
   return (
     <View style={styles.container}>
@@ -151,14 +153,14 @@ export default function SellerDashboard() {
         <View style={styles.headerContent}>
           <View style={styles.headerTextContainer}>
             <Text variant="labelMedium" style={styles.greeting}>Welcome back,</Text>
-            <Text variant="headlineSmall" style={styles.shopName}>{profile.shop_name}</Text>
-            <Chip 
-              mode="flat" 
-              icon="store" 
+            <Text variant="headlineSmall" style={styles.shopName}>{user?.shopName}</Text>
+            <Chip
+              mode="flat"
+              icon="store"
               style={styles.categoryChip}
               textStyle={styles.chipText}
             >
-              {profile.category || 'General'}
+              {profile?.category || 'General'}
             </Chip>
           </View>
           <IconButton
@@ -170,7 +172,7 @@ export default function SellerDashboard() {
         </View>
       </LinearGradient>
 
-      <ScrollView 
+      <ScrollView
         style={styles.content}
         showsVerticalScrollIndicator={false}
         refreshControl={
@@ -216,12 +218,13 @@ export default function SellerDashboard() {
         {/* Quick Actions */}
         <View style={styles.section}>
           <Text variant="titleLarge" style={styles.sectionTitle}>Quick Actions</Text>
-          
+
           <ActionCard
             icon="qrcode-plus"
             title="Generate QR Code"
             subtitle="Create a new loyalty QR code"
-            onPress={() => router.push('/seller/generate-qr')}
+            //onPress={() => router.push('/seller/generate-qr')}
+            onPress={() => { }}
             iconColor="#0D7377"
           />
 
@@ -229,7 +232,8 @@ export default function SellerDashboard() {
             icon="store-cog"
             title="Edit Profile"
             subtitle="Update shop details and rewards"
-            onPress={() => router.push('/seller/profile-setup')}
+            //onPress={() => router.push('/seller/profile-setup')}
+            onPress={() => { }}
             iconColor="#2B5F75"
           />
 
@@ -237,7 +241,8 @@ export default function SellerDashboard() {
             icon="chart-line"
             title="AI Insights"
             subtitle="Get reward optimization suggestions"
-            onPress={() => router.push('/seller/ai-insights')}
+            //onPress={() => router.push('/seller/ai-insights')}
+            onPress={() => { }}
             iconColor="#323E48"
           />
         </View>
@@ -251,13 +256,11 @@ export default function SellerDashboard() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: sellerTheme.colors.background,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: sellerTheme.colors.background,
   },
   header: {
     paddingTop: 60,
@@ -329,7 +332,6 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   sectionTitle: {
-    color: sellerTheme.colors.onBackground,
     fontWeight: '700',
     marginBottom: 16,
     paddingLeft: 4,
@@ -357,12 +359,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   actionTitle: {
-    color: sellerTheme.colors.onBackground,
     fontWeight: '600',
     marginBottom: 4,
   },
   actionSubtitle: {
-    color: sellerTheme.colors.secondaryContainer,
   },
   bottomSpacer: {
     height: 24,

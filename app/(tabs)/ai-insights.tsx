@@ -1,28 +1,28 @@
-import React, { useState } from 'react';
-import {
-  View,
-  StyleSheet,
-  ScrollView,
-  Alert,
-} from 'react-native';
-import { useAuthStore } from '../../store/authStore';
-import { 
-  Text, 
-  Card,
-  Button,
-  ActivityIndicator,
-  Divider,
-  Chip,
-} from 'react-native-paper';
-import { LinearGradient } from 'expo-linear-gradient';
+import { useTheme } from '@/hooks/use-theme-color';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { sellerTheme } from '../../constants/sellerTheme';
 import axios from 'axios';
 import Constants from 'expo-constants';
+import { LinearGradient } from 'expo-linear-gradient';
+import React, { useState } from 'react';
+import {
+  Alert,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
+import {
+  ActivityIndicator,
+  Button,
+  Card,
+  Chip,
+  Text
+} from 'react-native-paper';
+import { useAuthStore } from '../../store/authStore';
 
 const API_URL = Constants.expoConfig?.extra?.EXPO_PUBLIC_BACKEND_URL || process.env.EXPO_PUBLIC_BACKEND_URL;
 
 export default function SellerAIInsights() {
+  const sellerTheme = useTheme();
   const { user } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const [insights, setInsights] = useState<any>(null);
@@ -67,7 +67,7 @@ export default function SellerAIInsights() {
   const handleTabChange = (tab: 'optimize' | 'fraud' | 'recommend') => {
     setActiveTab(tab);
     setInsights(null);
-    
+
     if (tab === 'optimize') {
       fetchOptimization();
     } else if (tab === 'fraud') {
@@ -90,7 +90,7 @@ export default function SellerAIInsights() {
         </Text>
       </LinearGradient>
 
-      <ScrollView 
+      <ScrollView
         style={styles.content}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
@@ -139,10 +139,10 @@ export default function SellerAIInsights() {
               colors={['#2B5F75', '#0D7377']}
               style={styles.insightsHeader}
             >
-              <MaterialCommunityIcons 
-                name={activeTab === 'optimize' ? 'lightbulb' : 'shield-check'} 
-                size={40} 
-                color="#FFFFFF" 
+              <MaterialCommunityIcons
+                name={activeTab === 'optimize' ? 'lightbulb' : 'shield-check'}
+                size={40}
+                color="#FFFFFF"
               />
               <Text variant="headlineSmall" style={styles.insightsTitle}>
                 {activeTab === 'optimize' ? 'Optimization Suggestions' : 'Security Analysis'}
@@ -152,7 +152,7 @@ export default function SellerAIInsights() {
               <Text variant="bodyMedium" style={styles.insightsText}>
                 {insights.suggestion || insights.analysis || 'No insights available'}
               </Text>
-              
+
               {activeTab === 'optimize' && (
                 <View style={styles.metricsContainer}>
                   <View style={styles.metricCard}>
@@ -190,8 +190,8 @@ export default function SellerAIInsights() {
                   <Chip icon="check" style={styles.featureChip}>Engagement analysis</Chip>
                   <Chip icon="check" style={styles.featureChip}>Revenue prediction</Chip>
                 </View>
-                <Button 
-                  mode="contained" 
+                <Button
+                  mode="contained"
                   onPress={() => handleTabChange('optimize')}
                   style={styles.featureButton}
                   icon="rocket"
@@ -217,8 +217,8 @@ export default function SellerAIInsights() {
                   <Chip icon="check" style={styles.featureChip}>Pattern analysis</Chip>
                   <Chip icon="check" style={styles.featureChip}>Threat alerts</Chip>
                 </View>
-                <Button 
-                  mode="contained" 
+                <Button
+                  mode="contained"
                   onPress={() => handleTabChange('fraud')}
                   style={styles.featureButton}
                   icon="shield"
@@ -239,7 +239,6 @@ export default function SellerAIInsights() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: sellerTheme.colors.background,
   },
   header: {
     paddingTop: 60,
@@ -282,11 +281,9 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: 16,
-    color: sellerTheme.colors.onBackground,
   },
   loadingSubtext: {
     marginTop: 8,
-    color: sellerTheme.colors.secondaryContainer,
   },
   insightsCard: {
     borderRadius: 16,
@@ -307,7 +304,6 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   insightsText: {
-    color: sellerTheme.colors.onBackground,
     lineHeight: 24,
   },
   metricsContainer: {
@@ -317,18 +313,15 @@ const styles = StyleSheet.create({
   },
   metricCard: {
     flex: 1,
-    backgroundColor: sellerTheme.colors.surfaceVariant,
     padding: 16,
     borderRadius: 12,
     alignItems: 'center',
   },
   metricLabel: {
-    color: sellerTheme.colors.secondaryContainer,
     marginTop: 8,
     textAlign: 'center',
   },
   metricValue: {
-    color: sellerTheme.colors.primary,
     fontWeight: '700',
     marginTop: 4,
   },
@@ -342,12 +335,10 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   featureTitle: {
-    color: sellerTheme.colors.onBackground,
     marginTop: 12,
     textAlign: 'center',
   },
   featureDescription: {
-    color: sellerTheme.colors.secondaryContainer,
     textAlign: 'center',
     marginBottom: 16,
     lineHeight: 22,
@@ -360,7 +351,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   featureChip: {
-    backgroundColor: sellerTheme.colors.surfaceVariant,
   },
   featureButton: {
     borderRadius: 12,
