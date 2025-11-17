@@ -12,7 +12,7 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-import { Surface, Text, TextInput } from "react-native-paper";
+import { Surface, TextInput } from "react-native-paper";
 import { useAuthStore } from "../../store/authStore";
 
 export default function SellerLogin() {
@@ -49,6 +49,7 @@ export default function SellerLogin() {
 
   return (
     <View style={[styles.container, { backgroundColor }]}>
+
       <KeyboardAvoidingView
         style={styles.keyboardView}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -57,14 +58,7 @@ export default function SellerLogin() {
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={styles.header}>
-            <GradientText
-              style={{ fontFamily: "JostMedium", fontSize: 80, marginTop: 40 }}
-            >
-              grabbitt
-            </GradientText>
-            <Text style={[styles.subtitle]}>For Business</Text>
-          </View>
+
 
           <Surface
             style={[
@@ -188,21 +182,12 @@ const styles = StyleSheet.create({
     paddingTop: AppStyles.spacing.xxxl,
     paddingBottom: AppStyles.spacing.xl,
   },
-  header: {
-    alignItems: "center",
-    marginBottom: AppStyles.spacing.xl,
-  },
   gradientTitle: {
     fontFamily: "Poppins",
     fontSize: 24,
     fontWeight: "600",
     textAlign: "center",
     marginBottom: AppStyles.spacing.lg,
-  },
-  subtitle: {
-    textAlign: "center",
-    fontFamily: "Inter",
-    fontSize: 16,
   },
   formCard: {
     borderRadius: 12,

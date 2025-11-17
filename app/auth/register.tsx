@@ -902,17 +902,13 @@ export default function SellerRegister() {
 
     return (
         <View style={[styles.container, { backgroundColor }]}>
+
             <KeyboardAvoidingView
                 style={styles.keyboardView}
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             >
                 <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
-                    <View style={styles.header}>
-                        <GradientText style={{ fontFamily: 'JostMedium', fontSize: 80, marginTop: 40 }}>grabbitt</GradientText>
-                        <Text style={[styles.subtitle]}>
-                            Seller Registration
-                        </Text>
-                    </View>
+
 
                     <Surface style={[styles.formCard, { backgroundColor: theme.colors.surface, borderColor: outlineColor }]} elevation={2}>
                         <GradientText style={styles.gradientTitle}>
@@ -995,22 +991,12 @@ const styles = StyleSheet.create({
         paddingTop: AppStyles.spacing.xl,
         paddingBottom: AppStyles.spacing.xl,
     },
-    header: {
-        alignItems: 'center',
-        marginBottom: AppStyles.spacing.lg
-    },
     gradientTitle: {
         fontFamily: 'Poppins',
         fontSize: 20,
         fontWeight: '600',
         textAlign: 'center',
         marginBottom: AppStyles.spacing.lg,
-    },
-    subtitle: {
-        textAlign: 'center',
-        fontFamily: 'Inter',
-        fontSize: 16,
-        marginTop: AppStyles.spacing.sm,
     },
     formCard: {
         borderRadius: 12,
@@ -1095,7 +1081,7 @@ const styles = StyleSheet.create({
     },
     navigation: {
         marginTop: AppStyles.spacing.lg,
-        gap: AppStyles.spacing.lg,
+        gap: AppStyles.spacing.xl,
     },
     loginButton: {
         marginTop: AppStyles.spacing.md,

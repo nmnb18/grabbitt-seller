@@ -30,11 +30,6 @@ export default function ResetSuccessScreen() {
                     contentContainerStyle={styles.scrollContent}
                     keyboardShouldPersistTaps="handled"
                 >
-                    {/* HEADER */}
-                    <View style={styles.header}>
-                        <GradientText style={{ fontFamily: 'JostMedium', fontSize: 80, marginTop: 40 }}>grabbitt</GradientText>
-                        <Text style={styles.subtitle}>For Business</Text>
-                    </View>
 
                     {/* SUCCESS CARD */}
                     <Surface
@@ -93,16 +88,6 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
     },
 
-    header: {
-        alignItems: 'center',
-        marginBottom: AppStyles.spacing.xl,
-    },
-
-    subtitle: {
-        fontSize: 16,
-        textAlign: 'center',
-        fontFamily: 'Inter',
-    },
 
     card: {
         borderRadius: 12,

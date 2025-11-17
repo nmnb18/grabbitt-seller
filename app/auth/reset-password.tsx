@@ -13,7 +13,7 @@ import {
     StyleSheet,
     View
 } from 'react-native';
-import { Surface, Text, TextInput } from 'react-native-paper';
+import { Surface, TextInput } from 'react-native-paper';
 
 export default function ResetPasswordScreen() {
     const router = useRouter();
@@ -70,10 +70,7 @@ export default function ResetPasswordScreen() {
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             >
                 <ScrollView contentContainerStyle={styles.scrollContent}>
-                    <View style={styles.header}>
-                        <GradientText style={{ fontFamily: 'JostMedium', fontSize: 80, marginTop: 40 }}>grabbitt</GradientText>
-                        <Text style={styles.subtitle}>For Business</Text>
-                    </View>
+
 
                     <Surface style={[styles.formCard, { backgroundColor: theme.colors.surface, borderColor: outlineColor }]} elevation={2}>
                         <GradientText style={styles.gradientTitle}>Reset Password</GradientText>
@@ -156,8 +153,6 @@ const styles = StyleSheet.create({
         paddingTop: AppStyles.spacing.xxxl,
         paddingBottom: AppStyles.spacing.xl,
     },
-    header: { alignItems: 'center', marginBottom: AppStyles.spacing.xl },
-    subtitle: { fontSize: 16 },
     formCard: {
         borderRadius: 12,
         padding: AppStyles.spacing.lg,

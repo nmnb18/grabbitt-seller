@@ -48,17 +48,14 @@ export default function ForgotPasswordScreen() {
 
     return (
         <View style={[styles.container, { backgroundColor }]}>
+
             <KeyboardAvoidingView
                 style={styles.keyboardView}
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             >
                 <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
 
-                    {/* HEADER */}
-                    <View style={styles.header}>
-                        <GradientText style={{ fontFamily: 'JostMedium', fontSize: 80, marginTop: 40 }}>grabbitt</GradientText>
-                        <Text style={styles.subtitle}>For Business</Text>
-                    </View>
+
 
                     {/* FORM CARD */}
                     <Surface style={[styles.formCard, { backgroundColor: theme.colors.surface, borderColor: outlineColor }]} elevation={2}>
@@ -135,15 +132,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: AppStyles.spacing.lg,
         paddingTop: AppStyles.spacing.xxxl,
         paddingBottom: AppStyles.spacing.xl,
-    },
-    header: {
-        alignItems: 'center',
-        marginBottom: AppStyles.spacing.xl
-    },
-    subtitle: {
-        textAlign: 'center',
-        fontFamily: 'Inter',
-        fontSize: 16,
     },
     formCard: {
         borderRadius: 12,
