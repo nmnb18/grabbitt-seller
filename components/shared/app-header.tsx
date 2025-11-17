@@ -1,9 +1,9 @@
-import { Colors } from '@/utils/theme';
-import { Ionicons } from '@expo/vector-icons';
-import { DrawerActions, useNavigation } from '@react-navigation/native';
-import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { GradientText } from '../ui/gradient-text';
+import { useTheme } from "@/hooks/use-theme-color";
+import { Ionicons } from "@expo/vector-icons";
+import { DrawerActions, useNavigation } from "@react-navigation/native";
+import React from "react";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { GradientText } from "../ui/gradient-text";
 
 interface AppHeaderProps {
     showMenu?: boolean;
@@ -16,30 +16,54 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
     showMenu = true,
     showNotifications = true,
     onNotificationsPress,
-    backgroundColor = Colors.light.background,
+    backgroundColor,
 }) => {
     const navigation = useNavigation<any>();
+    const theme = useTheme();
+
+    const bg = backgroundColor || theme.colors.background;
+    const iconColor = theme.colors.onSurface;
 
     return (
-        <View style={[styles.headerContainer, { backgroundColor }]}>
+        <View style={[styles.headerContainer, { backgroundColor: bg }]}>
+            {/* Menu */}
             {showMenu ? (
                 <TouchableOpacity
-                    onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+                    onPress={() =>
+                        navigation.dispatch(DrawerActions.openDrawer())
+                    }
                     style={styles.iconButton}
                 >
-                    <Ionicons name="menu" size={26} color="#000" />
+                    <Ionicons name="menu" size={26} color={iconColor} />
                 </TouchableOpacity>
             ) : (
                 <View style={styles.iconButton} />
             )}
 
-            <GradientText style={{ fontFamily: 'JostMedium', fontSize: 40 }}>grabbitt</GradientText>
+            {/* Logo */}
+            <GradientText
+                style={{
+                    fontFamily: "JostMedium",
+                    fontSize: 40,
+                }}
+            >
+                grabbitt
+            </GradientText>
+
+            {/* Notifications */}
             {showNotifications ? (
                 <TouchableOpacity
-                    onPress={onNotificationsPress || (() => console.log('Notifications pressed'))}
+                    onPress={
+                        onNotificationsPress ||
+                        (() => console.log("Notifications pressed"))
+                    }
                     style={styles.iconButton}
                 >
-                    <Ionicons name="notifications-outline" size={24} color="#000" />
+                    <Ionicons
+                        name="notifications-outline"
+                        size={24}
+                        color={iconColor}
+                    />
                 </TouchableOpacity>
             ) : (
                 <View style={styles.iconButton} />
@@ -50,20 +74,15 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
 
 const styles = StyleSheet.create({
     headerContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
         paddingTop: 60,
         paddingBottom: 12,
         paddingHorizontal: 16,
-        borderBottomWidth: 0,
     },
     iconButton: {
         width: 40,
-        alignItems: 'center',
-    },
-    logo: {
-        width: 160,
-        height: 60,
+        alignItems: "center",
     },
 });

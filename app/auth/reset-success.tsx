@@ -56,7 +56,7 @@ export default function ResetSuccessScreen() {
                             />
                         </View>
 
-                        <Text style={styles.message}>
+                        <Text style={[styles.message, { color: theme.colors.accent }]}>
                             Your password has been successfully reset.
                             You can now log in using your new password.
                         </Text>
@@ -126,7 +126,6 @@ const styles = StyleSheet.create({
 
     message: {
         fontSize: 15,
-        color: '#555',
         marginBottom: AppStyles.spacing.lg,
         textAlign: 'center',
         lineHeight: 20,

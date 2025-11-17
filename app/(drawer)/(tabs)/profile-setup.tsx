@@ -4,7 +4,7 @@ import LocationDetails from '@/components/profile/location-details';
 import RewardsSettings from '@/components/profile/reward-settings';
 import VerificationDetails from '@/components/profile/verification-details';
 import { Button as CustomButton } from '@/components/ui/paper-button';
-import { useTheme, useThemeColor } from '@/hooks/use-theme-color';
+import { useTheme } from '@/hooks/use-theme-color';
 import api from '@/services/axiosInstance';
 import { isValidPassword } from '@/utils/helper';
 import { useRouter } from 'expo-router';
@@ -33,6 +33,14 @@ export default function SellerProfileSetup() {
   const router = useRouter();
   const { user, logout } = useAuthStore();
 
+  const theme = useTheme();
+  const outlineColor = theme.colors.outline;
+  const accent = theme.colors.primary;
+  const surface = theme.colors.surface;
+  const textColor = theme.colors.onSurface;
+  const danger = theme.colors.error;
+  const success = theme.colors.success;
+
   const subscription = user?.user.seller_profile?.subscription;
   const expiryText = subscription?.expires_at
     ? `Expires on ${new Date(subscription?.expires_at?._seconds * 1000).toLocaleDateString()}`
@@ -42,15 +50,12 @@ export default function SellerProfileSetup() {
   const [showPasswordSheet, setShowPasswordSheet] = useState(false);
 
   const [deleting, setDeleting] = useState(false);
+  const [changing, setChanging] = useState(false);
 
   // Password states
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
-  const [changing, setChanging] = useState(false);
-  const theme = useTheme();
-  const outlineColor = useThemeColor({}, 'outline');
-  const accentColor = useThemeColor({}, 'accent');
 
   // DELETE ACCOUNT
   const handleDeleteAccount = async () => {
@@ -58,7 +63,6 @@ export default function SellerProfileSetup() {
       setDeleting(true);
 
       const idToken = user?.idToken;
-
       const resp = await api.delete("/deleteSellerAccount", {
         headers: { Authorization: `Bearer ${idToken}` }
       });
@@ -72,7 +76,6 @@ export default function SellerProfileSetup() {
       router.replace("/auth/login");
 
       Alert.alert("Account Deleted", "Your account has been permanently deleted.");
-
     } catch (err: any) {
       console.log("Delete Error:", err);
       Alert.alert("Error", err.response?.data?.error || "Something went wrong.");
@@ -99,17 +102,8 @@ export default function SellerProfileSetup() {
     try {
       setChanging(true);
 
-      const idToken = user?.idToken;
-
-      await api.post(
-        "/reauthenticate",
-        { currentPassword }
-      );
-
-      await api.post(
-        "/changePassword",
-        { newPassword }
-      );
+      await api.post("/reauthenticate", { currentPassword });
+      await api.post("/changePassword", { newPassword });
 
       Alert.alert("Success", "Password updated.");
 
@@ -117,7 +111,6 @@ export default function SellerProfileSetup() {
       setNewPassword('');
       setConfirmNewPassword('');
       setShowPasswordSheet(false);
-
     } catch (err: any) {
       Alert.alert("Error", err?.response?.data?.message || "Failed to update password");
     } finally {
@@ -126,42 +119,47 @@ export default function SellerProfileSetup() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <ScrollView
         style={styles.content}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {/* ACCOUNT INFORMATION */}
+        {/* Profile Sections */}
         <AccountInformation onOpenChangePassword={() => setShowPasswordSheet(true)} />
-
-        {/* BUSINESS INFORMATION */}
         <BusinessInformation />
-
-        {/* LOCATION DETAILS */}
         <LocationDetails />
-
-        {/* VERIFICATION */}
         <VerificationDetails />
-
-        {/* REWARDS SETTINGS */}
         <RewardsSettings />
 
-        {/* SUBSCRIPTION */}
-        <Card style={styles.card} elevation={3}>
+        {/* SUBSCRIPTION CARD */}
+        <Card style={[styles.card, { backgroundColor: surface }]} elevation={3}>
           <Card.Content>
-            <Text variant="titleMedium" style={styles.cardTitle}>💎 Subscription</Text>
-            <Divider style={styles.divider} />
+            <Text variant="titleMedium" style={[styles.cardTitle, { color: textColor }]}>
+              💎 Subscription
+            </Text>
+
+            <Divider style={[styles.divider, { backgroundColor: outlineColor + "55" }]} />
+
             <View style={styles.subRow}>
-              <Chip style={styles.planChip} icon="crown">
+              <Chip
+                style={{ backgroundColor: accent + "22" }}
+                textStyle={{ color: accent, fontWeight: "600" }}
+                icon="crown"
+              >
                 {subscription?.tier?.toUpperCase()}
               </Chip>
-              <Chip style={styles.expChip} icon="calendar">
+
+              <Chip
+                style={{ backgroundColor: success + "22" }}
+                textStyle={{ color: success }}
+                icon="calendar"
+              >
                 {expiryText}
               </Chip>
             </View>
 
-            <HelperText type="info">
+            <HelperText type="info" style={{ color: theme.colors.onSurface }}>
               Plan changes are handled on the Subscription page.
             </HelperText>
 
@@ -176,34 +174,46 @@ export default function SellerProfileSetup() {
         </Card>
 
         {/* DELETE ACCOUNT */}
-        <View style={styles.deleteContainer}>
+        <View
+          style={[
+            styles.deleteContainer,
+            {
+              backgroundColor: danger + "15",
+              borderColor: danger + "55"
+            }
+          ]}
+        >
           <Button
             mode="contained"
             onPress={() => setShowDeleteModal(true)}
-            buttonColor="#DC2626"
+            buttonColor={danger}
             textColor="#fff"
           >
             Delete My Account
           </Button>
 
-          <Text style={styles.deleteNote}>
+          <Text style={[styles.deleteNote, { color: danger }]}>
             This action is permanent and cannot be undone.
           </Text>
         </View>
 
         <View style={styles.bottomSpacer} />
       </ScrollView>
-      {/* PORTAL SECTION (Always on top!) */}
+
+      {/* MODALS & DIALOGS */}
       <Portal>
-        {/* DELETE ACCOUNT DIALOG */}
+        {/* DELETE CONFIRMATION */}
         <Dialog
           visible={showDeleteModal}
-          style={{ borderRadius: 20 }}
+          style={{ borderRadius: 20, backgroundColor: surface }}
           onDismiss={() => setShowDeleteModal(false)}
         >
-          <Dialog.Title style={{ color: "#DC2626" }}>Delete Account?</Dialog.Title>
+          <Dialog.Title style={{ color: danger }}>
+            Delete Account?
+          </Dialog.Title>
+
           <Dialog.Content>
-            <Text>
+            <Text style={{ color: textColor }}>
               This will permanently delete your seller profile, QR data, scans,
               and rewards. This action cannot be undone.
             </Text>
@@ -228,46 +238,50 @@ export default function SellerProfileSetup() {
         <Modal
           visible={showPasswordSheet}
           onDismiss={() => !changing && setShowPasswordSheet(false)}
-          contentContainerStyle={styles.sheetContainer}
+          contentContainerStyle={[
+            styles.sheetContainer,
+            { backgroundColor: surface }
+          ]}
         >
-          <Text style={styles.sheetTitle}>Change Password</Text>
+          <Text style={[styles.sheetTitle, { color: textColor }]}>
+            Change Password
+          </Text>
 
-          <TextInput
-            label="Current Password"
-            value={currentPassword}
-            onChangeText={setCurrentPassword}
-            mode="outlined"
-            style={[styles.input, { backgroundColor: theme.colors.surface }]}
-            left={<TextInput.Icon icon="lock" />}
-            outlineColor={outlineColor}
-            activeOutlineColor={accentColor}
-            theme={theme}
-          />
-
-          <TextInput
-            label="New Password"
-            value={newPassword}
-            secureTextEntry
-            onChangeText={setNewPassword}
-            mode="outlined"
-            style={[styles.input, { backgroundColor: theme.colors.surface }]}
-            left={<TextInput.Icon icon="lock" />}
-            outlineColor={outlineColor}
-            activeOutlineColor={accentColor}
-            theme={theme}
-          />
-
-          <TextInput
-            label="Confirm New Password"
-            value={confirmNewPassword}
-            secureTextEntry
-            onChangeText={setConfirmNewPassword}
-            mode="outlined"
-            style={[styles.input, { backgroundColor: theme.colors.surface }]} outlineColor={outlineColor}
-            activeOutlineColor={accentColor}
-            theme={theme}
-            left={<TextInput.Icon icon="lock-check" />}
-          />
+          {/* INPUTS */}
+          {[{
+            label: "Current Password",
+            value: currentPassword,
+            onChange: setCurrentPassword
+          }, {
+            label: "New Password",
+            value: newPassword,
+            onChange: setNewPassword,
+            secure: true
+          }, {
+            label: "Confirm New Password",
+            value: confirmNewPassword,
+            onChange: setConfirmNewPassword,
+            secure: true
+          }].map((input, i) => (
+            <TextInput
+              key={i}
+              label={input.label}
+              value={input.value}
+              secureTextEntry={input.secure}
+              onChangeText={input.onChange}
+              mode="outlined"
+              style={[styles.input, { backgroundColor: surface }]}
+              outlineColor={theme.colors.outline}
+              activeOutlineColor={theme.colors.onSurface}
+              theme={{
+                colors: {
+                  primary: theme.colors.primary,      // focused label color
+                  onSurfaceVariant: theme.colors.onSurface, // unfocused label color
+                },
+              }}
+              left={<TextInput.Icon icon="lock" color={theme.colors.onSurface} />}
+            />
+          ))}
 
           <Button mode="contained" onPress={handleChangePassword} loading={changing}>
             Update Password
@@ -279,56 +293,48 @@ export default function SellerProfileSetup() {
         </Modal>
       </Portal>
     </View>
-
-
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F9FAFB', },
-  keyboardView: { flex: 1 },
+  container: { flex: 1 },
   content: { flex: 1 },
   scrollContent: { paddingHorizontal: 16, paddingTop: 8 },
 
-  card: {
-    marginBottom: 16,
-    borderRadius: 16,
-    backgroundColor: '#FFFFFF',
-    elevation: 3,
-  },
+  card: { marginBottom: 16, borderRadius: 16 },
   cardTitle: { fontWeight: '600', marginBottom: 12 },
-  divider: { marginBottom: 16, height: 1.2, backgroundColor: '#0D737733' },
+  divider: { marginBottom: 16, height: 1.2 },
 
-  subRow: { flexDirection: 'row', gap: 8, flexWrap: 'wrap', marginBottom: 8 },
-  planChip: { backgroundColor: '#EEF2FF' },
-  expChip: { backgroundColor: '#ECFDF5' },
+  subRow: {
+    flexDirection: 'row',
+    gap: 8,
+    flexWrap: 'wrap',
+    marginBottom: 8
+  },
 
   deleteContainer: {
     marginTop: 32,
     padding: 16,
     borderRadius: 12,
-    backgroundColor: '#FFF5F5',
-    borderWidth: 1,
-    borderColor: '#FECACA',
+    borderWidth: 1
   },
   deleteNote: {
     marginTop: 8,
     fontSize: 13,
-    color: '#B91C1C',
-    textAlign: 'center',
+    textAlign: "center"
   },
+
   bottomSpacer: { height: 80 },
 
   sheetContainer: {
-    backgroundColor: '#FFF',
     marginHorizontal: 20,
     padding: 20,
-    borderRadius: 16,
+    borderRadius: 16
   },
   sheetTitle: {
     fontSize: 20,
-    fontWeight: '700',
-    marginBottom: 16,
+    fontWeight: "700",
+    marginBottom: 16
   },
-  input: { marginBottom: 12, backgroundColor: '#FFF' },
+  input: { marginBottom: 12 }
 });

@@ -89,10 +89,16 @@ export default function SellerLogin() {
                   styles.input,
                   { backgroundColor: theme.colors.surface },
                 ]}
-                left={<TextInput.Icon icon="email" />}
-                outlineColor={outlineColor}
-                activeOutlineColor={accentColor}
-                theme={theme}
+                left={<TextInput.Icon icon="email" color={theme.colors.onSurface} />}
+                outlineColor={theme.colors.outline}
+                activeOutlineColor={theme.colors.onSurface}
+                theme={{
+                  ...theme,
+                  colors: {
+                    ...theme.colors,
+                    onSurfaceVariant: theme.colors.onSurfaceDisabled, // 👈 placeholder color source
+                  },
+                }}
               />
 
               <TextInput
@@ -105,16 +111,24 @@ export default function SellerLogin() {
                   styles.input,
                   { backgroundColor: theme.colors.surface },
                 ]}
-                left={<TextInput.Icon icon="lock" />}
+                left={<TextInput.Icon icon="lock" color={theme.colors.onSurface} />}
                 right={
                   <TextInput.Icon
                     icon={showPassword ? "eye-off" : "eye"}
+                    color={theme.colors.onSurface}
                     onPress={() => setShowPassword(!showPassword)}
                   />
                 }
-                outlineColor={outlineColor}
-                activeOutlineColor={accentColor}
-                theme={theme}
+                outlineColor={theme.colors.outline}
+                activeOutlineColor={theme.colors.onSurface}
+                theme={{
+                  ...theme,
+                  colors: {
+                    ...theme.colors,
+                    onSurfaceVariant: theme.colors.onSurfaceDisabled, // 👈 placeholder color source
+                  },
+                }}
+
               />
 
               {/* Using the new GrabbittButton component */}

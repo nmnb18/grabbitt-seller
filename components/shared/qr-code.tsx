@@ -77,7 +77,6 @@ const styles = StyleSheet.create({
   qrCard: {
     marginBottom: AppStyles.spacing.md,
     borderRadius: AppStyles.card.borderRadius,
-    borderWidth: 1,
     overflow: "hidden",
   },
   qrCardContent: {

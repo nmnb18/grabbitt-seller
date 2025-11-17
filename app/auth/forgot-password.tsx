@@ -66,7 +66,7 @@ export default function ForgotPasswordScreen() {
                             Forgot Password
                         </GradientText>
 
-                        <Text style={styles.infoText}>
+                        <Text style={[styles.infoText, { color: theme.colors.accent }]}>
                             Enter your email and we’ll send you a password reset link.
                         </Text>
 
@@ -80,10 +80,16 @@ export default function ForgotPasswordScreen() {
                                 keyboardType="email-address"
                                 autoCapitalize="none"
                                 style={[styles.input, { backgroundColor: theme.colors.surface }]}
-                                left={<TextInput.Icon icon="email" />}
-                                outlineColor={outlineColor}
-                                activeOutlineColor={accentColor}
-                                theme={theme}
+                                left={<TextInput.Icon icon="email" color={theme.colors.onSurface} />}
+                                outlineColor={theme.colors.outline}
+                                activeOutlineColor={theme.colors.onSurface}
+                                theme={{
+                                    ...theme,
+                                    colors: {
+                                        ...theme.colors,
+                                        onSurfaceVariant: theme.colors.onSurfaceDisabled, // 👈 placeholder color source
+                                    },
+                                }}
                             />
 
                             <Button
@@ -153,7 +159,6 @@ const styles = StyleSheet.create({
     infoText: {
         textAlign: 'center',
         marginBottom: AppStyles.spacing.lg,
-        color: '#555',
     },
     form: {
         gap: AppStyles.spacing.md,

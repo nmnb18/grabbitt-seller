@@ -1,40 +1,48 @@
+import { useTheme } from '@/hooks/use-theme-color';
 import api from '@/services/axiosInstance';
 import { useAuthStore } from '@/store/authStore';
-import { Colors } from '@/utils/theme';
 import * as Location from 'expo-location';
 import React, { useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, StyleSheet, View } from 'react-native';
-import { Button, Card, Divider, Text, TextInput } from 'react-native-paper';
+import {
+    Button,
+    Card,
+    Divider,
+    Text,
+    TextInput,
+} from 'react-native-paper';
 import { LockedOverlay } from '../shared/locked-overlay';
 
 export default function LocationInformation() {
+    const theme = useTheme();
     const { user, fetchUserDetails } = useAuthStore();
+
     const uid = user?.uid;
     const idToken = user?.idToken;
-
     const profile = user?.user?.seller_profile?.location;
 
-    // Extract values from profile
-    const [street, setStreet] = useState(profile?.address?.street || '');
-    const [city, setCity] = useState(profile?.address?.city || '');
-    const [stateName, setStateName] = useState(profile?.address?.state || '');
-    const [pincode, setPincode] = useState(profile?.address?.pincode || '');
-    const [country] = useState(profile?.address?.country || 'India');
     const subscriptionTier = user?.user?.seller_profile?.subscription.tier || "free";
     const isFree = subscriptionTier === "free";
+
+    // Address values
+    const [street, setStreet] = useState(profile?.address?.street || "");
+    const [city, setCity] = useState(profile?.address?.city || "");
+    const [stateName, setStateName] = useState(profile?.address?.state || "");
+    const [pincode, setPincode] = useState(profile?.address?.pincode || "");
+    const [country] = useState(profile?.address?.country || "India");
 
     const [lat, setLat] = useState(profile?.lat ?? null);
     const [lng, setLng] = useState(profile?.lng ?? null);
 
     const [radius, setRadius] = useState(
-        profile?.radius_meters ? String(profile.radius_meters) : '100'
+        profile?.radius_meters ? String(profile.radius_meters) : "100"
     );
 
     const [isEditing, setIsEditing] = useState(false);
     const [saving, setSaving] = useState(false);
     const [locBusy, setLocBusy] = useState(false);
 
-    // Initial values for cancel
+    // Initial state for cancel
     const [initial, setInitial] = useState({
         street,
         city,
@@ -74,24 +82,24 @@ export default function LocationInformation() {
             const res = await Location.reverseGeocodeAsync({ latitude, longitude });
             if (res.length > 0) {
                 const addr = res[0];
-                setStreet(addr.street || addr.name || '');
-                setCity(addr.city || addr.subregion || '');
-                setStateName(addr.region || '');
-                setPincode(addr.postalCode || '');
+                setStreet(addr.street || addr.name || "");
+                setCity(addr.city || addr.subregion || "");
+                setStateName(addr.region || "");
+                setPincode(addr.postalCode || "");
             }
         } catch (err) {
-            console.error('Reverse geocode failed', err);
+            console.error("Reverse geocode failed", err);
         }
     };
 
-    // GPS fetch handler
+    // Fetch GPS location
     const fetchCurrentLocation = async () => {
         try {
             setLocBusy(true);
 
             const { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-                Alert.alert('Permission Required', 'Location access must be enabled.');
+            if (status !== "granted") {
+                Alert.alert("Permission Required", "Location access must be enabled.");
                 return;
             }
 
@@ -104,7 +112,7 @@ export default function LocationInformation() {
 
             await reverseGeocode(pos.coords.latitude, pos.coords.longitude);
         } catch (error) {
-            Alert.alert('Error', 'Failed to fetch current location.');
+            Alert.alert("Error", "Failed to fetch current location.");
         } finally {
             setLocBusy(false);
         }
@@ -112,16 +120,16 @@ export default function LocationInformation() {
 
     const handleSave = async () => {
         if (!street || !city || !stateName || !pincode) {
-            return Alert.alert('Validation', 'All address fields are required.');
+            return Alert.alert("Validation", "All address fields are required.");
         }
 
         try {
             setSaving(true);
 
             await api.patch(
-                '/updateSellerProfile',
+                "/updateSellerProfile",
                 {
-                    section: 'location',
+                    section: "location",
                     data: {
                         address: {
                             street,
@@ -138,7 +146,7 @@ export default function LocationInformation() {
                 { headers: { Authorization: `Bearer ${idToken}` } }
             );
 
-            if (uid) await fetchUserDetails(uid, 'seller');
+            if (uid) await fetchUserDetails(uid, "seller");
 
             setInitial({
                 street,
@@ -151,26 +159,37 @@ export default function LocationInformation() {
             });
 
             setIsEditing(false);
-            Alert.alert('Success', 'Location updated successfully.');
+            Alert.alert("Success", "Location updated successfully.");
         } catch (err: any) {
-            Alert.alert('Error', err.response?.data?.message || 'Failed to update location.');
+            Alert.alert(
+                "Error",
+                err.response?.data?.message || "Failed to update location."
+            );
         } finally {
             setSaving(false);
         }
     };
 
     return (
-        <Card style={styles.card}>
-            <View style={{ position: 'relative' }}>
+        <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
+            <View style={{ position: "relative" }}>
                 <Card.Content>
                     {/* Header */}
                     <View style={styles.sectionHeader}>
-                        <Text variant="titleMedium" style={styles.cardTitle}>
+                        <Text
+                            variant="titleMedium"
+                            style={[styles.cardTitle, { color: theme.colors.onSurface }]}
+                        >
                             📍 Location Information
                         </Text>
 
                         {!isEditing ? (
-                            <Button mode="text" onPress={() => setIsEditing(true)} icon="pencil" compact>
+                            <Button
+                                mode="text"
+                                onPress={() => !isFree && setIsEditing(true)}
+                                icon="pencil"
+                                compact
+                            >
                                 Edit
                             </Button>
                         ) : (
@@ -199,35 +218,53 @@ export default function LocationInformation() {
                         )}
                     </View>
 
-                    <Divider style={styles.divider} />
+                    <Divider
+                        style={[
+                            styles.divider,
+                            { backgroundColor: theme.colors.outline },
+                        ]}
+                    />
 
-                    {/* View Mode */}
+                    {/* VIEW MODE */}
                     {!isEditing ? (
                         <View>
-                            <View style={styles.infoRow}>
-                                <Text style={styles.infoLabel}>Address</Text>
-                                <Text style={styles.infoValue}>
-                                    {street}, {city}, {stateName}, {pincode}
-                                </Text>
-                            </View>
-
-                            <View style={styles.infoRow}>
-                                <Text style={styles.infoLabel}>Latitude</Text>
-                                <Text style={styles.infoValue}>{lat ?? '—'}</Text>
-                            </View>
-
-                            <View style={styles.infoRow}>
-                                <Text style={styles.infoLabel}>Longitude</Text>
-                                <Text style={styles.infoValue}>{lng ?? '—'}</Text>
-                            </View>
-
-                            <View style={styles.infoRow}>
-                                <Text style={styles.infoLabel}>Radius (meters)</Text>
-                                <Text style={styles.infoValue}>{radius}</Text>
-                            </View>
+                            {[
+                                {
+                                    label: "Address",
+                                    value: `${street}, ${city}, ${stateName}, ${pincode}`,
+                                },
+                                { label: "Latitude", value: lat ?? "—" },
+                                { label: "Longitude", value: lng ?? "—" },
+                                { label: "Radius (meters)", value: radius },
+                            ].map((item) => (
+                                <View
+                                    key={item.label}
+                                    style={[
+                                        styles.infoRow,
+                                        { borderBottomColor: theme.colors.outline },
+                                    ]}
+                                >
+                                    <Text
+                                        style={[
+                                            styles.infoLabel,
+                                            { color: theme.colors.onSurfaceDisabled },
+                                        ]}
+                                    >
+                                        {item.label}
+                                    </Text>
+                                    <Text
+                                        style={[
+                                            styles.infoValue,
+                                            { color: theme.colors.onSurface },
+                                        ]}
+                                    >
+                                        {item.value}
+                                    </Text>
+                                </View>
+                            ))}
                         </View>
                     ) : (
-                        /* Edit Mode */
+                        /* EDIT MODE */
                         <View>
                             <TextInput
                                 label="Street"
@@ -235,6 +272,14 @@ export default function LocationInformation() {
                                 onChangeText={setStreet}
                                 mode="outlined"
                                 style={styles.input}
+                                outlineColor={theme.colors.outline}
+                                activeOutlineColor={theme.colors.onSurface}
+                                theme={{
+                                    colors: {
+                                        primary: theme.colors.primary,      // focused label color
+                                        onSurfaceVariant: theme.colors.onSurface, // unfocused label color
+                                    },
+                                }}
                             />
 
                             <View style={styles.row}>
@@ -245,8 +290,17 @@ export default function LocationInformation() {
                                         onChangeText={setCity}
                                         mode="outlined"
                                         style={styles.input}
+                                        outlineColor={theme.colors.outline}
+                                        activeOutlineColor={theme.colors.onSurface}
+                                        theme={{
+                                            colors: {
+                                                primary: theme.colors.primary,      // focused label color
+                                                onSurfaceVariant: theme.colors.onSurface, // unfocused label color
+                                            },
+                                        }}
                                     />
                                 </View>
+
                                 <View style={styles.col}>
                                     <TextInput
                                         label="State"
@@ -254,6 +308,14 @@ export default function LocationInformation() {
                                         onChangeText={setStateName}
                                         mode="outlined"
                                         style={styles.input}
+                                        outlineColor={theme.colors.outline}
+                                        activeOutlineColor={theme.colors.onSurface}
+                                        theme={{
+                                            colors: {
+                                                primary: theme.colors.primary,      // focused label color
+                                                onSurfaceVariant: theme.colors.onSurface, // unfocused label color
+                                            },
+                                        }}
                                     />
                                 </View>
                             </View>
@@ -267,20 +329,36 @@ export default function LocationInformation() {
                                         mode="outlined"
                                         keyboardType="numeric"
                                         style={styles.input}
+                                        outlineColor={theme.colors.outline}
+                                        activeOutlineColor={theme.colors.onSurface}
+                                        theme={{
+                                            colors: {
+                                                primary: theme.colors.primary,      // focused label color
+                                                onSurfaceVariant: theme.colors.onSurface, // unfocused label color
+                                            },
+                                        }}
                                     />
                                 </View>
+
                                 <View style={styles.col}>
                                     <TextInput
                                         label="Country"
                                         value={country}
-                                        mode="outlined"
                                         editable={false}
+                                        mode="outlined"
                                         style={styles.input}
+                                        outlineColor={theme.colors.outline}
+                                        activeOutlineColor={theme.colors.onSurface}
+                                        theme={{
+                                            colors: {
+                                                primary: theme.colors.primary,      // focused label color
+                                                onSurfaceVariant: theme.colors.onSurface, // unfocused label color
+                                            },
+                                        }}
                                     />
                                 </View>
                             </View>
 
-                            {/* GPS Button */}
                             <Button
                                 mode="outlined"
                                 icon="crosshairs-gps"
@@ -298,6 +376,14 @@ export default function LocationInformation() {
                                 keyboardType="numeric"
                                 mode="outlined"
                                 style={styles.input}
+                                outlineColor={theme.colors.outline}
+                                activeOutlineColor={theme.colors.onSurface}
+                                theme={{
+                                    colors: {
+                                        primary: theme.colors.primary,      // focused label color
+                                        onSurfaceVariant: theme.colors.onSurface, // unfocused label color
+                                    },
+                                }}
                             />
                         </View>
                     )}
@@ -305,11 +391,29 @@ export default function LocationInformation() {
 
                 {/* Saving Overlay */}
                 {saving && (
-                    <View style={styles.overlay}>
-                        <ActivityIndicator size="large" color={Colors.light.accent} />
-                        <Text style={styles.overlayText}>Saving…</Text>
+                    <View
+                        style={[
+                            styles.overlay,
+                            {
+                                backgroundColor: theme.dark
+                                    ? "rgba(0,0,0,0.5)"
+                                    : "rgba(255,255,255,0.7)",
+                            },
+                        ]}
+                    >
+                        <ActivityIndicator size="large" color={theme.colors.primary} />
+                        <Text
+                            style={[
+                                styles.overlayText,
+                                { color: theme.colors.onSurface },
+                            ]}
+                        >
+                            Saving…
+                        </Text>
                     </View>
                 )}
+
+                {/* Locked for Free Users */}
                 {isFree && (
                     <LockedOverlay message="Location Information cannot be edited on the Free plan." />
                 )}
@@ -322,49 +426,62 @@ const styles = StyleSheet.create({
     card: {
         marginBottom: 16,
         borderRadius: 16,
-        backgroundColor: '#FFF',
         paddingVertical: 12,
     },
     sectionHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'baseline'
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "baseline",
     },
     editButtons: {
-        flexDirection: 'row',
-        alignItems: 'baseline',
+        flexDirection: "row",
+        alignItems: "baseline",
     },
-    cardTitle: { fontWeight: '600', marginBottom: 12 },
-    divider: { backgroundColor: '#ddd', height: 1, marginBottom: 16 },
+    cardTitle: {
+        fontWeight: "600",
+        marginBottom: 12,
+    },
+    divider: {
+        height: 1,
+        marginBottom: 16,
+    },
     infoRow: {
         paddingVertical: 12,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        borderBottomColor: '#E5E4E2',
+        flexDirection: "row",
+        justifyContent: "space-between",
         borderBottomWidth: 0.5,
     },
-    infoLabel: { color: '#6B7280' },
-    infoValue: {
-        fontWeight: '600',
-        color: '#111827',
-        flexShrink: 1,
-        textAlign: 'right',
+    infoLabel: {
+        fontSize: 14,
     },
-    input: { marginBottom: 12, backgroundColor: '#FFF' },
-    row: { flexDirection: 'row', gap: 12 },
-    col: { flex: 1 },
-
+    infoValue: {
+        fontWeight: "600",
+        flexShrink: 1,
+        textAlign: "right",
+    },
+    input: {
+        marginBottom: 12,
+    },
+    row: {
+        flexDirection: "row",
+        gap: 12,
+    },
+    col: {
+        flex: 1,
+    },
     overlay: {
-        position: 'absolute',
+        position: "absolute",
         top: 0,
         bottom: 0,
         left: 0,
         right: 0,
-        backgroundColor: 'rgba(255,255,255,0.7)',
-        justifyContent: 'center',
-        alignItems: 'center',
+        justifyContent: "center",
+        alignItems: "center",
         borderRadius: 16,
         zIndex: 100,
     },
-    overlayText: { marginTop: 8, fontWeight: '500', color: '#444' },
+    overlayText: {
+        marginTop: 8,
+        fontWeight: "500",
+    },
 });

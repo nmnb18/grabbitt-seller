@@ -348,10 +348,16 @@ export default function SellerRegister() {
                 mode="outlined"
                 autoCapitalize="words"
                 style={[styles.input, { backgroundColor: theme.colors.surface }]}
-                left={<TextInput.Icon icon="account" />}
-                outlineColor={outlineColor}
-                activeOutlineColor={accentColor}
-                theme={theme}
+                left={<TextInput.Icon color={theme.colors.onSurface} icon="account" />}
+                outlineColor={theme.colors.outline}
+                activeOutlineColor={theme.colors.onSurface}
+                theme={{
+                    ...theme,
+                    colors: {
+                        ...theme.colors,
+                        onSurfaceVariant: theme.colors.onSurfaceDisabled, // 👈 placeholder color source
+                    },
+                }}
             />
 
             <TextInput
@@ -361,10 +367,16 @@ export default function SellerRegister() {
                 mode="outlined"
                 keyboardType="phone-pad"
                 style={[styles.input, { backgroundColor: theme.colors.surface }]}
-                left={<TextInput.Icon icon="phone" />}
-                outlineColor={outlineColor}
-                activeOutlineColor={accentColor}
-                theme={theme}
+                left={<TextInput.Icon color={theme.colors.onSurface} icon="phone" />}
+                outlineColor={theme.colors.outline}
+                activeOutlineColor={theme.colors.onSurface}
+                theme={{
+                    ...theme,
+                    colors: {
+                        ...theme.colors,
+                        onSurfaceVariant: theme.colors.onSurfaceDisabled, // 👈 placeholder color source
+                    },
+                }}
             />
 
             <TextInput
@@ -375,10 +387,16 @@ export default function SellerRegister() {
                 keyboardType="email-address"
                 autoCapitalize="none"
                 style={[styles.input, { backgroundColor: theme.colors.surface }]}
-                left={<TextInput.Icon icon="email" />}
-                outlineColor={outlineColor}
-                activeOutlineColor={accentColor}
-                theme={theme}
+                left={<TextInput.Icon color={theme.colors.onSurface} icon="email" />}
+                outlineColor={theme.colors.outline}
+                activeOutlineColor={theme.colors.onSurface}
+                theme={{
+                    ...theme,
+                    colors: {
+                        ...theme.colors,
+                        onSurfaceVariant: theme.colors.onSurfaceDisabled, // 👈 placeholder color source
+                    },
+                }}
             />
 
             <TextInput
@@ -388,16 +406,22 @@ export default function SellerRegister() {
                 mode="outlined"
                 secureTextEntry={!showPassword}
                 style={[styles.input, { backgroundColor: theme.colors.surface }]}
-                left={<TextInput.Icon icon="lock" />}
+                left={<TextInput.Icon color={theme.colors.onSurface} icon="lock" />}
                 right={
-                    <TextInput.Icon
+                    <TextInput.Icon color={theme.colors.onSurface}
                         icon={showPassword ? 'eye-off' : 'eye'}
                         onPress={() => setShowPassword(!showPassword)}
                     />
                 }
-                outlineColor={outlineColor}
-                activeOutlineColor={accentColor}
-                theme={theme}
+                outlineColor={theme.colors.outline}
+                activeOutlineColor={theme.colors.onSurface}
+                theme={{
+                    ...theme,
+                    colors: {
+                        ...theme.colors,
+                        onSurfaceVariant: theme.colors.onSurfaceDisabled, // 👈 placeholder color source
+                    },
+                }}
             />
 
             <TextInput
@@ -407,10 +431,16 @@ export default function SellerRegister() {
                 mode="outlined"
                 secureTextEntry={!showPassword}
                 style={[styles.input, { backgroundColor: theme.colors.surface }]}
-                left={<TextInput.Icon icon="lock-check" />}
-                outlineColor={outlineColor}
-                activeOutlineColor={accentColor}
-                theme={theme}
+                left={<TextInput.Icon color={theme.colors.onSurface} icon="lock-check" />}
+                outlineColor={theme.colors.outline}
+                activeOutlineColor={theme.colors.onSurface}
+                theme={{
+                    ...theme,
+                    colors: {
+                        ...theme.colors,
+                        onSurfaceVariant: theme.colors.onSurfaceDisabled, // 👈 placeholder color source
+                    },
+                }}
             />
         </View>
     );
@@ -427,10 +457,16 @@ export default function SellerRegister() {
                 mode="outlined"
                 autoCapitalize="words"
                 style={[styles.input, { backgroundColor: theme.colors.surface }]}
-                left={<TextInput.Icon icon="store" />}
-                outlineColor={outlineColor}
-                activeOutlineColor={accentColor}
-                theme={theme}
+                left={<TextInput.Icon color={theme.colors.onSurface} icon="store" />}
+                outlineColor={theme.colors.outline}
+                activeOutlineColor={theme.colors.onSurface}
+                theme={{
+                    ...theme,
+                    colors: {
+                        ...theme.colors,
+                        onSurfaceVariant: theme.colors.onSurfaceDisabled, // 👈 placeholder color source
+                    },
+                }}
             />
 
             <Text variant="bodyMedium" style={styles.sectionLabel}>Business Type *</Text>
@@ -496,9 +532,15 @@ export default function SellerRegister() {
                 multiline
                 numberOfLines={3}
                 style={[styles.input, { backgroundColor: theme.colors.surface }]}
-                outlineColor={outlineColor}
-                activeOutlineColor={accentColor}
-                theme={theme}
+                outlineColor={theme.colors.outline}
+                activeOutlineColor={theme.colors.onSurface}
+                theme={{
+                    ...theme,
+                    colors: {
+                        ...theme.colors,
+                        onSurfaceVariant: theme.colors.onSurfaceDisabled, // 👈 placeholder color source
+                    },
+                }}
             />
 
             <TextInput
@@ -508,10 +550,16 @@ export default function SellerRegister() {
                 mode="outlined"
                 keyboardType="numeric"
                 style={[styles.input, { backgroundColor: theme.colors.surface }]}
-                left={<TextInput.Icon icon="calendar" />}
-                outlineColor={outlineColor}
-                activeOutlineColor={accentColor}
-                theme={theme}
+                left={<TextInput.Icon color={theme.colors.onSurface} icon="calendar" />}
+                outlineColor={theme.colors.outline}
+                activeOutlineColor={theme.colors.onSurface}
+                theme={{
+                    ...theme,
+                    colors: {
+                        ...theme.colors,
+                        onSurfaceVariant: theme.colors.onSurfaceDisabled, // 👈 placeholder color source
+                    },
+                }}
             />
         </View>
     );
@@ -543,10 +591,16 @@ export default function SellerRegister() {
                 onChangeText={(value) => updateFormData('street', value)}
                 mode="outlined"
                 style={[styles.input, { backgroundColor: theme.colors.surface }]}
-                left={<TextInput.Icon icon="map-marker" />}
-                outlineColor={outlineColor}
-                activeOutlineColor={accentColor}
-                theme={theme}
+                left={<TextInput.Icon color={theme.colors.onSurface} icon="map-marker" />}
+                outlineColor={theme.colors.outline}
+                activeOutlineColor={theme.colors.onSurface}
+                theme={{
+                    ...theme,
+                    colors: {
+                        ...theme.colors,
+                        onSurfaceVariant: theme.colors.onSurfaceDisabled, // 👈 placeholder color source
+                    },
+                }}
                 placeholder="Enter your street address"
             />
 
@@ -557,9 +611,15 @@ export default function SellerRegister() {
                     onChangeText={(value) => updateFormData('city', value)}
                     mode="outlined"
                     style={[styles.input, styles.halfInput]}
-                    outlineColor={outlineColor}
-                    activeOutlineColor={accentColor}
-                    theme={theme}
+                    outlineColor={theme.colors.outline}
+                    activeOutlineColor={theme.colors.onSurface}
+                    theme={{
+                        ...theme,
+                        colors: {
+                            ...theme.colors,
+                            onSurfaceVariant: theme.colors.onSurfaceDisabled, // 👈 placeholder color source
+                        },
+                    }}
                     placeholder="Enter your city"
                 />
                 <TextInput
@@ -568,9 +628,15 @@ export default function SellerRegister() {
                     onChangeText={(value) => updateFormData('state', value)}
                     mode="outlined"
                     style={[styles.input, styles.halfInput]}
-                    outlineColor={outlineColor}
-                    activeOutlineColor={accentColor}
-                    theme={theme}
+                    outlineColor={theme.colors.outline}
+                    activeOutlineColor={theme.colors.onSurface}
+                    theme={{
+                        ...theme,
+                        colors: {
+                            ...theme.colors,
+                            onSurfaceVariant: theme.colors.onSurfaceDisabled, // 👈 placeholder color source
+                        },
+                    }}
                     placeholder="Enter your state"
                 />
             </View>
@@ -583,9 +649,15 @@ export default function SellerRegister() {
                     mode="outlined"
                     keyboardType="numeric"
                     style={[styles.input, styles.halfInput]}
-                    outlineColor={outlineColor}
-                    activeOutlineColor={accentColor}
-                    theme={theme}
+                    outlineColor={theme.colors.outline}
+                    activeOutlineColor={theme.colors.onSurface}
+                    theme={{
+                        ...theme,
+                        colors: {
+                            ...theme.colors,
+                            onSurfaceVariant: theme.colors.onSurfaceDisabled, // 👈 placeholder color source
+                        },
+                    }}
                     placeholder="Enter pincode"
                 />
                 <TextInput
@@ -594,9 +666,15 @@ export default function SellerRegister() {
                     onChangeText={(value) => updateFormData('country', value)}
                     mode="outlined"
                     style={[styles.input, styles.halfInput]}
-                    outlineColor={outlineColor}
-                    activeOutlineColor={accentColor}
-                    theme={theme}
+                    outlineColor={theme.colors.outline}
+                    activeOutlineColor={theme.colors.onSurface}
+                    theme={{
+                        ...theme,
+                        colors: {
+                            ...theme.colors,
+                            onSurfaceVariant: theme.colors.onSurfaceDisabled, // 👈 placeholder color source
+                        },
+                    }}
                     editable={false}
                 />
             </View>
@@ -618,7 +696,7 @@ export default function SellerRegister() {
                     >
                         Auto-fill Address from My Location
                     </Button>
-                    <HelperText type="info" style={styles.manualLocationHelper}>
+                    <HelperText type="info" style={[styles.manualLocationHelper, { color: theme.colors.accent }]}>
                         We'll use your current location to auto-fill your address and enable location-based QR scanning
                     </HelperText>
                 </View>
@@ -670,11 +748,17 @@ export default function SellerRegister() {
                             mode="outlined"
                             keyboardType="numeric"
                             style={[styles.input, { backgroundColor: theme.colors.surface }]}
-                            outlineColor={outlineColor}
-                            activeOutlineColor={accentColor}
-                            theme={theme}
+                            outlineColor={theme.colors.outline}
+                            activeOutlineColor={theme.colors.onSurface}
+                            theme={{
+                                ...theme,
+                                colors: {
+                                    ...theme.colors,
+                                    onSurfaceVariant: theme.colors.onSurfaceDisabled, // 👈 placeholder color source
+                                },
+                            }}
                         />
-                        <HelperText type='info'>
+                        <HelperText type='info' style={{ color: theme.colors.accent }}>
                             Customers must be within this distance to scan your QR codes (Recommended: 50-200 meters)
                         </HelperText>
                     </View>
@@ -694,10 +778,16 @@ export default function SellerRegister() {
                 onChangeText={(value) => updateFormData('gstNumber', value)}
                 mode="outlined"
                 style={[styles.input, { backgroundColor: theme.colors.surface }]}
-                left={<TextInput.Icon icon="card-account-details" />}
-                outlineColor={outlineColor}
-                activeOutlineColor={accentColor}
-                theme={theme}
+                left={<TextInput.Icon color={theme.colors.onSurface} icon="card-account-details" />}
+                outlineColor={theme.colors.outline}
+                activeOutlineColor={theme.colors.onSurface}
+                theme={{
+                    ...theme,
+                    colors: {
+                        ...theme.colors,
+                        onSurfaceVariant: theme.colors.onSurfaceDisabled, // 👈 placeholder color source
+                    },
+                }}
             />
 
             <TextInput
@@ -706,10 +796,16 @@ export default function SellerRegister() {
                 onChangeText={(value) => updateFormData('panNumber', value)}
                 mode="outlined"
                 style={[styles.input, { backgroundColor: theme.colors.surface }]}
-                left={<TextInput.Icon icon="card-bulleted" />}
-                outlineColor={outlineColor}
-                activeOutlineColor={accentColor}
-                theme={theme}
+                left={<TextInput.Icon color={theme.colors.onSurface} icon="card-bulleted" />}
+                outlineColor={theme.colors.outline}
+                activeOutlineColor={theme.colors.onSurface}
+                theme={{
+                    ...theme,
+                    colors: {
+                        ...theme.colors,
+                        onSurfaceVariant: theme.colors.onSurfaceDisabled, // 👈 placeholder color source
+                    },
+                }}
             />
 
             <TextInput
@@ -718,10 +814,16 @@ export default function SellerRegister() {
                 onChangeText={(value) => updateFormData('businessRegistrationNumber', value)}
                 mode="outlined"
                 style={[styles.input, { backgroundColor: theme.colors.surface }]}
-                left={<TextInput.Icon icon="file-document" />}
-                outlineColor={outlineColor}
-                activeOutlineColor={accentColor}
-                theme={theme}
+                left={<TextInput.Icon color={theme.colors.onSurface} icon="file-document" />}
+                outlineColor={theme.colors.outline}
+                activeOutlineColor={theme.colors.onSurface}
+                theme={{
+                    ...theme,
+                    colors: {
+                        ...theme.colors,
+                        onSurfaceVariant: theme.colors.onSurfaceDisabled, // 👈 placeholder color source
+                    },
+                }}
             />
         </View>
     );
@@ -741,7 +843,7 @@ export default function SellerRegister() {
                         <RadioButton.Android value={type.value} color={accentColor} />
                         <View style={styles.radioText}>
                             <Text variant="bodyLarge">{type.label}</Text>
-                            <Text variant="bodySmall" style={styles.helperText}>
+                            <Text variant="bodySmall" style={[styles.helperText, { color: theme.colors.accent }]}>
                                 {type.description}
                             </Text>
                         </View>
@@ -756,10 +858,16 @@ export default function SellerRegister() {
                 mode="outlined"
                 keyboardType="numeric"
                 style={[styles.input, { backgroundColor: theme.colors.surface }]}
-                left={<TextInput.Icon icon="star" />}
-                outlineColor={outlineColor}
-                activeOutlineColor={accentColor}
-                theme={theme}
+                left={<TextInput.Icon color={theme.colors.onSurface} icon="star" />}
+                outlineColor={theme.colors.outline}
+                activeOutlineColor={theme.colors.onSurface}
+                theme={{
+                    ...theme,
+                    colors: {
+                        ...theme.colors,
+                        onSurfaceVariant: theme.colors.onSurfaceDisabled, // 👈 placeholder color source
+                    },
+                }}
             />
 
             <View style={styles.checkboxContainer}>
@@ -978,7 +1086,6 @@ const styles = StyleSheet.create({
         marginLeft: 8,
     },
     helperText: {
-        color: '#666',
         marginTop: 2,
     },
     optionalText: {

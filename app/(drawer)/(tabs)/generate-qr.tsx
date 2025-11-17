@@ -131,8 +131,8 @@ export default function SellerGenerateQR() {
         Alert.alert(
           "Error",
           error?.response?.data?.detail ||
-            error?.response?.data?.error ||
-            "Failed to generate QR code"
+          error?.response?.data?.error ||
+          "Failed to generate QR code"
         );
       } finally {
         setLoading(false);
@@ -225,7 +225,7 @@ export default function SellerGenerateQR() {
             <Card
               style={[
                 styles.infoCard,
-                { backgroundColor: theme.colors.accent, elevation: 3 },
+                { backgroundColor: 'trasnparent', elevation: 3, borderColor: theme.colors.accent, borderWidth: 1 },
               ]}
             >
               <Card.Content style={[styles.infoContent]}>
@@ -250,7 +250,7 @@ export default function SellerGenerateQR() {
           <Card.Content>
             <Text variant="titleMedium" style={styles.cardTitle}>
               Settings
-            </Text>{" "}
+            </Text>
             <Divider
               style={[
                 styles.divider,
@@ -273,11 +273,17 @@ export default function SellerGenerateQR() {
                     },
                   ]}
                   disabled={isFree}
-                  left={<TextInput.Icon icon="timer" />}
+                  left={<TextInput.Icon icon="timer" color={theme.colors.onSurface} />}
                   outlineColor={theme.colors.outline}
-                  activeOutlineColor={theme.colors.accent}
+                  activeOutlineColor={theme.colors.onSurface}
+                  theme={{
+                    colors: {
+                      primary: theme.colors.primary,      // focused label color
+                      onSurfaceVariant: theme.colors.onSurface, // unfocused label color
+                    },
+                  }}
                 />
-                <HelperText type="info" style={styles.helperText}>
+                <HelperText type="info" style={[styles.helperText, { color: theme.colors.onSurface }]}>
                   {isFree
                     ? "For free tier, QR codes expire automatically in 24 hours."
                     : "Set how long your dynamic QR remains active before expiring."}
@@ -298,11 +304,17 @@ export default function SellerGenerateQR() {
                 },
               ]}
               disabled={isFree}
-              left={<TextInput.Icon icon="star-circle" />}
+              left={<TextInput.Icon icon="star-circle" color={theme.colors.onSurface} />}
               outlineColor={theme.colors.outline}
-              activeOutlineColor={theme.colors.accent}
+              activeOutlineColor={theme.colors.onSurface}
+              theme={{
+                colors: {
+                  primary: theme.colors.primary,      // focused label color
+                  onSurfaceVariant: theme.colors.onSurface, // unfocused label color
+                },
+              }}
             />
-            <HelperText type="info" style={styles.helperText}>
+            <HelperText type="info" style={[styles.helperText, { color: theme.colors.onSurface }]}>
               This defines how many loyalty points a customer earns for scanning
               this QR.
             </HelperText>
@@ -320,12 +332,18 @@ export default function SellerGenerateQR() {
                       backgroundColor: theme.colors.surface,
                     },
                   ]}
-                  left={<TextInput.Icon icon="key" />}
+                  left={<TextInput.Icon icon="key" color={theme.colors.onSurface} />}
                   placeholder="Enter a secret code..."
                   outlineColor={theme.colors.outline}
-                  activeOutlineColor={theme.colors.accent}
+                  activeOutlineColor={theme.colors.onSurface}
+                  theme={{
+                    colors: {
+                      primary: theme.colors.primary,      // focused label color
+                      onSurfaceVariant: theme.colors.onSurface, // unfocused label color
+                    },
+                  }}
                 />
-                <HelperText type="info" style={styles.helperText}>
+                <HelperText type="info" style={[styles.helperText, { color: theme.colors.onSurface }]}>
                   Customers must enter this secret code after scanning the QR.
                 </HelperText>
               </>
@@ -350,7 +368,7 @@ export default function SellerGenerateQR() {
           <Card.Content>
             <Text variant="titleMedium" style={styles.cardTitle}>
               How to Use
-            </Text>{" "}
+            </Text>
             <Divider
               style={[
                 styles.divider,
@@ -446,7 +464,6 @@ const styles = StyleSheet.create({
   card: {
     marginBottom: AppStyles.spacing.md,
     borderRadius: AppStyles.card.borderRadius,
-    borderWidth: 1,
   },
   cardTitle: {
     fontWeight: "600",

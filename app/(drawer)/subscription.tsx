@@ -1,8 +1,9 @@
 import { AppHeader } from '@/components/shared/app-header';
+import { useTheme } from '@/hooks/use-theme-color';
 import api from '@/services/axiosInstance';
 import { useAuthStore } from '@/store/authStore';
 import { PLANS } from '@/utils/constant';
-import { AppStyles, Colors } from '@/utils/theme';
+import { AppStyles } from '@/utils/theme';
 import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import React, { useMemo, useState } from 'react';
@@ -15,6 +16,9 @@ const API_URL =
     process.env.EXPO_PUBLIC_BACKEND_URL;
 
 export default function SubscriptionScreen() {
+    const theme = useTheme();
+    const styles = useMemo(() => createStyles(theme), [theme]);
+
     const router = useRouter();
     const { user, fetchUserDetails } = useAuthStore();
     const [loading, setLoading] = useState(false);
@@ -28,7 +32,6 @@ export default function SubscriptionScreen() {
         ? new Date(subscription?.expires_at._seconds * 1000)
         : null;
 
-    // Sort plans: active plan first
     const sortedPlans = useMemo(() => {
         const activePlan = PLANS.find((p) => p.id === currentTier);
         const others = PLANS.filter((p) => p.id !== currentTier);
@@ -61,7 +64,7 @@ export default function SubscriptionScreen() {
                     contact: user?.user.phone,
                     name: user?.user.name,
                 },
-                theme: { color: '#FF7A00' },
+                theme: { color: theme.colors.primary }, // THEME-WIRED
             };
 
             RazorpayCheckout.open(options)
@@ -111,23 +114,22 @@ export default function SubscriptionScreen() {
         }
     };
 
-    /** -------------------- LOADING SCREEN -------------------- **/
     if (verifying) {
         return (
-            <View style={{ flex: 1, backgroundColor: Colors.light.background }}>
+            <View style={[styles.loaderWrapper]}>
                 <AppHeader />
-
                 <View style={styles.loaderContainer}>
-                    <ActivityIndicator size="large" color={Colors.light.primary} />
-                    <Text>Please wait! Verifying your payment...</Text>
+                    <ActivityIndicator size="large" color={theme.colors.primary} />
+                    <Text style={{ color: theme.colors.onBackground }}>
+                        Please wait! Verifying your payment...
+                    </Text>
                 </View>
             </View>
         );
     }
 
-    /** -------------------- MAIN SCREEN -------------------- **/
     return (
-        <View style={styles.screen}>
+        <View style={[styles.screen, { backgroundColor: theme.colors.background }]}>
             <AppHeader />
 
             <ScrollView
@@ -159,6 +161,7 @@ export default function SubscriptionScreen() {
                                     >
                                         {plan.name}
                                     </Text>
+
                                     <Text variant="bodyMedium" style={styles.price}>
                                         {plan.price}
                                     </Text>
@@ -182,7 +185,10 @@ export default function SubscriptionScreen() {
                                     <View style={styles.ribbonContainer}>
                                         <Chip
                                             mode="flat"
-                                            style={[styles.ribbon, { backgroundColor: plan.color + '20' }]}
+                                            style={[
+                                                styles.ribbon,
+                                                { backgroundColor: plan.color + '20' }, // 20% opacity
+                                            ]}
                                             textStyle={[styles.ribbonText, { color: plan.color }]}
                                         >
                                             Current Active Plan
@@ -213,96 +219,103 @@ export default function SubscriptionScreen() {
                     );
                 })}
 
-                {/* Scroll padding */}
                 <View style={{ height: 100 }} />
             </ScrollView>
         </View>
     );
 }
 
-/* -------------------- STYLES -------------------- */
-const styles = StyleSheet.create({
-    screen: {
-        flex: 1,
-        backgroundColor: Colors.light.background,
-    },
+const createStyles = (theme: any) =>
+    StyleSheet.create({
+        screen: {
+            flex: 1,
+            backgroundColor: theme.colors.background,
+        },
 
-    scrollContainer: {
-        padding: AppStyles.spacing.lg,
-        paddingBottom: 100, // important for Android scrolling
-    },
+        scrollContainer: {
+            padding: AppStyles.spacing.lg,
+            paddingBottom: 100,
+        },
 
-    title: {
-        textAlign: 'center',
-        marginBottom: AppStyles.spacing.xl,
-        fontWeight: '700',
-    },
+        title: {
+            textAlign: 'center',
+            marginBottom: AppStyles.spacing.xl,
+            fontWeight: '700',
+            color: theme.colors.onBackground,
+        },
 
-    card: {
-        marginBottom: AppStyles.spacing.lg,
-        borderRadius: 16,
-        backgroundColor: Colors.light.surface,
-    },
+        card: {
+            marginBottom: AppStyles.spacing.lg,
+            borderRadius: 16,
+            backgroundColor: theme.colors.surface,
+        },
 
-    rowBetween: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
+        rowBetween: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+        },
 
-    planName: {
-        ...AppStyles.typography.heading,
-    },
+        planName: {
+            ...AppStyles.typography.heading,
+            color: theme.colors.primary,
+        },
 
-    price: {
-        ...AppStyles.typography.subheading,
-    },
+        price: {
+            ...AppStyles.typography.subheading,
+            color: theme.colors.onSurface,
+        },
 
-    features: {
-        marginVertical: AppStyles.spacing.md,
-    },
+        features: {
+            marginVertical: AppStyles.spacing.md,
+        },
 
-    feature: {
-        marginBottom: 4,
-        color: Colors.light.text,
-    },
+        feature: {
+            marginBottom: 4,
+            color: theme.colors.onSurface,
+        },
 
-    buyBtn: {
-        borderRadius: 8,
-        marginTop: 10,
-    },
+        buyBtn: {
+            borderRadius: 8,
+            marginTop: 10,
+        },
 
-    expiryText: {
-        color: Colors.light.accent,
-        fontSize: 13,
-        marginBottom: 10,
-    },
+        expiryText: {
+            color: theme.colors.accent,
+            fontSize: 13,
+            marginBottom: 10,
+        },
 
-    ribbonContainer: {
-        width: '100%',
-        marginBottom: 10,
-    },
+        ribbonContainer: {
+            width: '100%',
+            marginBottom: 10,
+        },
 
-    ribbon: {
-        justifyContent: 'center',
-        height: 38,
-    },
+        ribbon: {
+            justifyContent: 'center',
+            height: 38,
+        },
 
-    ribbonText: {
-        fontWeight: '600',
-    },
+        ribbonText: {
+            fontWeight: '600',
+        },
 
-    lockedText: {
-        color: Colors.light.secondary,
-        fontSize: 12,
-        textAlign: 'center',
-        marginTop: 8,
-    },
+        lockedText: {
+            color: theme.colors.warning,
+            fontSize: 12,
+            textAlign: 'center',
+            marginTop: 8,
+        },
 
-    loaderContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        gap: 8,
-    },
-});
+        loaderWrapper: {
+            flex: 1,
+            backgroundColor: theme.colors.background,
+        },
+
+        loaderContainer: {
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: 8,
+        },
+    });

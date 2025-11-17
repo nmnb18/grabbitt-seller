@@ -245,8 +245,15 @@ export default function AccountInformation({
                 mode="outlined"
                 style={styles.input}
                 outlineColor={theme.colors.outline}
-                activeOutlineColor={theme.colors.primary}
-                left={<TextInput.Icon icon="account" />}
+                activeOutlineColor={theme.colors.onSurface}   // focused border + label
+                left={<TextInput.Icon icon="account" color={theme.colors.onSurface} />}
+
+                theme={{
+                  colors: {
+                    primary: theme.colors.primary,      // focused label color
+                    onSurfaceVariant: theme.colors.onSurface, // unfocused label color
+                  },
+                }}
               />
 
               <TextInput
@@ -256,7 +263,13 @@ export default function AccountInformation({
                 editable={false}
                 style={styles.input}
                 outlineColor={theme.colors.outline}
-                left={<TextInput.Icon icon="email" />}
+                left={<TextInput.Icon icon="email" color={theme.colors.onSurface} />}
+                theme={{
+                  colors: {
+                    primary: theme.colors.primary,      // focused label color
+                    onSurfaceVariant: theme.colors.onSurface, // unfocused label color
+                  },
+                }}
               />
 
               <TextInput
@@ -267,8 +280,14 @@ export default function AccountInformation({
                 keyboardType="phone-pad"
                 style={styles.input}
                 outlineColor={theme.colors.outline}
-                activeOutlineColor={theme.colors.primary}
-                left={<TextInput.Icon icon="phone" />}
+                activeOutlineColor={theme.colors.onSurface}
+                left={<TextInput.Icon icon="phone" color={theme.colors.onSurface} />}
+                theme={{
+                  colors: {
+                    primary: theme.colors.primary,      // focused label color
+                    onSurfaceVariant: theme.colors.onSurface, // unfocused label color
+                  },
+                }}
               />
 
               <TextInput
@@ -279,8 +298,14 @@ export default function AccountInformation({
                 keyboardType="numeric"
                 style={styles.input}
                 outlineColor={theme.colors.outline}
-                activeOutlineColor={theme.colors.primary}
-                left={<TextInput.Icon icon="calendar" />}
+                activeOutlineColor={theme.colors.onSurface}
+                left={<TextInput.Icon icon="calendar" color={theme.colors.onSurface} />}
+                theme={{
+                  colors: {
+                    primary: theme.colors.primary,      // focused label color
+                    onSurfaceVariant: theme.colors.onSurface, // unfocused label color
+                  },
+                }}
               />
             </View>
           )}

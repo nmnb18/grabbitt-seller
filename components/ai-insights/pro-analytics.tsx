@@ -1,11 +1,12 @@
-import api from '@/services/axiosInstance';
-import { useAuthStore } from '@/store/authStore';
-import { Colors } from '@/utils/theme';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { Card, Text } from 'react-native-paper';
+
+import { useTheme } from '@/hooks/use-theme-color';
+import api from '@/services/axiosInstance';
+import { useAuthStore } from '@/store/authStore';
 import ProAnalyticsSkeleton from '../skeletons/pro-analytics';
 import { Button } from '../ui/paper-button';
 import withSkeletonTransition from '../wrappers/withSkeletonTransition';
@@ -70,6 +71,9 @@ type AdvancedAnalytics = {
 };
 
 function SellerProAnalyticsInsights() {
+    const theme = useTheme();
+    const styles = React.useMemo(() => createStyles(theme), [theme]);
+
     const router = useRouter();
     const { user } = useAuthStore();
     const idToken = user?.idToken;
@@ -98,6 +102,7 @@ function SellerProAnalyticsInsights() {
 
     useEffect(() => {
         fetchAdvancedAnalytics();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const onRefresh = () => {
@@ -107,28 +112,30 @@ function SellerProAnalyticsInsights() {
 
     // compute max for 7d mini-chart
     const maxScans7 = useMemo(
-        () => (data?.trends_7d?.length ? Math.max(...data.trends_7d.map(d => d.scans)) || 1 : 1),
+        () =>
+            data?.trends_7d?.length
+                ? Math.max(...data.trends_7d.map((d) => d.scans)) || 1
+                : 1,
         [data?.trends_7d]
     );
 
     // top hours & days
     const topHours = useMemo(() => {
         if (!data?.peak_hours?.length) return [];
-        return [...data.peak_hours]
-            .sort((a, b) => b.scans - a.scans)
-            .slice(0, 3);
+        return [...data.peak_hours].sort((a, b) => b.scans - a.scans).slice(0, 3);
     }, [data?.peak_hours]);
 
     const topDays = useMemo(() => {
         if (!data?.peak_days?.length) return [];
-        return [...data.peak_days]
-            .sort((a, b) => b.scans - a.scans)
-            .slice(0, 3);
+        return [...data.peak_days].sort((a, b) => b.scans - a.scans).slice(0, 3);
     }, [data?.peak_days]);
 
     const totalQrScans = useMemo(() => {
         if (!data?.qr_type_breakdown) return 0;
-        return Object.values(data.qr_type_breakdown).reduce((sum, v) => sum + v, 0);
+        return Object.values(data.qr_type_breakdown).reduce(
+            (sum, v) => sum + v,
+            0
+        );
     }, [data?.qr_type_breakdown]);
 
     // If free, show locked message
@@ -138,7 +145,8 @@ function SellerProAnalyticsInsights() {
                 <Text style={styles.lockedIcon}>🔒</Text>
                 <Text style={styles.lockedTitle}>Advanced analytics locked</Text>
                 <Text style={styles.lockedText}>
-                    Upgrade to Pro or Premium to unlock trends, peak hours, QR performance, and customer insights.
+                    Upgrade to Pro or Premium to unlock trends, peak hours, QR performance,
+                    and customer insights.
                 </Text>
                 <Button
                     variant="text"
@@ -150,6 +158,22 @@ function SellerProAnalyticsInsights() {
             </View>
         );
     }
+
+    // local component so it can use `styles`
+    const SegmentPill = ({
+        label,
+        value,
+        color,
+    }: {
+        label: string;
+        value: number;
+        color: string;
+    }) => (
+        <View style={[styles.segPill, { borderColor: color }]}>
+            <Text style={[styles.segPillLabel, { color }]}>{label}</Text>
+            <Text style={[styles.segPillValue, { color }]}>{value}</Text>
+        </View>
+    );
 
     return (
         <ScrollView
@@ -168,7 +192,11 @@ function SellerProAnalyticsInsights() {
                     </Text>
                 </View>
                 <View style={styles.tierBadge}>
-                    <MaterialCommunityIcons name="crown-outline" size={14} color="#F59E0B" />
+                    <MaterialCommunityIcons
+                        name="crown-outline"
+                        size={14}
+                        color={theme.colors.warning}
+                    />
                     <Text style={styles.tierText}>{tier.toUpperCase()}</Text>
                 </View>
             </View>
@@ -192,15 +220,22 @@ function SellerProAnalyticsInsights() {
 
                     {data?.trends_7d?.length ? (
                         <View>
-                            {data.trends_7d.map(day => {
-                                const widthPercent = maxScans7 ? (day.scans / maxScans7) * 100 : 0;
+                            {data.trends_7d.map((day) => {
+                                const widthPercent = maxScans7
+                                    ? (day.scans / maxScans7) * 100
+                                    : 0;
                                 return (
                                     <View key={day.date} style={styles.barRow}>
                                         <Text style={styles.barLabel}>
                                             {day.date.slice(5)} {/* show MM-DD */}
                                         </Text>
                                         <View style={styles.barTrack}>
-                                            <View style={[styles.barFill, { width: `${widthPercent || 4}%` }]} />
+                                            <View
+                                                style={[
+                                                    styles.barFill,
+                                                    { width: `${widthPercent || 4}%` },
+                                                ]}
+                                            />
                                         </View>
                                         <Text style={styles.barValue}>{day.scans}</Text>
                                     </View>
@@ -208,7 +243,9 @@ function SellerProAnalyticsInsights() {
                             })}
                         </View>
                     ) : (
-                        <Text style={styles.emptyText}>No scans in the last 7 days.</Text>
+                        <Text style={styles.emptyText}>
+                            No scans in the last 7 days.
+                        </Text>
                     )}
                 </Card.Content>
             </Card>
@@ -229,17 +266,13 @@ function SellerProAnalyticsInsights() {
                                         <View
                                             style={[
                                                 styles.stackBarFillNew,
-                                                {
-                                                    flex: data.new_vs_returning_30d.new,
-                                                },
+                                                { flex: data.new_vs_returning_30d.new },
                                             ]}
                                         />
                                         <View
                                             style={[
                                                 styles.stackBarFillReturning,
-                                                {
-                                                    flex: data.new_vs_returning_30d.returning,
-                                                },
+                                                { flex: data.new_vs_returning_30d.returning },
                                             ]}
                                         />
                                     </>
@@ -247,13 +280,23 @@ function SellerProAnalyticsInsights() {
                             </View>
                             <View style={styles.stackLegendRow}>
                                 <View style={styles.legendItem}>
-                                    <View style={[styles.legendDot, { backgroundColor: '#3B82F6' }]} />
+                                    <View
+                                        style={[
+                                            styles.legendDot,
+                                            { backgroundColor: theme.colors.primary },
+                                        ]}
+                                    />
                                     <Text style={styles.legendText}>
                                         New: {data?.new_vs_returning_30d.new ?? 0}
                                     </Text>
                                 </View>
                                 <View style={styles.legendItem}>
-                                    <View style={[styles.legendDot, { backgroundColor: '#10B981' }]} />
+                                    <View
+                                        style={[
+                                            styles.legendDot,
+                                            { backgroundColor: theme.colors.success },
+                                        ]}
+                                    />
                                     <Text style={styles.legendText}>
                                         Returning: {data?.new_vs_returning_30d.returning ?? 0}
                                     </Text>
@@ -264,12 +307,28 @@ function SellerProAnalyticsInsights() {
                         <View style={[styles.half, { paddingLeft: 4 }]}>
                             <Text style={styles.sectionLabel}>Segments</Text>
                             <View style={styles.segRow}>
-                                <SegmentPill label="New" value={data?.segments.new ?? 0} color="#3B82F6" />
-                                <SegmentPill label="Regular" value={data?.segments.regular ?? 0} color="#6366F1" />
+                                <SegmentPill
+                                    label="New"
+                                    value={data?.segments.new ?? 0}
+                                    color={theme.colors.primary} // Option A mapping
+                                />
+                                <SegmentPill
+                                    label="Regular"
+                                    value={data?.segments.regular ?? 0}
+                                    color={theme.colors.secondary}
+                                />
                             </View>
                             <View style={styles.segRow}>
-                                <SegmentPill label="Loyal" value={data?.segments.loyal ?? 0} color="#F59E0B" />
-                                <SegmentPill label="Dormant" value={data?.segments.dormant ?? 0} color="#9CA3AF" />
+                                <SegmentPill
+                                    label="Loyal"
+                                    value={data?.segments.loyal ?? 0}
+                                    color={theme.colors.warning}
+                                />
+                                <SegmentPill
+                                    label="Dormant"
+                                    value={data?.segments.dormant ?? 0}
+                                    color={theme.colors.accent}
+                                />
                             </View>
                         </View>
                     </View>
@@ -288,7 +347,7 @@ function SellerProAnalyticsInsights() {
                         <View style={[styles.half, { paddingRight: 4 }]}>
                             <Text style={styles.sectionLabel}>Top Hours</Text>
                             {topHours?.length ? (
-                                topHours.map(h => (
+                                topHours.map((h) => (
                                     <View key={h.hour} style={styles.peakRow}>
                                         <Text style={styles.peakLabel}>{h.hour}:00</Text>
                                         <Text style={styles.peakValue}>{h.scans} scans</Text>
@@ -301,7 +360,7 @@ function SellerProAnalyticsInsights() {
                         <View style={[styles.half, { paddingLeft: 4 }]}>
                             <Text style={styles.sectionLabel}>Top Days</Text>
                             {topDays?.length ? (
-                                topDays.map(d => (
+                                topDays.map((d) => (
                                     <View key={d.weekday} style={styles.peakRow}>
                                         <Text style={styles.peakLabel}>
                                             {weekdayLabel(d.weekday)}
@@ -386,7 +445,8 @@ function SellerProAnalyticsInsights() {
                         Customers earning points: {data?.reward_funnel.earned_customers ?? 0}
                     </Text>
                     <Text style={styles.funnelText}>
-                        Customers who redeemed: {data?.reward_funnel.redeemed_customers ?? 0}
+                        Customers who redeemed:{' '}
+                        {data?.reward_funnel.redeemed_customers ?? 0}
                     </Text>
                     <Text style={styles.funnelText}>
                         Total redemptions: {data?.reward_funnel.total_redemptions ?? 0}
@@ -402,7 +462,8 @@ function SellerProAnalyticsInsights() {
                     </View>
                     {data?.export_available ? (
                         <Text style={styles.exportText}>
-                            Export detailed analytics as CSV or integrate with your reporting tools (to be implemented).
+                            Export detailed analytics as CSV or integrate with your reporting
+                            tools (to be implemented).
                         </Text>
                     ) : (
                         <Text style={styles.exportText}>
@@ -414,15 +475,6 @@ function SellerProAnalyticsInsights() {
 
             <View style={{ height: 32 }} />
         </ScrollView>
-    );
-}
-
-function SegmentPill({ label, value, color }: { label: string; value: number; color: string }) {
-    return (
-        <View style={[styles.segPill, { borderColor: color }]}>
-            <Text style={[styles.segPillLabel, { color }]}>{label}</Text>
-            <Text style={[styles.segPillValue, { color }]}>{value}</Text>
-        </View>
     );
 }
 
@@ -438,206 +490,282 @@ function prettyQrLabel(type: string) {
     return type;
 }
 
-const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#F9FAFB' },
-    content: { padding: 16, paddingBottom: 32 },
-    loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+const createStyles = (theme: any) =>
+    StyleSheet.create({
+        container: {
+            flex: 1,
+            backgroundColor: theme.colors.background,
+        },
+        content: {
+            padding: 16,
+            paddingBottom: 32,
+        },
+        loadingContainer: {
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
 
-    headerRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 16,
-    },
-    title: { fontSize: 22, fontWeight: '700', color: '#111827' },
-    subtitle: { fontSize: 13, color: '#6B7280', marginTop: 2 },
+        headerRow: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 16,
+        },
+        title: {
+            fontSize: 22,
+            fontWeight: '700',
+            color: theme.colors.onBackground,
+        },
+        subtitle: {
+            fontSize: 13,
+            color: theme.colors.accent,
+            marginTop: 2,
+        },
 
-    tierBadge: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#FEF3C7',
-        borderRadius: 999,
-        paddingHorizontal: 10,
-        paddingVertical: 4,
-    },
-    tierText: {
-        fontSize: 11,
-        color: '#92400E',
-        marginLeft: 4,
-        fontWeight: '600',
-    },
+        tierBadge: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            backgroundColor: theme.colors.surfaceVariant,
+            borderRadius: 999,
+            paddingHorizontal: 10,
+            paddingVertical: 4,
+        },
+        tierText: {
+            fontSize: 11,
+            color: theme.colors.warning,
+            marginLeft: 4,
+            fontWeight: '600',
+        },
 
-    errorCard: {
-        borderRadius: 12,
-        backgroundColor: '#FEF2F2',
-        marginBottom: 12,
-    },
-    errorText: { color: '#B91C1C', fontSize: 13 },
+        errorCard: {
+            borderRadius: 12,
+            backgroundColor: theme.colors.surfaceVariant,
+            marginBottom: 12,
+        },
+        errorText: {
+            color: theme.colors.error,
+            fontSize: 13,
+        },
 
-    card: {
-        borderRadius: 16,
-        backgroundColor: '#FFFFFF',
-        marginBottom: 16,
-    },
-    cardHeaderRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'baseline',
-        marginBottom: 8,
-    },
-    cardTitle: { fontSize: 16, fontWeight: '600', color: '#111827' },
-    cardSubtitle: { fontSize: 12, color: '#6B7280' },
+        card: {
+            borderRadius: 16,
+            backgroundColor: theme.colors.surface,
+            marginBottom: 16,
+        },
+        cardHeaderRow: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'baseline',
+            marginBottom: 8,
+        },
+        cardTitle: {
+            fontSize: 16,
+            fontWeight: '600',
+            color: theme.colors.onSurface,
+        },
+        cardSubtitle: {
+            fontSize: 12,
+            color: theme.colors.accent,
+        },
 
-    emptyText: { fontSize: 12, color: '#9CA3AF' },
+        emptyText: {
+            fontSize: 12,
+            color: theme.colors.accent,
+        },
 
-    // 7-day bar mini chart
-    barRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 6,
-    },
-    barLabel: {
-        width: 52,
-        fontSize: 11,
-        color: '#6B7280',
-    },
-    barTrack: {
-        flex: 1,
-        height: 8,
-        borderRadius: 999,
-        backgroundColor: '#E5E7EB',
-        overflow: 'hidden',
-    },
-    barFill: {
-        height: 8,
-        borderRadius: 999,
-        backgroundColor: Colors.light.accent,
-    },
-    barValue: {
-        width: 32,
-        fontSize: 11,
-        textAlign: 'right',
-        color: '#4B5563',
-        marginLeft: 6,
-    },
+        // 7-day bar mini chart
+        barRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginBottom: 6,
+        },
+        barLabel: {
+            width: 52,
+            fontSize: 11,
+            color: theme.colors.accent,
+        },
+        barTrack: {
+            flex: 1,
+            height: 8,
+            borderRadius: 999,
+            backgroundColor: theme.colors.surfaceVariant,
+            overflow: 'hidden',
+        },
+        barFill: {
+            height: 8,
+            borderRadius: 999,
+            backgroundColor: theme.colors.accent,
+        },
+        barValue: {
+            width: 32,
+            fontSize: 11,
+            textAlign: 'right',
+            color: theme.colors.onSurface,
+            marginLeft: 6,
+        },
 
-    // new vs returning, segments
-    row: { flexDirection: 'row', marginTop: 4 },
-    half: { flex: 1 },
-    sectionLabel: { fontSize: 12, fontWeight: '600', color: '#4B5563', marginBottom: 4 },
+        // new vs returning, segments
+        row: { flexDirection: 'row', marginTop: 4 },
+        half: { flex: 1 },
+        sectionLabel: {
+            fontSize: 12,
+            fontWeight: '600',
+            color: theme.colors.onSurface,
+            marginBottom: 4,
+        },
 
-    stackBarTrack: {
-        flexDirection: 'row',
-        borderRadius: 999,
-        overflow: 'hidden',
-        height: 12,
-        backgroundColor: '#E5E7EB',
-    },
-    stackBarFillNew: { backgroundColor: '#3B82F6' },
-    stackBarFillReturning: { backgroundColor: '#10B981' },
-    stackLegendRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 6,
-    },
-    legendItem: { flexDirection: 'row', alignItems: 'center' },
-    legendDot: {
-        width: 8,
-        height: 8,
-        borderRadius: 999,
-        marginRight: 4,
-    },
-    legendText: { fontSize: 11, color: '#6B7280' },
+        stackBarTrack: {
+            flexDirection: 'row',
+            borderRadius: 999,
+            overflow: 'hidden',
+            height: 12,
+            backgroundColor: theme.colors.surfaceVariant,
+        },
+        stackBarFillNew: { backgroundColor: theme.colors.primary },
+        stackBarFillReturning: { backgroundColor: theme.colors.success },
+        stackLegendRow: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginTop: 6,
+        },
+        legendItem: { flexDirection: 'row', alignItems: 'center' },
+        legendDot: {
+            width: 8,
+            height: 8,
+            borderRadius: 999,
+            marginRight: 4,
+        },
+        legendText: {
+            fontSize: 11,
+            color: theme.colors.accent,
+        },
 
-    segRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 6,
-    },
-    segPill: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderRadius: 999,
-        borderWidth: 1,
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-    },
-    segPillLabel: {
-        fontSize: 11,
-        fontWeight: '600',
-        marginRight: 4,
-    },
-    segPillValue: { fontSize: 11 },
+        segRow: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginBottom: 6,
+        },
+        segPill: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            borderRadius: 999,
+            borderWidth: 1,
+            paddingHorizontal: 8,
+            paddingVertical: 4,
+        },
+        segPillLabel: {
+            fontSize: 11,
+            fontWeight: '600',
+            marginRight: 4,
+        },
+        segPillValue: {
+            fontSize: 11,
+        },
 
-    // peaks
-    peakRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        paddingVertical: 4,
-    },
-    peakLabel: { fontSize: 13, color: '#111827' },
-    peakValue: { fontSize: 12, color: '#6B7280' },
+        // peaks
+        peakRow: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            paddingVertical: 4,
+        },
+        peakLabel: {
+            fontSize: 13,
+            color: theme.colors.onSurface,
+        },
+        peakValue: {
+            fontSize: 12,
+            color: theme.colors.accent,
+        },
 
-    // qr performance
-    qrRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        paddingVertical: 6,
-    },
-    qrLabel: { fontSize: 13, color: '#111827' },
-    qrValue: { fontSize: 12, color: '#6B7280' },
+        // qr performance
+        qrRow: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            paddingVertical: 6,
+        },
+        qrLabel: {
+            fontSize: 13,
+            color: theme.colors.onSurface,
+        },
+        qrValue: {
+            fontSize: 12,
+            color: theme.colors.accent,
+        },
 
-    // top customers
-    customerRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingVertical: 8,
-        borderBottomWidth: StyleSheet.hairlineWidth,
-        borderBottomColor: '#E5E7EB',
-    },
-    customerAvatar: {
-        width: 32,
-        height: 32,
-        borderRadius: 999,
-        backgroundColor: '#EEF2FF',
-        marginRight: 10,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    customerAvatarText: {
-        fontSize: 12,
-        fontWeight: '700',
-        color: '#4F46E5',
-    },
-    customerTitle: {
-        fontSize: 13,
-        fontWeight: '600',
-        color: '#111827',
-    },
-    customerSubtitle: { fontSize: 11, color: '#6B7280' },
+        // top customers
+        customerRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingVertical: 8,
+            borderBottomWidth: StyleSheet.hairlineWidth,
+            borderBottomColor: theme.colors.outline,
+        },
+        customerAvatar: {
+            width: 32,
+            height: 32,
+            borderRadius: 999,
+            backgroundColor: theme.colors.surfaceVariant,
+            marginRight: 10,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        customerAvatarText: {
+            fontSize: 12,
+            fontWeight: '700',
+            color: theme.colors.primary,
+        },
+        customerTitle: {
+            fontSize: 13,
+            fontWeight: '600',
+            color: theme.colors.onSurface,
+        },
+        customerSubtitle: {
+            fontSize: 11,
+            color: theme.colors.accent,
+        },
 
-    funnelText: {
-        fontSize: 13,
-        color: '#4B5563',
-        marginBottom: 3,
-    },
+        funnelText: {
+            fontSize: 13,
+            color: theme.colors.onSurface,
+            marginBottom: 3,
+        },
 
-    exportText: {
-        fontSize: 13,
-        color: '#4B5563',
-    },
+        exportText: {
+            fontSize: 13,
+            color: theme.colors.onSurface,
+        },
 
-    lockedContainer: {
-        flex: 1,
-        backgroundColor: '#F9FAFB',
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingHorizontal: 32,
-    },
-    lockedIcon: { fontSize: 42, marginBottom: 8 },
-    lockedTitle: { fontSize: 18, fontWeight: '700', marginBottom: 6, color: '#111827' },
-    lockedText: { fontSize: 14, color: '#4B5563', textAlign: 'center', marginBottom: 14 },
-    lockedCta: { fontSize: 14, color: Colors.light.accent, fontWeight: '600' },
-});
+        lockedContainer: {
+            flex: 1,
+            backgroundColor: theme.colors.background,
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingHorizontal: 32,
+        },
+        lockedIcon: {
+            fontSize: 42,
+            marginBottom: 8,
+        },
+        lockedTitle: {
+            fontSize: 18,
+            fontWeight: '700',
+            marginBottom: 6,
+            color: theme.colors.onBackground,
+        },
+        lockedText: {
+            fontSize: 14,
+            color: theme.colors.onSurface,
+            textAlign: 'center',
+            marginBottom: 14,
+        },
+        lockedCta: {
+            fontSize: 14,
+            color: theme.colors.accent,
+            fontWeight: '600',
+        },
+    });
 
-export default withSkeletonTransition(ProAnalyticsSkeleton)(SellerProAnalyticsInsights)
+export default withSkeletonTransition(ProAnalyticsSkeleton)(
+    SellerProAnalyticsInsights
+);

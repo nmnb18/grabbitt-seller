@@ -86,10 +86,17 @@ export default function ResetPasswordScreen() {
                                 mode="outlined"
                                 secureTextEntry={!show}
                                 style={[styles.input, { backgroundColor: theme.colors.surface }]}
-                                left={<TextInput.Icon icon="lock" />}
-                                right={<TextInput.Icon icon={show ? 'eye-off' : 'eye'} onPress={() => setShow(!show)} />}
-                                outlineColor={outlineColor}
-                                activeOutlineColor={accentColor}
+                                left={<TextInput.Icon color={theme.colors.onSurface} icon="lock" />}
+                                right={<TextInput.Icon color={theme.colors.onSurface} icon={show ? 'eye-off' : 'eye'} onPress={() => setShow(!show)} />}
+                                outlineColor={theme.colors.outline}
+                                activeOutlineColor={theme.colors.onSurface}
+                                theme={{
+                                    ...theme,
+                                    colors: {
+                                        ...theme.colors,
+                                        onSurfaceVariant: theme.colors.onSurfaceDisabled, // 👈 placeholder color source
+                                    },
+                                }}
                             />
 
                             <TextInput
@@ -99,10 +106,17 @@ export default function ResetPasswordScreen() {
                                 mode="outlined"
                                 secureTextEntry={!show2}
                                 style={[styles.input, { backgroundColor: theme.colors.surface }]}
-                                left={<TextInput.Icon icon="lock-check" />}
-                                right={<TextInput.Icon icon={show2 ? 'eye-off' : 'eye'} onPress={() => setShow2(!show2)} />}
-                                outlineColor={outlineColor}
-                                activeOutlineColor={accentColor}
+                                left={<TextInput.Icon color={theme.colors.onSurface} icon="lock-check" />}
+                                right={<TextInput.Icon color={theme.colors.onSurface} icon={show2 ? 'eye-off' : 'eye'} onPress={() => setShow2(!show2)} />}
+                                outlineColor={theme.colors.outline}
+                                activeOutlineColor={theme.colors.onSurface}
+                                theme={{
+                                    ...theme,
+                                    colors: {
+                                        ...theme.colors,
+                                        onSurfaceVariant: theme.colors.onSurfaceDisabled, // 👈 placeholder color source
+                                    },
+                                }}
                             />
 
                             <Button

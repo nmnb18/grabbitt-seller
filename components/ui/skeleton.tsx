@@ -1,7 +1,9 @@
+import { useTheme } from "@/hooks/use-theme-color";
 import React, { useEffect, useRef } from "react";
 import { Animated, StyleSheet, ViewStyle } from "react-native";
 
 export const Skeleton = ({ style }: { style?: ViewStyle }) => {
+    const theme = useTheme();
     const opacity = useRef(new Animated.Value(0.3)).current;
 
     useEffect(() => {
@@ -21,12 +23,20 @@ export const Skeleton = ({ style }: { style?: ViewStyle }) => {
         ).start();
     }, []);
 
-    return <Animated.View style={[styles.skeleton, style, { opacity }]} />;
+    return (
+        <Animated.View
+            style={[
+                styles.skeleton,
+                { backgroundColor: theme.colors.surfaceVariant },
+                style,
+                { opacity },
+            ]}
+        />
+    );
 };
 
 const styles = StyleSheet.create({
     skeleton: {
-        backgroundColor: "#D3D3D3",
         borderRadius: 8,
     },
 });

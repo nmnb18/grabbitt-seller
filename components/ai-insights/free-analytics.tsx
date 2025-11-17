@@ -1,10 +1,18 @@
+import { useTheme } from '@/hooks/use-theme-color';
 import api from '@/services/axiosInstance';
 import { useAuthStore } from '@/store/authStore';
-import { Colors } from '@/utils/theme';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
-import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
-import { Card, Text } from 'react-native-paper';
+import {
+    RefreshControl,
+    ScrollView,
+    StyleSheet,
+    View
+} from 'react-native';
+import {
+    Card,
+    Text,
+} from 'react-native-paper';
 import FreeAnalyticsSkeleton from '../skeletons/free-analytics';
 import withSkeletonTransition from '../wrappers/withSkeletonTransition';
 
@@ -38,6 +46,7 @@ type SellerStats = {
 };
 
 function SellerFreeAIInsights() {
+    const theme = useTheme();
     const { user } = useAuthStore();
     const idToken = user?.idToken;
 
@@ -66,6 +75,7 @@ function SellerFreeAIInsights() {
 
     useEffect(() => {
         fetchStats();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const onRefresh = () => {
@@ -75,7 +85,7 @@ function SellerFreeAIInsights() {
 
     return (
         <ScrollView
-            style={styles.container}
+            style={[styles.container, { backgroundColor: theme.colors.background }]}
             contentContainerStyle={styles.content}
             refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -83,34 +93,89 @@ function SellerFreeAIInsights() {
         >
             {/* ERROR BANNER */}
             {error && (
-                <Card style={styles.errorCard}>
+                <Card
+                    style={[
+                        styles.errorCard,
+                        { backgroundColor: theme.colors.error + '22' },
+                    ]}
+                >
                     <Card.Content>
-                        <Text style={styles.errorText}>{error}</Text>
+                        <Text
+                            style={[
+                                styles.errorText,
+                                { color: theme.colors.error },
+                            ]}
+                        >
+                            {error}
+                        </Text>
                     </Card.Content>
                 </Card>
             )}
 
             {/* HEADER */}
             <View style={styles.headerRow}>
-                <Text style={styles.title}>Analytics</Text>
-                <Text style={styles.subtitle}>
-                    {stats?.seller_name ? stats.seller_name : 'Your shop'} • Overview
-                </Text>
+                <View>
+                    <Text
+                        style={[
+                            styles.title,
+                            { color: theme.colors.onSurface },
+                        ]}
+                    >
+                        Analytics
+                    </Text>
+                    <Text
+                        style={[
+                            styles.subtitle,
+                            { color: theme.colors.onSurfaceDisabled },
+                        ]}
+                    >
+                        {stats?.seller_name ? stats.seller_name : 'Your shop'} • Overview
+                    </Text>
+                </View>
             </View>
 
             {/* TODAY SUMMARY CARD */}
-            <Card style={styles.todayCard}>
+            <Card
+                style={[
+                    styles.todayCard,
+                    { backgroundColor: theme.colors.surface },
+                ]}
+                elevation={2}
+            >
                 <Card.Content style={styles.todayContent}>
                     <View>
-                        <Text style={styles.todayLabel}>Today</Text>
-                        <Text style={styles.todayScans}>
+                        <Text
+                            style={[
+                                styles.todayLabel,
+                                {
+                                    color: theme.colors.primary,
+                                },
+                            ]}
+                        >
+                            Today
+                        </Text>
+                        <Text
+                            style={[
+                                styles.todayScans,
+                                { color: theme.colors.onSurface },
+                            ]}
+                        >
                             {stats?.today?.scans ?? 0} scans
                         </Text>
-                        <Text style={styles.todayPoints}>
+                        <Text
+                            style={[
+                                styles.todayPoints,
+                                { color: theme.colors.onSurfaceDisabled },
+                            ]}
+                        >
                             {stats?.today?.points ?? 0} points issued
                         </Text>
                     </View>
-                    <MaterialCommunityIcons name="calendar-today" size={32} color={Colors.light.accent} />
+                    <MaterialCommunityIcons
+                        name="calendar-today"
+                        size={32}
+                        color={theme.colors.accent}
+                    />
                 </Card.Content>
             </Card>
 
@@ -148,46 +213,130 @@ function SellerFreeAIInsights() {
             </View>
 
             {/* LAST 5 SCANS */}
-            <Card style={styles.card}>
+            <Card
+                style={[
+                    styles.card,
+                    { backgroundColor: theme.colors.surface },
+                ]}
+                elevation={2}
+            >
                 <Card.Content>
                     <View style={styles.cardHeaderRow}>
-                        <Text style={styles.cardTitle}>Recent Scans</Text>
+                        <Text
+                            style={[
+                                styles.cardTitle,
+                                { color: theme.colors.onSurface },
+                            ]}
+                        >
+                            Recent Scans
+                        </Text>
                     </View>
 
                     {stats?.last_five_scans && stats.last_five_scans.length > 0 ? (
                         stats.last_five_scans.map((scan, idx) => (
-                            <View key={scan.id || idx} style={styles.scanRow}>
+                            <View
+                                key={scan.id || idx}
+                                style={[
+                                    styles.scanRow,
+                                    { borderBottomColor: theme.colors.outline },
+                                ]}
+                            >
                                 <View>
-                                    <Text style={styles.scanTitle}>
+                                    <Text
+                                        style={[
+                                            styles.scanTitle,
+                                            { color: theme.colors.onSurface },
+                                        ]}
+                                    >
                                         {scan.description || 'QR Scan'}
                                     </Text>
-                                    <Text style={styles.scanSubtitle}>
+                                    <Text
+                                        style={[
+                                            styles.scanSubtitle,
+                                            { color: theme.colors.onSurfaceDisabled },
+                                        ]}
+                                    >
                                         {scan.points ?? 0} pts • {scan.qr_type || 'QR'}
                                     </Text>
                                 </View>
                             </View>
                         ))
                     ) : (
-                        <Text style={styles.emptyText}>No recent scans yet.</Text>
+                        <Text
+                            style={[
+                                styles.emptyText,
+                                { color: theme.colors.onSurfaceDisabled },
+                            ]}
+                        >
+                            No recent scans yet.
+                        </Text>
                     )}
                 </Card.Content>
             </Card>
 
             {/* UPGRADE CARD (PREVIEW PRO ANALYTICS) */}
             {isFree && (
-                <Card style={styles.upgradeCard}>
+                <Card
+                    style={[
+                        styles.upgradeCard,
+                        { backgroundColor: theme.colors.surfaceVariant },
+                    ]}
+                >
                     <Card.Content>
-                        <Text style={styles.upgradeTitle}>Unlock full analytics</Text>
-                        <Text style={styles.upgradeText}>
-                            Get detailed trends, charts, customer segments, and more with Pro or Premium.
+                        <Text
+                            style={[
+                                styles.upgradeTitle,
+                                { color: theme.colors.secondary },
+                            ]}
+                        >
+                            Unlock full analytics
                         </Text>
+                        <Text
+                            style={[
+                                styles.upgradeText,
+                                { color: theme.colors.onSurface },
+                            ]}
+                        >
+                            Get detailed trends, charts, customer segments, and more with Pro or
+                            Premium.
+                        </Text>
+
                         <View style={styles.upgradeFeaturesRow}>
-                            <Text style={styles.upgradeBullet}>• Scan trends & charts</Text>
-                            <Text style={styles.upgradeBullet}>• Top customers insights</Text>
-                            <Text style={styles.upgradeBullet}>• Export reports</Text>
+                            <Text
+                                style={[
+                                    styles.upgradeBullet,
+                                    { color: theme.colors.onSurfaceDisabled },
+                                ]}
+                            >
+                                • Scan trends & charts
+                            </Text>
+                            <Text
+                                style={[
+                                    styles.upgradeBullet,
+                                    { color: theme.colors.onSurfaceDisabled },
+                                ]}
+                            >
+                                • Top customers insights
+                            </Text>
+                            <Text
+                                style={[
+                                    styles.upgradeBullet,
+                                    { color: theme.colors.onSurfaceDisabled },
+                                ]}
+                            >
+                                • Export reports
+                            </Text>
                         </View>
+
                         <View style={styles.upgradeButtonRow}>
-                            <Text style={styles.upgradeCta}>Go to Plans to upgrade →</Text>
+                            <Text
+                                style={[
+                                    styles.upgradeCta,
+                                    { color: theme.colors.accent },
+                                ]}
+                            >
+                                Go to Plans to upgrade →
+                            </Text>
                         </View>
                     </Card.Content>
                 </Card>
@@ -205,87 +354,119 @@ interface StatTileProps {
 }
 
 function StatTile({ label, value, icon }: StatTileProps) {
+    const theme = useTheme();
+
     return (
-        <Card style={styles.tile}>
-            <Card.Content style={styles.tileContent}>
+        <Card style={styles.tile} elevation={0}>
+            <Card.Content
+                style={[
+                    styles.tileContent,
+                    {
+                        backgroundColor: theme.colors.surface,
+                        shadowColor: theme.dark ? '#000' : '#000',
+                    },
+                ]}
+            >
                 <View style={styles.tileHeader}>
-                    <MaterialCommunityIcons name={icon as any} size={22} color={Colors.light.accent} />
-                    {/* Simple trend fake indicator for now (we can wire real later) */}
-                    <View style={styles.trendBadge}>
-                        <MaterialCommunityIcons name="trending-up" size={14} color="#10B981" />
-                        <Text style={styles.trendText}>—</Text>
+                    <MaterialCommunityIcons
+                        name={icon as any}
+                        size={22}
+                        color={theme.colors.accent}
+                    />
+
+                    {/* Trend placeholder */}
+                    <View
+                        style={[
+                            styles.trendBadge,
+                            { backgroundColor: theme.colors.success + '22' },
+                        ]}
+                    >
+                        <MaterialCommunityIcons
+                            name="trending-up"
+                            size={14}
+                            color={theme.colors.success}
+                        />
+                        <Text
+                            style={[
+                                styles.trendText,
+                                { color: theme.colors.success },
+                            ]}
+                        >
+                            —
+                        </Text>
                     </View>
                 </View>
 
-                <Text style={styles.tileValue}>{value}</Text>
-                <Text style={styles.tileLabel}>{label}</Text>
+                <Text
+                    style={[
+                        styles.tileValue,
+                        { color: theme.colors.onSurface },
+                    ]}
+                >
+                    {value}
+                </Text>
+                <Text
+                    style={[
+                        styles.tileLabel,
+                        { color: theme.colors.onSurfaceDisabled },
+                    ]}
+                >
+                    {label}
+                </Text>
             </Card.Content>
         </Card>
     );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#F9FAFB' },
+    container: { flex: 1 },
     content: { padding: 16, paddingBottom: 32 },
-    loadingContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
 
     headerRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         marginBottom: 16,
     },
     title: {
         fontSize: 22,
         fontWeight: '700',
-        color: '#111827',
     },
     subtitle: {
         fontSize: 13,
-        color: '#6B7280',
         marginTop: 2,
     },
 
     errorCard: {
         marginBottom: 12,
         borderRadius: 12,
-        backgroundColor: '#FEF2F2',
     },
     errorText: {
-        color: '#B91C1C',
         fontSize: 13,
     },
 
     todayCard: {
         borderRadius: 16,
         marginBottom: 16,
-        backgroundColor: '',
     },
     todayContent: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        backgroundColor: '#ffffff'
     },
     todayLabel: {
-        fontSize: 16,
-        color: Colors.light.primary,
+        fontSize: 14,
         textTransform: 'uppercase',
-        letterSpacing: 1,
+        letterSpacing: 0.8,
         marginBottom: 4,
+        fontWeight: '600',
     },
     todayScans: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#0F172A',
     },
     todayPoints: {
         fontSize: 13,
-        color: '#475569',
         marginTop: 4,
     },
 
@@ -293,20 +474,17 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         marginBottom: 16,
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
     },
     tile: {
         width: '48%',
         marginBottom: 12,
         backgroundColor: 'transparent',
-        elevation: 0,
     },
     tileContent: {
         borderRadius: 14,
-        backgroundColor: '#FFFFFF',
         paddingVertical: 12,
         paddingHorizontal: 12,
-        shadowColor: '#000',
         shadowOpacity: 0.05,
         shadowRadius: 4,
         elevation: 2,
@@ -320,17 +498,14 @@ const styles = StyleSheet.create({
     tileValue: {
         fontSize: 20,
         fontWeight: '700',
-        color: '#111827',
         marginBottom: 4,
     },
     tileLabel: {
         fontSize: 12,
-        color: '#6B7280',
     },
     trendBadge: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#ECFDF5',
         borderRadius: 999,
         paddingHorizontal: 6,
         paddingVertical: 2,
@@ -338,12 +513,10 @@ const styles = StyleSheet.create({
     trendText: {
         marginLeft: 4,
         fontSize: 10,
-        color: '#065F46',
     },
 
     card: {
         borderRadius: 16,
-        backgroundColor: '#FFFFFF',
         marginBottom: 16,
     },
     cardHeaderRow: {
@@ -355,42 +528,34 @@ const styles = StyleSheet.create({
     cardTitle: {
         fontSize: 16,
         fontWeight: '600',
-        color: '#111827',
     },
     scanRow: {
         paddingVertical: 10,
         borderBottomWidth: StyleSheet.hairlineWidth,
-        borderBottomColor: '#E5E7EB',
     },
     scanTitle: {
         fontSize: 14,
         fontWeight: '500',
-        color: '#111827',
     },
     scanSubtitle: {
         fontSize: 12,
-        color: '#6B7280',
         marginTop: 2,
     },
     emptyText: {
         fontSize: 13,
-        color: '#9CA3AF',
         marginTop: 4,
     },
 
     upgradeCard: {
         borderRadius: 16,
-        backgroundColor: '#F5F3FF',
     },
     upgradeTitle: {
         fontSize: 16,
         fontWeight: '700',
-        color: '#4C1D95',
         marginBottom: 4,
     },
     upgradeText: {
         fontSize: 13,
-        color: '#4B5563',
         marginBottom: 8,
     },
     upgradeFeaturesRow: {
@@ -398,17 +563,14 @@ const styles = StyleSheet.create({
     },
     upgradeBullet: {
         fontSize: 12,
-        color: '#6B7280',
     },
     upgradeButtonRow: {
         marginTop: 4,
     },
     upgradeCta: {
         fontSize: 13,
-        color: Colors.light.accent,
         fontWeight: '600',
     },
 });
-
 
 export default withSkeletonTransition(FreeAnalyticsSkeleton)(SellerFreeAIInsights);

@@ -4,7 +4,7 @@ import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { DrawerActions, useNavigation } from "@react-navigation/native";
 import { Tabs } from "expo-router";
 import React from "react";
-import { Dimensions, TouchableOpacity } from "react-native";
+import { Dimensions, Platform, TouchableOpacity } from "react-native";
 const { width } = Dimensions.get("window");
 const LOGO_WIDTH = width * 0.4;
 
@@ -22,7 +22,7 @@ export default function SellerLayout() {
         headerTitleAlign: "center",
         tabBarStyle: {
           backgroundColor,
-          borderTopColor: sellerTheme.colors.outline,
+          borderTopColor: 'transparent',
           borderTopWidth: 1,
           paddingBottom: 20,
           paddingTop: 8,
@@ -33,7 +33,7 @@ export default function SellerLayout() {
           fontWeight: "600",
         },
         headerStyle: {
-          height: 90,
+          height: Platform.OS === 'ios' ? 120 : 90,
           backgroundColor,
           elevation: 0, // Android shadow
           shadowOpacity: 0, // iOS shadow
