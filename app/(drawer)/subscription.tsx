@@ -234,12 +234,12 @@ const createStyles = (theme: any) =>
 
         scrollContainer: {
             padding: AppStyles.spacing.lg,
-            paddingBottom: 100,
+            paddingBottom: 0,
         },
 
         title: {
             textAlign: 'center',
-            marginBottom: AppStyles.spacing.xl,
+            marginBottom: AppStyles.spacing.md,
             fontWeight: '700',
             color: theme.colors.onBackground,
         },

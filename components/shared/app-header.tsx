@@ -2,7 +2,7 @@ import { useTheme } from "@/hooks/use-theme-color";
 import { Ionicons } from "@expo/vector-icons";
 import { DrawerActions, useNavigation } from "@react-navigation/native";
 import React from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { Platform, StyleSheet, TouchableOpacity, View } from "react-native";
 import { GradientText } from "../ui/gradient-text";
 
 interface AppHeaderProps {
@@ -25,7 +25,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
     const iconColor = theme.colors.onSurface;
 
     return (
-        <View style={[styles.headerContainer, { backgroundColor: bg }]}>
+        <View style={[styles.headerContainer, { backgroundColor: bg, paddingTop: Platform.OS === 'ios' ? 50 : 35 }]}>
             {/* Menu */}
             {showMenu ? (
                 <TouchableOpacity
@@ -77,9 +77,8 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-        paddingTop: 60,
-        paddingBottom: 12,
-        paddingHorizontal: 16,
+        paddingBottom: 0,
+        paddingHorizontal: 8,
     },
     iconButton: {
         width: 40,

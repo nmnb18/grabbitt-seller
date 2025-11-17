@@ -46,7 +46,6 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   },
 
   login: async (email, password, role) => {
-    console.log("Logging in with role:", API_URL);
     try {
       set({ loading: true });
       const response = await axios.post(`${API_URL}/loginSeller`, {
@@ -117,7 +116,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       // Restart watcher with new expiry
       const expiry = updatedUser?.user?.seller_profile?.subscription?.expires_at
         ? updatedUser.user.seller_profile.subscription.expires_at._seconds *
-          1000
+        1000
         : null;
 
       startSubscriptionWatcher(expiry, () => {
@@ -186,7 +185,6 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     try {
       const { user } = get();
       if (!user?.refreshToken) return null;
-
       const response = await axios.post(`${API_URL}/refreshToken`, {
         refreshToken: user.refreshToken,
       });
