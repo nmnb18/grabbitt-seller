@@ -73,11 +73,7 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <PaperProvider theme={theme}>
         {/* FIXED STATUS BAR */}
-        <StatusBar
-          style={theme.dark ? "light" : "dark"}
-          translucent
-          backgroundColor={"transparent"}
-        />
+        <StatusBar translucent backgroundColor={"transparent"} />
 
         <Stack screenOptions={{ headerShown: false }} />
       </PaperProvider>
