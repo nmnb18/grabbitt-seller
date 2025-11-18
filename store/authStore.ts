@@ -82,7 +82,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     } catch (err: any) {
       set({ loading: false });
       console.error("Login error:", err.response?.data || err.message);
-      throw new Error(err.response?.data?.message || "Login failed");
+      throw new Error(err.response?.data?.error || err.message || "Login failed");
     }
   },
 
