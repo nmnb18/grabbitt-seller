@@ -1,3 +1,4 @@
+import { FormTextInput } from "@/components/form/form-text-input";
 import { GradientText } from "@/components/ui/gradient-text";
 import { Button } from "@/components/ui/paper-button";
 import AuthScreenWrapper from "@/components/wrappers/authScreenWrapper";
@@ -86,23 +87,21 @@ export default function SellerLogin() {
         <GradientText style={styles.gradientTitle}>Login</GradientText>
 
         <View style={styles.form}>
-          <TextInput
-            {...textInputProps}
-            label="Email"
+
+          <FormTextInput
+            label="Email *"
             value={formData.email}
             onChangeText={handleInputChange("email")}
-            keyboardType="email-address"
-            left={<TextInput.Icon icon="email" color={theme.colors.onSurface} />}
+            autoCapitalize="words"
+            leftIcon="account"
           />
 
-          <TextInput
-            {...textInputProps}
-            label="Password"
+          <FormTextInput
+            label="Password *"
             value={formData.password}
             onChangeText={handleInputChange("password")}
             secureTextEntry={!uiState.showPassword}
-            style={[textInputProps.style, styles.passwordInput]}
-            left={<TextInput.Icon icon="lock" color={theme.colors.onSurface} />}
+            leftIcon="lock"
             right={
               <TextInput.Icon
                 icon={uiState.showPassword ? "eye-off" : "eye"}
@@ -111,6 +110,7 @@ export default function SellerLogin() {
               />
             }
           />
+
 
           <Button
             onPress={handleLogin}

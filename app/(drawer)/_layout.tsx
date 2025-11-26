@@ -88,6 +88,9 @@ function CustomDrawerContent() {
 
           <MenuItem label="Plans" icon="star" onPress={() => router.push("/subscription")} />
 
+
+          <MenuItem label="Plans History" icon="history" onPress={() => router.push("/subscription-history")} />
+
           <MenuItem label="Contact Us" icon="mail" onPress={() => Linking.openURL("mailto:support@grabbitt.in")} />
 
           <MenuItem label="Privacy Policy" icon="lock" onPress={() => Linking.openURL("https://grabbitt.in/privacy")} />
