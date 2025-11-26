@@ -33,7 +33,7 @@ export const CATEGORIES = {
 export const QR_CODE_TYPES = [
     { value: 'dynamic', label: 'Dynamic QR', description: 'Expires after use' },
     { value: 'static', label: 'Static QR', description: 'Once per day per customer' },
-    { value: 'static_hidden', label: 'Static with Hidden Code', description: 'For product packaging' },
+    // { value: 'static_hidden', label: 'Static with Hidden Code', description: 'For product packaging' },
 ];
 
 export const SUBSCRIPTION_PLANS = {

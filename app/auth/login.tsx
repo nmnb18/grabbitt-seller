@@ -90,7 +90,7 @@ export default function SellerLogin() {
             secureTextEntry={!showPassword}
             style={[
               styles.input,
-              { backgroundColor: theme.colors.surface },
+              { backgroundColor: theme.colors.surface, marginBottom: 20 },
             ]}
             left={<TextInput.Icon icon="lock" color={theme.colors.onSurface} />}
             right={

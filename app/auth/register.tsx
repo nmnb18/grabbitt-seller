@@ -17,6 +17,7 @@ import {
     Checkbox,
     Chip,
     HelperText,
+    IconButton,
     RadioButton,
     Surface,
     Text,
@@ -69,6 +70,12 @@ export default function SellerRegister() {
         defaultPoints: '5',
         subscriptionTier: 'free',
         acceptTerms: false,
+        rewardType: 'default',       // default | percentage | flat | slab
+        percentageValue: '',         // only if rewardType = percentage
+        slabRules: [],               // only if rewardType = slab
+
+        upiIds: [],
+        newUpiId: ''
     });
 
     const router = useRouter();
@@ -78,6 +85,9 @@ export default function SellerRegister() {
     const backgroundColor = useThemeColor({}, 'background');
     const outlineColor = useThemeColor({}, 'outline');
     const accentColor = useThemeColor({}, 'accent');
+    const [slabRules, setSlabRules] = useState<
+        { min: number; max: string; points: string }[]
+    >([{ min: 0, max: "", points: "" }]);
 
     // Check location permission on component mount
     useEffect(() => {
@@ -322,6 +332,19 @@ export default function SellerRegister() {
                 defaultPoints: parseInt(formData.defaultPoints),
                 subscriptionTier: formData.subscriptionTier,
                 acceptTerms: formData.acceptTerms,
+                rewardType: formData.rewardType,
+                percentageValue: formData.rewardType === 'percentage' ? Number(formData.percentageValue) : undefined,
+                slabRules:
+                    formData.rewardType === "slab"
+                        ? slabRules
+                            .filter((r) => r.max !== "" && r.points !== "") // keep only filled rows
+                            .map((r) => ({
+                                min: r.min,
+                                max: r.max === "" ? null : Number(r.max),
+                                points: Number(r.points)
+                            }))
+                        : [],
+                upiIds: formData.upiIds
             };
 
             await register(payload);
@@ -332,6 +355,36 @@ export default function SellerRegister() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const updateSlab = (index: number, field: "max" | "points", value: string) => {
+        setSlabRules((prev) => {
+            const updated = [...prev];
+            updated[index][field] = value;
+            return updated;
+        });
+    };
+
+    const addSlab = () => {
+        const last = slabRules[slabRules.length - 1];
+
+        if (!last.max || !last.points) {
+            Alert.alert("Incomplete", "Please fill max amount & points first");
+            return;
+        }
+
+        setSlabRules((prev) => [
+            ...prev,
+            {
+                min: parseFloat(last.max),
+                max: "",
+                points: ""
+            }
+        ]);
+    };
+
+    const removeSlab = (index: number) => {
+        setSlabRules((prev) => prev.filter((_, i) => i !== index));
     };
 
     // Step 1: Account & Basic Information
@@ -608,7 +661,7 @@ export default function SellerRegister() {
                     value={formData.city}
                     onChangeText={(value) => updateFormData('city', value)}
                     mode="outlined"
-                    style={[styles.input, styles.halfInput]}
+                    style={[styles.input, styles.halfInput, { backgroundColor: theme.colors.surface }]}
                     outlineColor={theme.colors.outline}
                     activeOutlineColor={theme.colors.onSurface}
                     theme={{
@@ -625,7 +678,7 @@ export default function SellerRegister() {
                     value={formData.state}
                     onChangeText={(value) => updateFormData('state', value)}
                     mode="outlined"
-                    style={[styles.input, styles.halfInput]}
+                    style={[styles.input, styles.halfInput, { backgroundColor: theme.colors.surface }]}
                     outlineColor={theme.colors.outline}
                     activeOutlineColor={theme.colors.onSurface}
                     theme={{
@@ -646,7 +699,7 @@ export default function SellerRegister() {
                     onChangeText={(value) => updateFormData('pincode', value)}
                     mode="outlined"
                     keyboardType="numeric"
-                    style={[styles.input, styles.halfInput]}
+                    style={[styles.input, styles.halfInput, { backgroundColor: theme.colors.surface }]}
                     outlineColor={theme.colors.outline}
                     activeOutlineColor={theme.colors.onSurface}
                     theme={{
@@ -663,7 +716,7 @@ export default function SellerRegister() {
                     value={formData.country}
                     onChangeText={(value) => updateFormData('country', value)}
                     mode="outlined"
-                    style={[styles.input, styles.halfInput]}
+                    style={[styles.input, styles.halfInput, { backgroundColor: theme.colors.surface }]}
                     outlineColor={theme.colors.outline}
                     activeOutlineColor={theme.colors.onSurface}
                     theme={{
@@ -849,8 +902,31 @@ export default function SellerRegister() {
                 ))}
             </RadioButton.Group>
 
-            <TextInput
-                label="Default Points per Scan"
+
+            {/* Reward Type Section */}
+            <Text variant="bodyMedium" style={styles.sectionLabel}>Reward Type</Text>
+
+            <RadioButton.Group
+                value={formData.rewardType}
+                onValueChange={(value) => updateFormData('rewardType', value)}
+            >
+                <View style={styles.radioOption}>
+                    <RadioButton.Android value="default" color={accentColor} />
+                    <Text>Default (Fixed points per scan)</Text>
+                </View>
+
+                <View style={styles.radioOption}>
+                    <RadioButton.Android value="percentage" color={accentColor} />
+                    <Text>Percentage of payment</Text>
+                </View>
+
+                <View style={styles.radioOption}>
+                    <RadioButton.Android value="slab" color={accentColor} />
+                    <Text>Slab-based reward</Text>
+                </View>
+            </RadioButton.Group>
+            {formData.rewardType === 'default' && (<TextInput
+                label="Default (Flat) Points per Scan"
                 value={formData.defaultPoints}
                 onChangeText={(value) => updateFormData('defaultPoints', value)}
                 mode="outlined"
@@ -866,8 +942,189 @@ export default function SellerRegister() {
                         onSurfaceVariant: theme.colors.onSurfaceDisabled, // 👈 placeholder color source
                     },
                 }}
-            />
+            />)}
+            {formData.rewardType === 'percentage' && (
+                <TextInput
+                    label="Percentage (%)"
+                    value={formData.percentageValue}
+                    onChangeText={(value) => updateFormData('percentageValue', value)}
+                    mode="outlined"
+                    keyboardType="numeric"
+                    outlineColor={theme.colors.outline}
+                    activeOutlineColor={theme.colors.onSurface}
+                    left={<TextInput.Icon color={theme.colors.onSurface} icon="percent" />}
+                    style={[styles.input, { backgroundColor: theme.colors.surface }]}
+                    theme={{
+                        ...theme,
+                        colors: {
+                            ...theme.colors,
+                            onSurfaceVariant: theme.colors.onSurfaceDisabled, // 👈 placeholder color source
+                        },
+                    }}
+                />
+            )}
 
+
+            {formData.rewardType === "slab" && (
+                <View style={{ marginTop: 10 }}>
+                    <Text style={styles.sectionLabel}>Slab Rules</Text>
+
+                    {slabRules.map((rule, index) => (
+                        <View
+                            key={index}
+                            style={{
+                                marginBottom: 14,
+                                padding: 10,
+                                borderRadius: 10,
+                                borderWidth: 1,
+                                borderColor: outlineColor,
+                            }}
+                        >
+                            <TextInput
+                                label="Min Amount"
+                                value={String(rule.min)}
+                                mode="outlined"
+                                disabled
+                                style={[styles.input, { backgroundColor: theme.colors.surface }]}
+                                outlineColor={theme.colors.outline}
+                                activeOutlineColor={theme.colors.onSurface}
+                                theme={{
+                                    ...theme,
+                                    colors: {
+                                        ...theme.colors,
+                                        onSurfaceVariant: theme.colors.onSurfaceDisabled, // 👈 placeholder color source
+                                    },
+                                }}
+                            />
+
+                            <TextInput
+                                label="Max Amount"
+                                value={rule.max}
+                                onChangeText={(v) =>
+                                    updateSlab(index, "max", v)
+                                }
+                                mode="outlined"
+                                keyboardType="numeric"
+                                style={[styles.input, { backgroundColor: theme.colors.surface }]}
+                                outlineColor={theme.colors.outline}
+                                activeOutlineColor={theme.colors.onSurface}
+                                theme={{
+                                    ...theme,
+                                    colors: {
+                                        ...theme.colors,
+                                        onSurfaceVariant: theme.colors.onSurfaceDisabled, // 👈 placeholder color source
+                                    },
+                                }}
+                            />
+
+                            <TextInput
+                                label="Points"
+                                value={rule.points}
+                                onChangeText={(v) =>
+                                    updateSlab(index, "points", v)
+                                }
+                                mode="outlined"
+                                keyboardType="numeric"
+                                style={[styles.input, { backgroundColor: theme.colors.surface }]}
+                                outlineColor={theme.colors.outline}
+                                activeOutlineColor={theme.colors.onSurface}
+                                theme={{
+                                    ...theme,
+                                    colors: {
+                                        ...theme.colors,
+                                        onSurfaceVariant: theme.colors.onSurfaceDisabled, // 👈 placeholder color source
+                                    },
+                                }}
+                            />
+
+                            <View style={{ flexDirection: "row", marginTop: 8, gap: 8 }}>
+                                {slabRules.length > 1 && (
+                                    <Button
+                                        icon="delete"
+                                        variant="outlined"
+                                        onPress={() => removeSlab(index)}
+                                    >
+                                        Remove
+                                    </Button>
+                                )}
+
+                                {index === slabRules.length - 1 && (
+                                    <Button
+                                        icon="plus"
+                                        variant="contained"
+                                        onPress={addSlab}
+                                    >
+                                        Add Slab
+                                    </Button>
+                                )}
+                            </View>
+                        </View>
+                    ))}
+
+
+                </View>
+            )}
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                <TextInput
+                    label="Enter UPI ID"
+                    value={formData.newUpiId}
+                    onChangeText={(value) => updateFormData("newUpiId", value)}
+                    mode="outlined"
+                    autoCapitalize="none"
+                    style={[styles.input, { flex: 1, backgroundColor: theme.colors.surface }]}
+                    left={<TextInput.Icon icon="bank" color={theme.colors.onSurface} />}
+                    outlineColor={theme.colors.outline}
+                    activeOutlineColor={theme.colors.onSurface}
+                    theme={{
+                        ...theme,
+                        colors: {
+                            ...theme.colors,
+                            onSurfaceVariant: theme.colors.onSurfaceDisabled, // 👈 placeholder color source
+                        },
+                    }}
+                />
+
+                <IconButton
+                    icon="plus-circle"
+                    iconColor={accentColor}
+                    size={32}
+                    onPress={() => {
+                        if (!formData.newUpiId.trim()) {
+                            Alert.alert("UPI Required", "Please enter a valid UPI ID");
+                            return;
+                        }
+                        updateFormData("upiIds", [...formData.upiIds, formData.newUpiId.trim()]);
+                        updateFormData("newUpiId", "");
+                    }}
+                />
+            </View>
+
+            {formData.upiIds.length > 0 && (
+                <View style={{ marginTop: 8 }}>
+                    {formData.upiIds.map((upi, idx) => (
+                        <View key={idx} style={{ flexDirection: "row", alignItems: "center", marginBottom: 6 }}>
+                            <Chip
+                                style={{ backgroundColor: theme.colors.surfaceVariant, flex: 1 }}
+                                textStyle={{ color: theme.colors.onSurface }}
+                            >
+                                {upi}
+                            </Chip>
+
+                            <IconButton
+                                icon="delete"
+                                iconColor="red"
+                                size={20}
+                                onPress={() => {
+                                    updateFormData(
+                                        "upiIds",
+                                        formData.upiIds.filter((_, i) => i !== idx)
+                                    );
+                                }}
+                            />
+                        </View>
+                    ))}
+                </View>
+            )}
             <View style={styles.checkboxContainer}>
                 <Checkbox.Android
                     status={formData.acceptTerms ? 'checked' : 'unchecked'}
@@ -1031,7 +1288,7 @@ const styles = StyleSheet.create({
     },
     radioOption: {
         flexDirection: 'row',
-        alignItems: 'flex-start',
+        alignItems: 'center',
         marginBottom: AppStyles.spacing.sm,
     },
     radioText: {

@@ -22,10 +22,23 @@ export interface SellerSubscription {
 }
 export interface SellerRewards {
     default_points_value: number;
-    reward_points: number;
-    reward_description?: string;
-    reward_name?: string;
-}export interface SellerVerification {
+    offers?: {
+        reward_points: number;
+        reward_name: string;
+        reward_description: string;
+    }[];
+    percentage_value?: string;
+
+    reward_type?: string;
+    flat_points?: string;
+    slab_rules?: {
+        min: number;
+        max: number;
+        points: number;
+    }[];
+    upi_ids?: string[]
+}
+export interface SellerVerification {
     gst_number?: string | null;
     pan_number?: string | null;
     business_registration_number?: string | null;
@@ -115,24 +128,43 @@ export type UserPayload = {
     shopName: string;
     phone: string;
     password: string;
+
     latitude?: number | null;
     longitude?: number | null;
+
     businessType?: string;
     category?: string;
     description?: string;
     establishedYear?: number;
+
     street?: string;
     city?: string;
     state?: string;
     pincode?: string;
     country?: string;
+
     enableLocation?: boolean;
     locationRadius?: number;
+
     gstNumber?: string;
     panNumber?: string;
     businessRegistrationNumber?: string;
+
     qrCodeType?: string;
     defaultPoints?: number;
+
+    /** ⭐ REWARD SETTINGS */
+    rewardType?: string;
+    percentageValue?: number;
+    slabRules?: {
+        min: number;
+        max: number | null;
+        points: number;
+    }[];
+
+    /** ⭐ MULTIPLE UPI IDs */
+    upiIds?: string[];
+
     subscriptionTier?: string;
     acceptTerms?: boolean;
-}
+};

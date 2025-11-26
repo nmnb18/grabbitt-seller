@@ -37,9 +37,6 @@ export default function SellerGenerateQR() {
   const [qrMode, setQRMode] = useState<QRMode>(registeredQrType);
   const [hiddenCode, setHiddenCode] = useState("");
   const [expiryHours, setExpiryHours] = useState("24");
-  const [pointValue, setPointsValue] = useState(
-    sellerProfile?.rewards?.default_points_value?.toString() ?? "50"
-  );
 
   const isFree = tier === "free";
 
@@ -111,7 +108,6 @@ export default function SellerGenerateQR() {
 
         const payload: any = {
           qr_code_type: qrMode,
-          points_value: parseInt(pointValue, 10) || 0,
         };
 
         if (qrMode === "dynamic") {
@@ -290,7 +286,7 @@ export default function SellerGenerateQR() {
                 </HelperText>
               </>
             )}
-            <TextInput
+            {/* <TextInput
               label="Points Value"
               value={pointValue}
               onChangeText={setPointsValue}
@@ -317,7 +313,7 @@ export default function SellerGenerateQR() {
             <HelperText type="info" style={[styles.helperText, { color: theme.colors.onSurface }]}>
               This defines how many loyalty points a customer earns for scanning
               this QR.
-            </HelperText>
+            </HelperText> */}
             {qrMode === "static_hidden" && (
               <>
                 <TextInput

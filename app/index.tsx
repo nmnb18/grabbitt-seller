@@ -35,7 +35,7 @@ export default function Index() {
   useEffect(() => {
     const interval = setInterval(() => {
       refreshToken();
-    }, 45 * 60 * 1000); // every 45 min
+    }, 30 * 60 * 1000); // every 30 min
     return () => clearInterval(interval);
   }, []);
 
