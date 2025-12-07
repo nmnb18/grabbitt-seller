@@ -1,6 +1,7 @@
 import AccountInformation from '@/components/profile/account-information';
 import BusinessInformation from '@/components/profile/business-information';
 import LocationDetails from '@/components/profile/location-details';
+import MediaInformation from '@/components/profile/media-information';
 import RewardsSettings from '@/components/profile/reward-settings';
 import VerificationDetails from '@/components/profile/verification-details';
 import { Button as CustomButton } from '@/components/ui/paper-button';
@@ -129,6 +130,7 @@ export default function SellerProfileSetup() {
         <AccountInformation onOpenChangePassword={() => setShowPasswordSheet(true)} />
         <BusinessInformation />
         <LocationDetails />
+        <MediaInformation />
         <VerificationDetails />
         <RewardsSettings />
 

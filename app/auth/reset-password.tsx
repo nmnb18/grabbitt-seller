@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/paper-button';
 import AuthScreenWrapper from '@/components/wrappers/authScreenWrapper';
 import { useTheme, useThemeColor } from '@/hooks/use-theme-color';
 import api from '@/services/axiosInstance';
+import { isValidPassword } from '@/utils/helper';
 import { AppStyles } from '@/utils/theme';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -24,9 +25,7 @@ export default function ResetPasswordScreen() {
     const [loading, setLoading] = useState(false);
 
     const theme = useTheme();
-    const backgroundColor = useThemeColor({}, 'background');
     const outlineColor = useThemeColor({}, 'outline');
-    const accentColor = useThemeColor({}, 'accent');
 
     useEffect(() => {
         if (!oobCode) {
@@ -39,6 +38,13 @@ export default function ResetPasswordScreen() {
     const handleReset = async () => {
         if (!password || !confirm)
             return Alert.alert('Error', 'All fields are required.');
+        if (!isValidPassword(password)) {
+            Alert.alert(
+                'Weak Password',
+                'Password must be at least 8 characters with 1 uppercase, 1 lowercase, 1 number and 1 special character.'
+            );
+            return false;
+        }
 
         if (password !== confirm)
             return Alert.alert('Error', 'Passwords do not match.');

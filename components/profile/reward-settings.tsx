@@ -1,5 +1,6 @@
 import api from '@/services/axiosInstance';
 import { useAuthStore } from '@/store/authStore';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React, { useMemo, useState } from 'react';
 import {
     ActivityIndicator,
@@ -181,7 +182,7 @@ export default function RewardsSettings() {
             setUpiError(err);
             return;
         }
-        const trimmed = newUpi.trim();
+        const trimmed = newUpi.trim().toLowerCase();
         setUpiIds((prev) => [...prev, trimmed]);
         setNewUpi("");
         setUpiError(null);
@@ -251,6 +252,7 @@ export default function RewardsSettings() {
                         percentage_value: percentageValue ? Number(percentageValue) : 0,
                         slab_rules: numericSlabs,
                         upi_ids: upiIds,
+                        payment_reward_enabled: upiIds?.length > 0
                     },
                 }
             );
@@ -387,7 +389,7 @@ export default function RewardsSettings() {
                             {[
                                 { label: "Reward Type", value: rewardTypeLabel(rewardType) },
                                 rewardType === "default"
-                                    ? { label: "", value: pointsPerVisit || "—" }
+                                    ? { label: "Points per scan", value: pointsPerVisit || "—" }
                                     : null,
                                 rewardType === "percentage"
                                     ? { label: "Percentage (%)", value: percentageValue || "—" }
@@ -439,16 +441,23 @@ export default function RewardsSettings() {
                                         const min = index === 0 ? 0 : prevMax + 1;
                                         const isLast = index === slabRules.length - 1;
                                         return (
-                                            <Text
-                                                key={index}
-                                                style={{
-                                                    fontSize: 14,
-                                                    color: theme.colors.onSurface,
-                                                }}
-                                            >
-                                                {isLast ? `₹${min}+ → ${s.points || "…"} pts` : `₹${min} - ₹${s.max || "…"} → ${s.points || "…"} pts`}
+                                            <View key={index} style={{
+                                                flexDirection: 'row',
+                                                paddingBottom: 4,
+                                                gap: 8
+                                            }}>
+                                                <MaterialCommunityIcons name="hand-pointing-right" color={theme.colors.onSurface} />
+                                                <Text
+                                                    key={index}
+                                                    style={{
+                                                        fontSize: 14,
+                                                        color: theme.colors.onSurface,
 
-                                            </Text>
+                                                    }}
+                                                >
+                                                    {isLast ? `₹${min}+ → ${s.points || "…"} pts` : `₹${min} - ₹${s.max || "…"} → ${s.points || "…"} pts`}
+
+                                                </Text></View>
                                         );
                                     })}
                                 </View>
@@ -466,7 +475,7 @@ export default function RewardsSettings() {
                                 </Text>
                                 {offers.map((s, index) => {
                                     return (
-                                        <View key={index}>
+                                        <View key={index} style={[styles.offers, { borderColor: theme.colors.outline }]}>
                                             <Text
                                                 style={{
                                                     fontSize: 14,
@@ -621,9 +630,7 @@ export default function RewardsSettings() {
                                             },
                                         }}
                                     />
-                                    <HelperText type="info" style={{ color: theme.colors.onSurface }}>
-                                        Example: 5 means 5% of bill amount converted to points.
-                                    </HelperText>
+
                                 </>
                             )}
 
@@ -648,6 +655,9 @@ export default function RewardsSettings() {
                                     />
                                     <HelperText type="info" style={{ color: theme.colors.onSurface }}>
                                         Example: 5 means 5% of bill amount converted to points.
+                                    </HelperText>
+                                    <HelperText type="info" style={{ color: theme.colors.onSurface }}>
+                                        You must generate dynamic qr everytime if user paying through cash, card or scan payment qr from different app.
                                     </HelperText>
                                 </>
                             )}
@@ -762,6 +772,9 @@ export default function RewardsSettings() {
                                             </Card>
                                         );
                                     })}
+                                    <HelperText type="info" style={{ color: theme.colors.onSurface }}>
+                                        You must generate dynamic qr everytime if user paying through cash, card or scan payment qr from different app.
+                                    </HelperText>
                                 </View>
                             )}
 
@@ -864,7 +877,7 @@ export default function RewardsSettings() {
                                                         buttonColor={theme.colors.primary}
                                                         textColor="#fff"
                                                     >
-                                                        Add Slab
+                                                        Add Offer
                                                     </Button>
                                                 )}
                                             </View>
@@ -985,6 +998,11 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "baseline",
+    },
+    offers: {
+        paddingBlock: 8,
+        borderBottomWidth: 1,
+        borderStyle: 'dashed'
     },
     cardTitle: {
         fontWeight: "600",

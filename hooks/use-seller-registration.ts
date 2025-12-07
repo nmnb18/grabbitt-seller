@@ -1,5 +1,5 @@
 import { useAuthStore } from '@/store/authStore';
-import { isValidPassword } from '@/utils/helper';
+import { isValidEmail, isValidPassword } from '@/utils/helper';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Alert } from 'react-native';
@@ -117,6 +117,20 @@ export const useSellerRegistration = () => {
                     );
                     return false;
                 }
+                if (!isValidEmail(formData.email)) {
+                    Alert.alert(
+                        'Error',
+                        'Please enter valid email.'
+                    );
+                    return false;
+                }
+                if (!isValidPassword(formData.phone)) {
+                    Alert.alert(
+                        'Error',
+                        'Please enter valid 10 digit phone number.'
+                    );
+                    return false;
+                }
                 return true;
 
             case 2:
@@ -215,7 +229,7 @@ export const useSellerRegistration = () => {
                             points: Number(r.points)
                         }))
                     : [],
-                upiIds: formData.upiIds
+                upi_ids: formData.upiIds
             };
 
             await register(payload);

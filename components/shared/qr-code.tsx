@@ -1,4 +1,5 @@
 import { useTheme } from "@/hooks/use-theme-color";
+import { SellerRewards } from "@/types/auth";
 import { AppStyles, Colors } from "@/utils/theme";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Image, StyleSheet, View } from "react-native";
@@ -6,8 +7,9 @@ import { Card, Chip, Text } from "react-native-paper";
 interface QrCodeProps {
   qrMode: string;
   qrData: any;
+  rewards: SellerRewards | undefined
 }
-export function QrCode({ qrMode, qrData }: QrCodeProps) {
+export function QrCode({ qrMode, qrData, rewards }: QrCodeProps) {
   const theme = useTheme();
   return (
     <Card style={[styles.qrCard, { backgroundColor: theme.colors.surface }]}>
@@ -27,9 +29,28 @@ export function QrCode({ qrMode, qrData }: QrCodeProps) {
           <Text variant="bodySmall">
             QR Code ID: {qrData?.qr_id?.substring(0, 8)}...
           </Text>
-          <Text variant="bodySmall">
-            Points per scan: {qrData?.points_value}
-          </Text>
+          {rewards?.reward_type === 'default' && <Text variant="bodySmall" >
+            Points per scan: {rewards?.default_points_value}
+          </Text>}
+          {rewards?.reward_type === 'percentage' && <Text variant="bodySmall" >
+            Customer will earn {rewards?.percentage_value}% of order amount.
+          </Text>}
+          {rewards?.reward_type === 'slab' &&
+            rewards?.slab_rules?.map((s, index) => {
+
+              const isLast = rewards?.slab_rules?.length && index === rewards?.slab_rules?.length - 1;
+              return (
+                <Text
+                  key={index}
+                  style={{
+                    fontSize: 14,
+                    color: theme.colors.onSurface,
+                  }}
+                >
+                  <MaterialCommunityIcons name="hand-pointing-right" /> {isLast ? `Customer will earn ${s.points || "…"} pts for order value more than ₹${s.max}` : `Customer will earn ${s.points || "…"} pts for order value smaller than ₹${s.max}`}
+                </Text>
+              );
+            })}
           {qrMode === "dynamic" && qrData?.expires_at && (
             <Text variant="bodySmall">
               Expires:{" "}

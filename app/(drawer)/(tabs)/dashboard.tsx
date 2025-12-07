@@ -129,7 +129,7 @@ function SellerDashboard() {
 
       const response = await api.get(`/sellerStats`);
       const { data } = response;
-
+      console.log(data);
       if (!data?.success) {
         Alert.alert("Error", data?.error || "Failed to load dashboard stats");
         return;
@@ -270,7 +270,7 @@ function SellerDashboard() {
             </Card>
           )}
 
-          {activeQR && <QrCode qrMode={activeQR.qr_type} qrData={activeQR} />}
+          {activeQR && <QrCode qrMode={activeQR.qr_type} qrData={activeQR} rewards={sellerProfile?.rewards} />}
         </View>
 
         <View style={styles.bottomSpacer} />

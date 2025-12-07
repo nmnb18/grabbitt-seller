@@ -64,7 +64,7 @@ export const RewardTypeSection: React.FC<RewardTypeSectionProps> = ({
 
     const addUpiId = () => {
         if (!newUpiId.trim()) return;
-        onUpiIdsChange([...upiIds, newUpiId.trim()]);
+        onUpiIdsChange([...upiIds, newUpiId.trim().toLowerCase()]);
         onNewUpiIdChange("");
     };
 

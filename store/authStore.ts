@@ -140,7 +140,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       const token = idToken || user?.idToken;
       set({ loading: true });
       await axios.post(
-        `${API_URL}/logoutSeller`,
+        `${API_URL}/logout`,
         {
           uid,
         },

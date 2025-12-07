@@ -32,11 +32,13 @@ export default function SellerGenerateQR() {
 
   const registeredQrType: QRMode =
     (sellerProfile?.qr_settings?.qr_code_type as QRMode) ?? "dynamic";
+  const rewardType = sellerProfile?.rewards?.reward_type ?? 'default';
   const tier = sellerProfile?.subscription?.tier ?? "free";
 
   const [qrMode, setQRMode] = useState<QRMode>(registeredQrType);
   const [hiddenCode, setHiddenCode] = useState("");
-  const [expiryHours, setExpiryHours] = useState("24");
+  const [amount, setAmount] = useState("");
+  const [expiryMins, setExpiryMins] = useState("60");
 
   const isFree = tier === "free";
 
@@ -44,6 +46,16 @@ export default function SellerGenerateQR() {
     // basic validation
     if (qrMode === "static_hidden" && !hiddenCode) {
       Alert.alert("Error", "Please enter a hidden code");
+      return;
+    }
+
+    if (qrMode === 'static' && (rewardType === 'percentage' || rewardType === 'slab')) {
+      Alert.alert("Error", "As your reward type is either percentage basis or as per slab, please generate dynamic QR with expiry time and exact amount of order!");
+      return;
+    }
+
+    if (qrMode === 'dynamic' && (!expiryMins || !amount)) {
+      Alert.alert("Error", "Please enter expiry time and order amount!");
       return;
     }
 
@@ -112,8 +124,9 @@ export default function SellerGenerateQR() {
 
         if (qrMode === "dynamic") {
           // label is "Expiry Time (hours)" so convert to minutes for backend
-          const hours = parseInt(expiryHours, 10) || 24;
-          payload.expires_in_minutes = hours * 60;
+          const mins = parseInt(expiryMins, 10) || 60;
+          payload.expires_in_minutes = mins;
+          payload.amount = parseInt(amount);
         } else if (qrMode === "static_hidden") {
           // optional: send hidden_code (backend currently auto-generates its own, but this won't hurt)
           payload.hidden_code = hiddenCode;
@@ -256,9 +269,9 @@ export default function SellerGenerateQR() {
             {qrMode === "dynamic" && (
               <>
                 <TextInput
-                  label="Expiry Time (hours)"
-                  value={expiryHours}
-                  onChangeText={setExpiryHours}
+                  label="Expiry Time (mins)"
+                  value={expiryMins}
+                  onChangeText={setExpiryMins}
                   mode="outlined"
                   keyboardType="numeric"
                   style={[
@@ -284,36 +297,37 @@ export default function SellerGenerateQR() {
                     ? "For free tier, QR codes expire automatically in 24 hours."
                     : "Set how long your dynamic QR remains active before expiring."}
                 </HelperText>
+                <TextInput
+                  label="Order Amount"
+                  value={amount}
+                  onChangeText={setAmount}
+                  mode="outlined"
+                  keyboardType="numeric"
+                  style={[
+                    styles.input,
+                    {
+                      color: theme.colors.onSurface,
+                      backgroundColor: theme.colors.surface,
+                    },
+                  ]}
+                  disabled={isFree}
+                  left={<TextInput.Icon icon="currency-rupee" color={theme.colors.onSurface} />}
+                  outlineColor={theme.colors.outline}
+                  activeOutlineColor={theme.colors.onSurface}
+                  theme={{
+                    colors: {
+                      primary: theme.colors.primary,      // focused label color
+                      onSurfaceVariant: theme.colors.onSurface, // unfocused label color
+                    },
+                  }}
+                />
+                <HelperText type="info" style={[styles.helperText, { color: theme.colors.onSurface }]}>
+                  This defines exact order amount.
+                </HelperText>
               </>
+
             )}
-            {/* <TextInput
-              label="Points Value"
-              value={pointValue}
-              onChangeText={setPointsValue}
-              mode="outlined"
-              keyboardType="numeric"
-              style={[
-                styles.input,
-                {
-                  color: theme.colors.onSurface,
-                  backgroundColor: theme.colors.surface,
-                },
-              ]}
-              disabled={isFree}
-              left={<TextInput.Icon icon="star-circle" color={theme.colors.onSurface} />}
-              outlineColor={theme.colors.outline}
-              activeOutlineColor={theme.colors.onSurface}
-              theme={{
-                colors: {
-                  primary: theme.colors.primary,      // focused label color
-                  onSurfaceVariant: theme.colors.onSurface, // unfocused label color
-                },
-              }}
-            />
-            <HelperText type="info" style={[styles.helperText, { color: theme.colors.onSurface }]}>
-              This defines how many loyalty points a customer earns for scanning
-              this QR.
-            </HelperText> */}
+
             {qrMode === "static_hidden" && (
               <>
                 <TextInput
@@ -353,11 +367,14 @@ export default function SellerGenerateQR() {
             >
               Generate QR Code
             </Button>
+            <HelperText type="info" style={[styles.helperText, { color: theme.colors.onSurface, textAlign: "center" }]}>
+              Reward type for this QR: {sellerProfile?.rewards.reward_type?.toUpperCase()}.
+            </HelperText>
           </Card.Content>
         </Card>
 
         {/* Active QR Preview (from shared hook) */}
-        {activeQR && <QrCode qrMode={activeQR.qr_type} qrData={activeQR} />}
+        {activeQR && <QrCode qrMode={activeQR.qr_type} qrData={activeQR} rewards={sellerProfile?.rewards} />}
 
         {/* Usage Instructions */}
         <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>

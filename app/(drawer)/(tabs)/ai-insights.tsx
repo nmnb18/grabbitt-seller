@@ -1,13 +1,11 @@
 import SellerFreeAIInsights from '@/components/ai-insights/free-analytics';
 import SellerProAnalyticsInsights from '@/components/ai-insights/pro-analytics';
 import { useTheme } from '@/hooks/use-theme-color';
-import { useAuthStore } from '@/store/authStore';
 import React, { useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Text } from 'react-native-paper';
 
 export default function AnalyticsScreen() {
-  const { user } = useAuthStore();
   const theme = useTheme();
 
   const [tab, setTab] = useState<'free' | 'pro'>('free');
