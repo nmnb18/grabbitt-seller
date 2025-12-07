@@ -1,15 +1,20 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { Card, Text } from 'react-native-paper';
 
 import { useTheme } from '@/hooks/use-theme-color';
-import api from '@/services/axiosInstance';
-import { useAuthStore } from '@/store/authStore';
-import ProAnalyticsSkeleton from '../skeletons/pro-analytics';
 import { Button } from '../ui/paper-button';
-import withSkeletonTransition from '../wrappers/withSkeletonTransition';
+
+type SellerProAnalyticsInsightsProps = {
+    data: AdvancedAnalytics | null;
+    refreshing: boolean;
+    loading: boolean;
+    error: string | null;
+    tier: "free" | "pro" | "premium";
+    onRefresh: () => void;
+};
 
 type DayBucket = {
     date: string; // "YYYY-MM-DD"
@@ -70,45 +75,19 @@ type AdvancedAnalytics = {
     export_available: boolean;
 };
 
-function SellerProAnalyticsInsights() {
+export default function SellerProAnalyticsInsights({
+    data,
+    refreshing,
+    error,
+    tier,
+    onRefresh
+}: SellerProAnalyticsInsightsProps) {
     const theme = useTheme();
     const styles = React.useMemo(() => createStyles(theme), [theme]);
 
     const router = useRouter();
-    const { user } = useAuthStore();
-    const idToken = user?.idToken;
-    const tier = user?.user?.seller_profile?.subscription.tier || 'free';
-
-    const [data, setData] = useState<AdvancedAnalytics | null>(null);
-    const [refreshing, setRefreshing] = useState(false);
-    const [error, setError] = useState<string | null>(null);
 
     const isFree = tier === 'free';
-
-    const fetchAdvancedAnalytics = async () => {
-        try {
-            setError(null);
-            const resp = await api.get('/sellerAdvancedAnalytics', {
-                headers: { Authorization: `Bearer ${idToken}` },
-            });
-            setData(resp.data.data);
-        } catch (err: any) {
-            console.log('Pro analytics error', err.response?.data || err.message);
-            setError(err.response?.data?.error || 'Failed to load advanced analytics');
-        } finally {
-            setRefreshing(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchAdvancedAnalytics();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    const onRefresh = () => {
-        setRefreshing(true);
-        fetchAdvancedAnalytics();
-    };
 
     // compute max for 7d mini-chart
     const maxScans7 = useMemo(
@@ -487,7 +466,7 @@ function prettyQrLabel(type: string) {
     if (type === 'dynamic') return 'Dynamic QR';
     if (type === 'static') return 'Static QR';
     if (type === 'static_hidden') return 'Static Hidden QR';
-    return type;
+    return type.toUpperCase();
 }
 
 const createStyles = (theme: any) =>
@@ -687,6 +666,7 @@ const createStyles = (theme: any) =>
         qrLabel: {
             fontSize: 13,
             color: theme.colors.onSurface,
+            textTransform: 'capitalize'
         },
         qrValue: {
             fontSize: 12,
@@ -765,7 +745,3 @@ const createStyles = (theme: any) =>
             fontWeight: '600',
         },
     });
-
-export default withSkeletonTransition(ProAnalyticsSkeleton)(
-    SellerProAnalyticsInsights
-);

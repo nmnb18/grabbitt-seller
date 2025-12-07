@@ -1,5 +1,5 @@
-import SellerFreeAIInsights from '@/components/ai-insights/free-analytics';
-import SellerProAnalyticsInsights from '@/components/ai-insights/pro-analytics';
+import SellerFreeAIInsightsContainer from '@/components/ai-insights/free-analytics-container';
+import SellerProAnalyticsInsightsContainer from '@/components/ai-insights/pro-analytics-container';
 import { useTheme } from '@/hooks/use-theme-color';
 import React, { useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
@@ -76,7 +76,7 @@ export default function AnalyticsScreen() {
       </View>
 
       {/* CONTENT */}
-      {tab === 'free' ? <SellerFreeAIInsights /> : <SellerProAnalyticsInsights />}
+      {tab === 'free' ? <SellerFreeAIInsightsContainer /> : <SellerProAnalyticsInsightsContainer />}
 
     </View>
   );

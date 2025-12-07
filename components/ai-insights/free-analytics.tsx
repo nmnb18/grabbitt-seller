@@ -1,8 +1,6 @@
 import { useTheme } from '@/hooks/use-theme-color';
-import api from '@/services/axiosInstance';
-import { useAuthStore } from '@/store/authStore';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
     RefreshControl,
     ScrollView,
@@ -13,8 +11,14 @@ import {
     Card,
     Text,
 } from 'react-native-paper';
-import FreeAnalyticsSkeleton from '../skeletons/free-analytics';
-import withSkeletonTransition from '../wrappers/withSkeletonTransition';
+
+type SellerFreeAIInsightsProps = {
+    stats: SellerStats | null;
+    loading: boolean;
+    refreshing: boolean;
+    error: string | null;
+    onRefresh: () => void;
+};
 
 type TodayStats = {
     scans: number;
@@ -45,43 +49,16 @@ type SellerStats = {
     locked_features?: boolean;
 };
 
-function SellerFreeAIInsights() {
+export default function SellerFreeAIInsights({
+    stats,
+    refreshing,
+    error,
+    onRefresh,
+}: SellerFreeAIInsightsProps) {
     const theme = useTheme();
-    const { user } = useAuthStore();
-    const idToken = user?.idToken;
-
-    const [stats, setStats] = useState<SellerStats | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [refreshing, setRefreshing] = useState(false);
-    const [error, setError] = useState<string | null>(null);
 
     const isFree = stats?.subscription_tier === 'free' || !stats?.subscription_tier;
 
-    const fetchStats = async () => {
-        try {
-            setError(null);
-            const resp = await api.get('/sellerStats', {
-                headers: { Authorization: `Bearer ${idToken}` },
-            });
-            setStats(resp.data.data);
-        } catch (err: any) {
-            console.log('Analytics fetch error', err.response?.data || err.message);
-            setError(err.response?.data?.error || 'Failed to load analytics');
-        } finally {
-            setLoading(false);
-            setRefreshing(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchStats();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    const onRefresh = () => {
-        setRefreshing(true);
-        fetchStats();
-    };
 
     return (
         <ScrollView
@@ -572,5 +549,3 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
 });
-
-export default withSkeletonTransition(FreeAnalyticsSkeleton)(SellerFreeAIInsights);
