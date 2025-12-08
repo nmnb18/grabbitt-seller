@@ -35,7 +35,7 @@ export const PreferencesStep: React.FC<PreferencesStepProps> = ({
             >
                 {QR_CODE_TYPES.map(type => (
                     <View key={type.value} style={styles.radioOption}>
-                        <RadioButton.Android value={type.value} color={accentColor} />
+                        <RadioButton.Android value={type.value} color={accentColor} disabled={type.disabled} />
                         <View style={styles.radioText}>
                             <Text variant="bodyLarge">{type.label}</Text>
                             <Text variant="bodySmall" style={[styles.helperText, { color: accentColor }]}>

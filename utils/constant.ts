@@ -31,8 +31,8 @@ export const CATEGORIES = {
 };
 
 export const QR_CODE_TYPES = [
-    { value: 'dynamic', label: 'Dynamic QR', description: 'Expires after use' },
-    { value: 'static', label: 'Static QR', description: 'Once per day per customer' },
+    { value: 'dynamic', label: 'Dynamic QR', description: 'Expires after use', disabled: true, selected: false },
+    { value: 'static', label: 'Static QR', description: 'Once per day per customer', disabled: false, selected: true },
     // { value: 'static_hidden', label: 'Static with Hidden Code', description: 'For product packaging' },
 ];
 

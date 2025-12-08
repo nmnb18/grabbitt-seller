@@ -230,8 +230,7 @@ export default function SellerDashboard({
                             </Button>
                         </Card>
                     )}
-
-                    {activeQR && <QrCode qrMode={activeQR.qr_type} qrData={activeQR} rewards={sellerProfile?.rewards} />}
+                    {activeQR && <QrCode qrData={activeQR} rewards={sellerProfile?.rewards} />}
                 </View>
 
                 <View style={styles.bottomSpacer} />
@@ -307,4 +306,5 @@ const styles = StyleSheet.create({
     actionTextContainer: { flex: 1 },
     actionTitle: { fontWeight: "600", marginBottom: 4 },
     actionSubtitle: { opacity: 0.8 },
+
 });

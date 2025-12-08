@@ -2,14 +2,13 @@
 import api from '@/services/axiosInstance';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-export type QRMode = 'dynamic' | 'static' | 'static_hidden';
+export type QRMode = 'dynamic' | 'static' | 'multiple';
 
 export interface ActiveQR {
     qr_id: string;
     qr_type: QRMode;
     qr_code_base64: string;
     expires_at?: any;
-    hidden_code?: string | null;
     status?: string;
     [key: string]: any;
 }
@@ -20,16 +19,18 @@ interface UseSellerQROptions {
 }
 
 export function useSellerQR(options?: UseSellerQROptions) {
-    const [activeQR, setActiveQR] = useState<ActiveQR | null>(null);
+    const [activeQR, setActiveQR] = useState<ActiveQR[]>([]);
     const [loadingQR, setLoadingQR] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const pollInterval = options?.pollIntervalMs ?? 60000;
 
-    // track interval
-    const intervalRef = useRef<NodeJS.Timeout | null | number>(null);
+    // ✅ track interval
+    const intervalRef = useRef<NodeJS.Timeout | number | null>(null);
 
-    // --- Fetch active QR ---
+    // ====================================================
+    // ✅ FETCH ACTIVE QRs (MULTIPLE)
+    // ====================================================
     const fetchActiveQR = useCallback(async () => {
         try {
             setError(null);
@@ -37,14 +38,14 @@ export function useSellerQR(options?: UseSellerQROptions) {
 
             const resp = await api.get('/getActiveQR');
 
-            if (resp.status === 200 && resp.data?.success && resp.data.data) {
+            if (resp.status === 200 && resp.data?.success && Array.isArray(resp.data.data)) {
                 setActiveQR(resp.data.data);
             } else {
-                setActiveQR(null);
+                setActiveQR([]);
             }
         } catch (err: any) {
             if (err?.response?.status === 204) {
-                setActiveQR(null);
+                setActiveQR([]);
             } else {
                 setError(err?.response?.data?.error || 'Failed to load QR');
             }
@@ -53,9 +54,11 @@ export function useSellerQR(options?: UseSellerQROptions) {
         }
     }, []);
 
-    // --- Smart Poll Start/Stop ---
+    // ====================================================
+    // ✅ SMART POLLING CONTROL
+    // ====================================================
     const startPolling = useCallback(() => {
-        if (intervalRef.current) return; // already polling
+        if (intervalRef.current) return;
 
         intervalRef.current = setInterval(() => {
             fetchActiveQR();
@@ -64,57 +67,56 @@ export function useSellerQR(options?: UseSellerQROptions) {
 
     const stopPolling = useCallback(() => {
         if (intervalRef.current) {
-            clearInterval(intervalRef.current);
+            clearInterval(intervalRef.current as any);
             intervalRef.current = null;
         }
     }, []);
 
-    // --- Start initial load ---
+    // ====================================================
+    // ✅ INITIAL LOAD
+    // ====================================================
     useEffect(() => {
         if (options?.autoLoad !== false) {
             fetchActiveQR();
         }
-        return () => stopPolling(); // cleanup
+
+        return () => stopPolling();
     }, []);
 
-    // --- Decide when to poll ---
+    // ====================================================
+    // ✅ DYNAMIC QR EXPIRY POLLING (ARRAY SAFE)
+    // ====================================================
     useEffect(() => {
-        stopPolling(); // reset first
+        stopPolling();
 
-        if (!activeQR) {
-            return;
-        }
+        if (!activeQR.length) return;
 
-        if (activeQR.qr_type !== 'dynamic') {
-            return;
-        }
+        // ✅ find if ANY dynamic QR exists
+        const dynamicQR = activeQR.find((qr) => qr.qr_type === 'dynamic' && qr.expires_at);
 
-        // For dynamic QR → check if expired
-        const expiresAt = activeQR.expires_at
-            ? new Date(activeQR.expires_at)
-            : null;
+        if (!dynamicQR) return;
 
-        if (!expiresAt) {
-            return;
-        }
+        const expiresAt = dynamicQR.expires_at?._seconds
+            ? new Date(dynamicQR.expires_at._seconds * 1000)
+            : new Date(dynamicQR.expires_at);
 
-        // If already expired → stop
         if (expiresAt.getTime() <= Date.now()) {
-            setActiveQR(null);
+            fetchActiveQR(); // refresh expired QR
             return;
         }
 
-        // Otherwise → start polling
         startPolling();
 
         return () => stopPolling();
-    }, [activeQR]);
+    }, [activeQR, fetchActiveQR, startPolling, stopPolling]);
 
-    // --- Create QR ---
+    // ====================================================
+    // ✅ CREATE QR
+    // ====================================================
     const generateQR = useCallback(
         async (payload: any) => {
             const resp = await api.post('/generateQRCode', payload);
-            await fetchActiveQR(); // refresh active QR
+            await fetchActiveQR();
             return resp;
         },
         [fetchActiveQR]

@@ -36,26 +36,27 @@ export default function SellerGenerateQR() {
   const tier = sellerProfile?.subscription?.tier ?? "free";
 
   const [qrMode, setQRMode] = useState<QRMode>(registeredQrType);
-  const [hiddenCode, setHiddenCode] = useState("");
   const [amount, setAmount] = useState("");
   const [expiryMins, setExpiryMins] = useState("60");
+  const [rewardPoints, setRewardPoints] = useState("100");
 
   const isFree = tier === "free";
 
   const handleGenerateQR = async () => {
     // basic validation
-    if (qrMode === "static_hidden" && !hiddenCode) {
-      Alert.alert("Error", "Please enter a hidden code");
-      return;
-    }
 
     if (qrMode === 'static' && (rewardType === 'percentage' || rewardType === 'slab')) {
-      Alert.alert("Error", "As your reward type is either percentage basis or as per slab, please generate dynamic QR with expiry time and exact amount of order!");
+      Alert.alert("Error", "As your reward type is either percentage basis or as per slab, please generate dynamic QR with expiry time and exact amount of order or generate multiple QR with amount and points!");
       return;
     }
 
     if (qrMode === 'dynamic' && (!expiryMins || !amount)) {
       Alert.alert("Error", "Please enter expiry time and order amount!");
+      return;
+    }
+
+    if (qrMode === 'multiple' && (!rewardPoints || !amount)) {
+      Alert.alert("Error", "Please enter reward points and amount!");
       return;
     }
 
@@ -105,51 +106,8 @@ export default function SellerGenerateQR() {
       }
     }
 
-    // Pro: only registered QR type
-    if (tier === "pro" && qrMode !== qrTypeFromProfile) {
-      Alert.alert(
-        "Plan Restriction",
-        `You can only generate ${qrTypeFromProfile.toUpperCase()} QRs in your current Pro plan.`
-      );
-      return;
-    }
-
-    const proceedGenerate = async () => {
-      try {
-        setLoading(true);
-
-        const payload: any = {
-          qr_code_type: qrMode,
-        };
-
-        if (qrMode === "dynamic") {
-          // label is "Expiry Time (hours)" so convert to minutes for backend
-          const mins = parseInt(expiryMins, 10) || 60;
-          payload.expires_in_minutes = mins;
-          payload.amount = parseInt(amount);
-        } else if (qrMode === "static_hidden") {
-          // optional: send hidden_code (backend currently auto-generates its own, but this won't hurt)
-          payload.hidden_code = hiddenCode;
-        }
-
-        await generateQR(payload);
-
-        Alert.alert("Success", "QR code generated successfully!");
-      } catch (error: any) {
-        console.error("Generate QR error:", error);
-        Alert.alert(
-          "Error",
-          error?.response?.data?.detail ||
-          error?.response?.data?.error ||
-          "Failed to generate QR code"
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
     // Pro/Premium: if there is already an active QR, confirm overwrite
-    if (activeQR && (tier === "pro" || tier === "premium")) {
+    if (activeQR && (tier === "pro" || tier === "premium") && qrMode !== 'multiple') {
       Alert.alert(
         "Replace Active QR?",
         "You already have an active QR. Creating a new one will deactivate the previous QR. Do you want to proceed?",
@@ -163,14 +121,49 @@ export default function SellerGenerateQR() {
     }
   };
 
+  const proceedGenerate = async () => {
+    try {
+      setLoading(true);
+
+      const payload: any = {
+        qr_code_type: qrMode,
+      };
+
+      if (qrMode === "dynamic") {
+        // label is "Expiry Time (hours)" so convert to minutes for backend
+        const mins = parseInt(expiryMins, 10) || 60;
+        payload.expires_in_minutes = mins;
+        payload.amount = parseInt(amount);
+      } else if (qrMode === "multiple") {
+        // optional: send hidden_code (backend currently auto-generates its own, but this won't hurt)
+        payload.amount = parseInt(amount);
+        payload.points = parseInt(rewardPoints)
+      }
+
+      await generateQR(payload);
+
+      Alert.alert("Success", "QR code generated successfully!");
+    } catch (error: any) {
+      console.error("Generate QR error:", error);
+      Alert.alert(
+        "Error",
+        error?.response?.data?.detail ||
+        error?.response?.data?.error ||
+        "Failed to generate QR code"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const getModeDescription = () => {
     switch (qrMode) {
       case "dynamic":
         return "Expires after the set time. Best for temporary campaigns.";
       case "static":
         return "Never expires. Can be scanned multiple times (once per day per user).";
-      case "static_hidden":
-        return "Never expires. Requires a hidden code for extra security.";
+      case "multiple":
+        return "Never expires. Rewards based on points and amount.";
       default:
         return "";
     }
@@ -219,6 +212,11 @@ export default function SellerGenerateQR() {
                   value: "static",
                   label: "Static",
                   icon: "qrcode",
+                },
+                {
+                  value: "multiple",
+                  label: "Multiple",
+                  icon: "grid",
                 },
               ]}
               theme={{
@@ -328,12 +326,12 @@ export default function SellerGenerateQR() {
 
             )}
 
-            {qrMode === "static_hidden" && (
+            {qrMode === "multiple" && (
               <>
                 <TextInput
-                  label="Hidden Code"
-                  value={hiddenCode}
-                  onChangeText={setHiddenCode}
+                  label="Reward Points"
+                  value={rewardPoints}
+                  onChangeText={setRewardPoints}
                   mode="outlined"
                   style={[
                     styles.input,
@@ -342,7 +340,7 @@ export default function SellerGenerateQR() {
                       backgroundColor: theme.colors.surface,
                     },
                   ]}
-                  left={<TextInput.Icon icon="key" color={theme.colors.onSurface} />}
+                  left={<TextInput.Icon icon="star" color={theme.colors.onSurface} />}
                   placeholder="Enter a secret code..."
                   outlineColor={theme.colors.outline}
                   activeOutlineColor={theme.colors.onSurface}
@@ -354,7 +352,34 @@ export default function SellerGenerateQR() {
                   }}
                 />
                 <HelperText type="info" style={[styles.helperText, { color: theme.colors.onSurface }]}>
-                  Customers must enter this secret code after scanning the QR.
+                  This defines reward points customer will earn on order below your configured amount.
+                </HelperText>
+                <TextInput
+                  label=" Amount"
+                  value={amount}
+                  onChangeText={setAmount}
+                  mode="outlined"
+                  keyboardType="numeric"
+                  style={[
+                    styles.input,
+                    {
+                      color: theme.colors.onSurface,
+                      backgroundColor: theme.colors.surface,
+                    },
+                  ]}
+                  disabled={isFree}
+                  left={<TextInput.Icon icon="currency-rupee" color={theme.colors.onSurface} />}
+                  outlineColor={theme.colors.outline}
+                  activeOutlineColor={theme.colors.onSurface}
+                  theme={{
+                    colors: {
+                      primary: theme.colors.primary,      // focused label color
+                      onSurfaceVariant: theme.colors.onSurface, // unfocused label color
+                    },
+                  }}
+                />
+                <HelperText type="info" style={[styles.helperText, { color: theme.colors.onSurface }]}>
+                  This defines max order amount for above reward points.
                 </HelperText>
               </>
             )}
@@ -374,7 +399,7 @@ export default function SellerGenerateQR() {
         </Card>
 
         {/* Active QR Preview (from shared hook) */}
-        {activeQR && <QrCode qrMode={activeQR.qr_type} qrData={activeQR} rewards={sellerProfile?.rewards} />}
+        {activeQR && <QrCode qrData={activeQR} rewards={sellerProfile?.rewards} />}
 
         {/* Usage Instructions */}
         <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
@@ -418,26 +443,6 @@ export default function SellerGenerateQR() {
                 Customer scans the QR code with their app.
               </Text>
             </View>
-            {qrMode === "static_hidden" && (
-              <View style={styles.instructionItem}>
-                <View
-                  style={[
-                    styles.instructionNumber,
-                    { backgroundColor: theme.colors.primary },
-                  ]}
-                >
-                  <Text
-                    variant="labelLarge"
-                    style={styles.instructionNumberText}
-                  >
-                    3
-                  </Text>
-                </View>
-                <Text variant="bodyMedium" style={styles.instructionText}>
-                  Customer enters the hidden code you shared.
-                </Text>
-              </View>
-            )}
             <View style={styles.instructionItem}>
               <View
                 style={[
@@ -446,7 +451,7 @@ export default function SellerGenerateQR() {
                 ]}
               >
                 <Text variant="labelLarge" style={styles.instructionNumberText}>
-                  {qrMode === "static_hidden" ? "4" : "3"}
+                  3
                 </Text>
               </View>
               <Text variant="bodyMedium" style={styles.instructionText}>

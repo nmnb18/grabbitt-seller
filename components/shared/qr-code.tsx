@@ -1,130 +1,229 @@
+import React, { useState } from "react";
+import {
+  Image,
+  LayoutAnimation,
+  Platform,
+  StyleSheet,
+  UIManager,
+  View,
+} from "react-native";
+import { Card, IconButton, Text } from "react-native-paper";
+
 import { useTheme } from "@/hooks/use-theme-color";
 import { SellerRewards } from "@/types/auth";
-import { AppStyles, Colors } from "@/utils/theme";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { Image, StyleSheet, View } from "react-native";
-import { Card, Chip, Text } from "react-native-paper";
-interface QrCodeProps {
-  qrMode: string;
-  qrData: any;
-  rewards: SellerRewards | undefined
+import { AppStyles } from "@/utils/theme";
+import { GradientText } from "../ui/gradient-text";
+
+// ✅ Enable smooth animation on Android
+if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
 }
-export function QrCode({ qrMode, qrData, rewards }: QrCodeProps) {
+
+interface QrCodeProps {
+  qrData: any[]; // ✅ multiple QRs
+  rewards: SellerRewards | undefined;
+}
+
+export function QrCode({ qrData = [], rewards }: QrCodeProps) {
   const theme = useTheme();
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  const toggleExpand = (qrId: string) => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setExpandedId((prev) => (prev === qrId ? null : qrId));
+  };
+
+  // ✅ Empty State
+  if (!qrData.length) {
+    return (
+      <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
+        <Card.Content>
+          <Text>No active QR codes available.</Text>
+        </Card.Content>
+      </Card>
+    );
+  }
+
   return (
-    <Card style={[styles.qrCard, { backgroundColor: theme.colors.surface }]}>
-      <View style={[styles.qrCardContent]}>
-        <View style={styles.qrContainer}>
-          <Image
-            source={{ uri: qrData.qr_code_base64 }}
-            style={styles.qrImage}
-            resizeMode="contain"
-          />
-        </View>
+    <View>
 
-        <View style={styles.qrInfo}>
-          <Chip icon="check-circle" style={styles.qrChip}>
-            Active
-          </Chip>
-          <Text variant="bodySmall">
-            QR Code ID: {qrData?.qr_id?.substring(0, 8)}...
-          </Text>
-          {rewards?.reward_type === 'default' && <Text variant="bodySmall" >
-            Points per scan: {rewards?.default_points_value}
-          </Text>}
-          {rewards?.reward_type === 'percentage' && <Text variant="bodySmall" >
-            Customer will earn {rewards?.percentage_value}% of order amount.
-          </Text>}
-          {rewards?.reward_type === 'slab' &&
-            rewards?.slab_rules?.map((s, index) => {
+      <Text style={styles.title}>Active QRs</Text>
+      {qrData.map((qr) => {
+        const isExpanded = expandedId === qr.qr_id;
 
-              const isLast = rewards?.slab_rules?.length && index === rewards?.slab_rules?.length - 1;
-              return (
+        return (
+          <Card
+            key={qr.qr_id}
+            style={[styles.card, { backgroundColor: theme.colors.surface }]}
+            onPress={() => toggleExpand(qr.qr_id)}
+          >
+            <Card.Content>
+
+              {/* ✅ HEADER ROW */}
+              <View style={styles.headerRow}>
+                <View style={styles.chipRow}>
+
+
+                  <GradientText style={styles.headerLabel}>
+                    {qr.qr_type?.toUpperCase()}
+                  </GradientText>
+                  {qr.amount && <GradientText style={styles.headerLabel}>
+                    - {qr.amount}
+                  </GradientText>}
+
+                </View>
                 <Text
-                  key={index}
-                  style={{
-                    fontSize: 14,
-                    color: theme.colors.onSurface,
-                  }}
+                  style={[
+
+                    { color: theme.colors.success },
+                  ]}
                 >
-                  <MaterialCommunityIcons name="hand-pointing-right" /> {isLast ? `Customer will earn ${s.points || "…"} pts for order value more than ₹${s.max}` : `Customer will earn ${s.points || "…"} pts for order value smaller than ₹${s.max}`}
+                  {qr.status?.toUpperCase() || "active"}
                 </Text>
-              );
-            })}
-          {qrMode === "dynamic" && qrData?.expires_at && (
-            <Text variant="bodySmall">
-              Expires:{" "}
-              {new Date(
-                qrData.expires_at._seconds
-                  ? qrData.expires_at._seconds * 1000
-                  : qrData.expires_at
-              ).toLocaleString()}
-            </Text>
-          )}
-          {qrMode === "static_with_code" && (
-            <View style={styles.codeContainer}>
-              <MaterialCommunityIcons
-                name="key"
-                size={16}
-                color={Colors.light.onPrimary}
-              />
-              <Text variant="bodySmall">Code: {qrData.hiddenCode}</Text>
-            </View>
-          )}
-        </View>
-      </View>
-      {/* 
-            <Card.Actions style={styles.cardActions}>
-                <Button
-                    onPress={handleShare}
-                    icon="share-variant"
-                >
-                    Share
-                </Button>
-                <Button
-                    onPress={() => {
-                        setQrImage(null);
-                        setQrData(null);
-                    }}
-                    icon="refresh"
-                >
-                    New QR
-                </Button>
-            </Card.Actions> */}
-    </Card>
+                <IconButton
+                  icon={isExpanded ? "chevron-up" : "chevron-down"}
+                  size={26}
+                  iconColor={theme.colors.onSurface}
+                />
+              </View>
+
+              {/* ✅ SUB HEADER */}
+
+
+              {/* ✅ EXPANDED VIEW */}
+              {isExpanded && (
+                <View style={styles.expandedBox}>
+
+                  {/* ✅ QR IMAGE */}
+                  <Image
+                    source={{ uri: qr.qr_code_base64 }}
+                    style={styles.qrImage}
+                    resizeMode="contain"
+                  />
+                  <Text variant="bodySmall" style={styles.qrId}>
+                    QR ID: {qr.qr_id?.substring(0, 10)}...
+                  </Text>
+                  {/* ✅ MULTIPLE MODE = SHOW AMOUNT + POINTS */}
+                  {qr.qr_type === "multiple" && (
+                    <View style={styles.infoBox}>
+                      <Text style={styles.infoText}>
+                        💰 Amount: ₹{qr.amount || "--"}
+                      </Text>
+                      <Text style={styles.infoText}>
+                        ⭐ Points: {qr.points_value || "--"}
+                      </Text>
+                    </View>
+                  )}
+
+                  {/* ✅ DYNAMIC / STATIC = SHOW REWARD LOGIC */}
+                  {qr.qr_type !== "multiple" && rewards && (
+                    <View style={styles.infoBox}>
+                      {rewards.reward_type === "default" && (
+                        <Text style={styles.infoText}>
+                          ⭐ {rewards.default_points_value} points per scan
+                        </Text>
+                      )}
+
+                      {rewards.reward_type === "percentage" && (
+                        <Text style={styles.infoText}>
+                          🧾 {rewards.percentage_value}% of order value
+                        </Text>
+                      )}
+
+                      {rewards.reward_type === "slab" &&
+                        rewards.slab_rules?.map((s, index) => {
+                          const isLast =
+                            rewards?.slab_rules?.length &&
+                            index === rewards.slab_rules.length - 1;
+
+                          return (
+                            <Text key={index} style={styles.infoText}>
+                              {isLast
+                                ? `Above ₹${s.max} → ${s.points} pts`
+                                : `Below ₹${s.max} → ${s.points} pts`}
+                            </Text>
+                          );
+                        })}
+                    </View>
+                  )}
+
+                  {/* ✅ EXPIRY */}
+                  {qr.qr_type === "dynamic" && qr?.expires_at && (
+                    <Text variant="bodySmall" style={styles.expiryText}>
+                      Expires:{" "}
+                      {new Date(
+                        qr.expires_at._seconds
+                          ? qr.expires_at._seconds * 1000
+                          : qr.expires_at
+                      ).toLocaleString()}
+                    </Text>
+                  )}
+                </View>
+              )}
+            </Card.Content>
+          </Card>
+        );
+      })}
+    </View>
   );
 }
+
+// ✅ CLEAN UI STYLES
 const styles = StyleSheet.create({
-  qrCard: {
+  card: {
     marginBottom: AppStyles.spacing.md,
     borderRadius: AppStyles.card.borderRadius,
-    overflow: "hidden",
   },
-  qrCardContent: {
-    padding: AppStyles.spacing.lg,
+
+  headerRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
   },
-  qrContainer: {
-    padding: AppStyles.spacing.md,
-    borderRadius: AppStyles.card.borderRadius,
-    marginBottom: AppStyles.spacing.md,
+  title: { fontSize: 18, fontWeight: '500', marginBottom: 10, textAlign: 'center' },
+
+  chipRow: {
+    flexDirection: "row",
+    gap: 8,
+    alignItems: "center",
   },
+
+  headerLabel: {
+    fontSize: 18
+  },
+
+
+  qrId: {
+    marginTop: 6,
+    opacity: 0.7,
+    alignSelf: 'center'
+  },
+
+  expandedBox: {
+    marginTop: 16,
+    alignItems: "center",
+  },
+
   qrImage: {
     width: 200,
     height: 200,
+    marginBottom: 12,
   },
-  qrInfo: {
-    alignItems: "center",
-    gap: AppStyles.spacing.sm,
+
+  infoBox: {
+    flexDirection: 'row',
+    paddingVertical: 8,
+    gap: 24,
   },
-  qrChip: {
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
-    borderWidth: 1,
-    borderColor: Colors.light.primary,
+
+  infoText: {
+    fontSize: 14,
+    fontWeight: "600",
   },
-  codeContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: AppStyles.spacing.sm,
+
+  expiryText: {
+    marginTop: 6,
+    fontSize: 12,
+    opacity: 0.7,
   },
 });
