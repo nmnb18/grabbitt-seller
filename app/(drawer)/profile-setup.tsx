@@ -4,9 +4,11 @@ import LocationDetails from '@/components/profile/location-details';
 import MediaInformation from '@/components/profile/media-information';
 import RewardsSettings from '@/components/profile/reward-settings';
 import VerificationDetails from '@/components/profile/verification-details';
+import { AppHeader } from '@/components/shared/app-header';
 import { Button as CustomButton } from '@/components/ui/paper-button';
 import { useTheme } from '@/hooks/use-theme-color';
 import api from '@/services/axiosInstance';
+import { useAuthStore } from '@/store/authStore';
 import { isValidPassword } from '@/utils/helper';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
@@ -28,7 +30,6 @@ import {
   Text,
   TextInput
 } from 'react-native-paper';
-import { useAuthStore } from '../../../store/authStore';
 
 export default function SellerProfileSetup() {
   const router = useRouter();
@@ -121,6 +122,7 @@ export default function SellerProfileSetup() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <AppHeader />
       <ScrollView
         style={styles.content}
         showsVerticalScrollIndicator={false}

@@ -105,12 +105,12 @@ export default function SellerLayout() {
         }}
       />
       <Tabs.Screen
-        name="profile-setup"
+        name="redeem-qr"
         options={{
-          title: "Profile",
+          title: "Redeem",
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons
-              name="account-cog"
+            <Ionicons
+              name="qr-code-outline"
               size={size}
               color={color}
             />

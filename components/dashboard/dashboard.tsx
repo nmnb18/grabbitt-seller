@@ -1,6 +1,4 @@
 import { QrCode } from "@/components/shared/qr-code";
-import { GradientIcon } from "@/components/ui/gradient-icon";
-import { GradientText } from "@/components/ui/gradient-text";
 import { Button } from "@/components/ui/paper-button";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useAuthStore } from "@/store/authStore";
@@ -15,19 +13,13 @@ import {
     StyleSheet,
     View
 } from "react-native";
-import { Card, Chip, Surface, Text } from "react-native-paper";
+import { Card, Chip, FAB, Surface, Text } from "react-native-paper";
+import { StatCard } from "../shared/stats-card";
 
 // ------------------------------
 // TYPES
 // ------------------------------
 
-interface StatCardProps {
-    icon: string;
-    value: number;
-    label: string;
-    gradientColors?: [string, string];
-    backgroundColor: string;
-}
 
 interface ActionCardProps {
     icon: string;
@@ -41,25 +33,7 @@ interface ActionCardProps {
 // STAT CARD
 // ------------------------------
 
-const StatCard = ({
-    icon,
-    value,
-    label,
-    gradientColors,
-    backgroundColor,
-}: StatCardProps) => (
-    <Card style={[styles.statCard, { backgroundColor }]} elevation={2}>
-        <View style={styles.statContent}>
-            <GradientIcon size={32} name={icon as any} />
-            <GradientText colors={gradientColors} style={styles.statValue}>
-                {value}
-            </GradientText>
-            <GradientText colors={gradientColors} style={styles.statLabel}>
-                {label}
-            </GradientText>
-        </View>
-    </Card>
-);
+
 
 // ------------------------------
 // ACTION CARD
@@ -234,6 +208,13 @@ export default function SellerDashboard({
                 </View>
 
                 <View style={styles.bottomSpacer} />
+                <FAB
+                    icon="qrcode-scan"
+                    label=""
+                    style={[styles.fab, { backgroundColor: theme.colors.tertiary }]}
+                    onPress={() => router.push("/(drawer)/(tabs)/redeem-qr")}
+                    color={theme.colors.onSurface}
+                />
             </ScrollView>
         </View>
     );
@@ -244,6 +225,7 @@ export default function SellerDashboard({
 // ------------------------------
 
 const styles = StyleSheet.create({
+    fab: { position: "absolute", bottom: 100, right: 16 },
     container: { flex: 1 },
     content: { flex: 1 },
     scrollContent: { paddingHorizontal: 16, paddingTop: 16 },
@@ -276,19 +258,6 @@ const styles = StyleSheet.create({
     statsSection: { marginBottom: 24 },
     statsGrid: { flexDirection: "row", gap: 12, marginBottom: 12 },
 
-    statCard: {
-        flex: 1,
-        borderRadius: 16,
-        overflow: "hidden",
-    },
-    statContent: {
-        padding: 16,
-        alignItems: "center",
-        justifyContent: "center",
-        minHeight: 120,
-    },
-    statValue: { fontSize: 24, fontWeight: "700", marginTop: 6 },
-    statLabel: { fontSize: 16, opacity: 0.9, marginTop: 4, textAlign: "center" },
 
     section: { marginBottom: 24 },
 

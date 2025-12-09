@@ -86,11 +86,14 @@ function CustomDrawerContent() {
             onPress={() => router.push("/(drawer)/(tabs)/dashboard")}
           />
 
-          <MenuItem label="Plans" icon="star" onPress={() => router.push("/subscription")} />
+          <MenuItem label="Plans" icon="star" onPress={() => router.push("/(drawer)/subscription")} />
 
 
-          <MenuItem label="Plans History" icon="history" onPress={() => router.push("/subscription-history")} />
+          <MenuItem label="Plans History" icon="history" onPress={() => router.push("/(drawer)/subscription-history")} />
 
+          <MenuItem label="Profile" icon="account" onPress={() => router.push("/(drawer)/profile-setup")} />
+
+          <MenuItem label="Redemption" icon="star-four-points-outline" onPress={() => router.push("/(drawer)/redeem")} />
           <MenuItem label="Contact Us" icon="mail" onPress={() => Linking.openURL("mailto:support@grabbitt.in")} />
 
           <MenuItem label="Privacy Policy" icon="lock" onPress={() => Linking.openURL("https://grabbitt.in/privacy")} />
