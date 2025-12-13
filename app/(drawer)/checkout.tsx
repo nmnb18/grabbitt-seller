@@ -5,9 +5,10 @@ import api from '@/services/axiosInstance';
 import { useAuthStore } from '@/store/authStore';
 import { PLANS } from '@/utils/constant';
 import { AppStyles } from '@/utils/theme';
+//import * as InAppPurchases from "expo-in-app-purchases";
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useMemo, useState } from 'react';
-import { Alert, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { ActivityIndicator, Card, Divider, Text, TextInput } from 'react-native-paper';
 import RazorpayCheckout from 'react-native-razorpay';
 
@@ -27,6 +28,10 @@ export default function CheckoutScreen() {
     // Get selected plan from params
     const selectedPlanId = params.planId as string;
     const selectedPlan = PLANS.find(plan => plan.id === selectedPlanId);
+    const productIdMap: Record<string, string> = {
+        pro: "seller_pro_30d",
+        premium: "seller_premium_1yr",
+    };
 
     if (!selectedPlan || selectedPlan.id === 'free') {
         return (
@@ -84,6 +89,55 @@ export default function CheckoutScreen() {
     };
 
     const handleProceedToPayment = async () => {
+        if (Platform.OS === "ios") {
+            await handleIOSPayment();
+        } else {
+            await handleAndroidRazorpayPayment();
+        }
+    };
+
+    const handleIOSPayment = async () => {
+        try {
+            setLoading(true);
+
+            const appleProductId = productIdMap[selectedPlan.id];
+
+            if (!appleProductId) {
+                Alert.alert("Error", "Plan not available on iOS.");
+                return;
+            }
+
+            // (Optional) ensure products are loaded, but the listener init already does
+            //const { responseCode, results } =
+            //await InAppPurchases.getProductsAsync([appleProductId]);
+
+            // if (
+            //     responseCode !== InAppPurchases.IAPResponseCode.OK ||
+            //     !results?.length
+            // ) {
+            //     Alert.alert("Error", "Unable to load purchase options.");
+            //     return;
+            // }
+
+            // await InAppPurchases.purchaseItemAsync(appleProductId);
+
+            // After this, the purchase listener in _layout will call handleIOSPurchase()
+            // and then your auth store refresh will update the UI
+
+            Alert.alert(
+                "Processing",
+                "Your purchase is being processed. Please wait a moment."
+            );
+        } catch (err: any) {
+            console.error("IAP error:", err);
+            Alert.alert("Error", err.message || "Purchase failed.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
+    const handleAndroidRazorpayPayment = async () => {
         setLoading(true);
         try {
             const response = await api.post(`/createOrder`, {
@@ -211,7 +265,7 @@ export default function CheckoutScreen() {
                         <Divider style={styles.divider} />
 
                         {/* Coupon Section */}
-                        <View style={styles.couponSection}>
+                        {Platform.OS === "android" && <View style={styles.couponSection}>
                             <Text variant="titleMedium" style={styles.sectionTitle}>
                                 Apply Coupon
                             </Text>
@@ -254,7 +308,7 @@ export default function CheckoutScreen() {
                                     </Button>
                                 </View>
                             )}
-                        </View>
+                        </View>}
 
                         <Divider style={styles.divider} />
 
