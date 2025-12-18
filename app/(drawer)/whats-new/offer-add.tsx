@@ -16,6 +16,14 @@ import {
 import { Button, Card, Divider, Text } from "react-native-paper";
 import DatePicker from "react-native-ui-datepicker";
 
+type Offer = {
+    id: number;
+    title: string;
+    min_spend: string;
+    terms: string;
+};
+
+
 export default function SellerAddOfferScreen() {
     const theme = useTheme();
     const router = useRouter();
@@ -24,16 +32,19 @@ export default function SellerAddOfferScreen() {
 
     const [showPicker, setShowPicker] = useState(false);
 
-    const [offers, setOffers] = useState([
+    const [offers, setOffers] = useState<Offer[]>([
         { id: Date.now(), title: "", min_spend: "", terms: "" },
         { id: Date.now() + 1, title: "", min_spend: "", terms: "" },
     ]);
 
     const [saving, setSaving] = useState(false);
 
-    const onChangeOffer = (index: number, key: string, value: string) => {
-        const updated: any = [...offers];
-        updated[index][key] = value;
+    const onChangeOffer = (index: number, key: string, value: Offer[keyof Offer]) => {
+        const updated = [...offers];
+        updated[index] = {
+            ...updated[index],
+            [key]: value
+        };
         setOffers(updated);
     };
 
@@ -175,8 +186,8 @@ export default function SellerAddOfferScreen() {
                                 <FormTextInput
                                     label="Terms & Conditions"
                                     value={offer.terms}
+                                    multiline
                                     onChangeText={(v) => onChangeOffer(index, "terms", v)}
-                                    keyboardType="numeric"
                                     numberOfLines={3}
                                     leftIcon="note-text"
                                 />

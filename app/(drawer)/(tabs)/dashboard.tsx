@@ -45,7 +45,6 @@ export default function SellerDashboardContainer() {
 
       const response = await api.get(`/sellerStats`);
       const { data } = response;
-      console.log(data);
       if (!data?.success) {
         Alert.alert("Error", data?.error || "Failed to load dashboard stats");
         return;

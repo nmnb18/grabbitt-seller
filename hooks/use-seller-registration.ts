@@ -189,7 +189,6 @@ export const useSellerRegistration = () => {
 
     const handleRegister = async () => {
         if (!validateStep(5)) return;
-        console.log('formData', formData);
         setLoading(true);
         try {
             const payload = {

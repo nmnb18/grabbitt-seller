@@ -85,9 +85,10 @@ export default function SubscriptionScreen() {
                                             mode="flat"
                                             style={[
                                                 styles.ribbon,
-                                                { backgroundColor: plan.color + '20' },
+                                                { backgroundColor: plan.color + '40', alignSelf: 'center' },
+
                                             ]}
-                                            textStyle={[styles.ribbonText, { color: plan.color }]}
+                                            textStyle={[styles.ribbonText, { color: theme.colors.onBackground }]}
                                         >
                                             Current Active Plan
                                         </Chip>

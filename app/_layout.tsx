@@ -1,6 +1,7 @@
 import { useTheme } from "@/hooks/use-theme-color";
+import { endIAP, handleIOSPurchase, initIAP } from "@/services/iap";
 import { useFonts } from "expo-font";
-//import * as InAppPurchases from "expo-in-app-purchases";
+import * as InAppPurchases from "expo-in-app-purchases";
 import * as Linking from "expo-linking";
 import { Stack, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -68,50 +69,50 @@ export default function RootLayout() {
     SystemUI.setBackgroundColorAsync("transparent");
   }, []);
 
-  // useEffect(() => {
-  //   if (Platform.OS === "ios") {
-  //     (async () => {
-  //       await initIAP();
-  //     })();
+  useEffect(() => {
+    if (Platform.OS === "ios") {
+      (async () => {
+        await initIAP();
+      })();
 
-  //     const subscription = InAppPurchases.setPurchaseListener(
-  //       async ({ responseCode, results, errorCode }) => {
-  //         if (
-  //           responseCode === InAppPurchases.IAPResponseCode.OK &&
-  //           results
-  //         ) {
-  //           for (const purchase of results) {
-  //             if (!purchase.acknowledged) {
-  //               try {
-  //                 await handleIOSPurchase(purchase);
-  //               } catch (e) {
-  //                 console.error("Error handling IAP purchase:", e);
-  //               } finally {
-  //                 // Must always finish the transaction
-  //                 await InAppPurchases.finishTransactionAsync(purchase, true);
-  //               }
-  //             }
-  //           }
-  //         } else if (
-  //           responseCode === InAppPurchases.IAPResponseCode.USER_CANCELED
-  //         ) {
-  //           console.log("User canceled IAP");
-  //         } else if (
-  //           responseCode === InAppPurchases.IAPResponseCode.DEFERRED
-  //         ) {
-  //           console.log("IAP deferred");
-  //         } else {
-  //           console.log("IAP error:", errorCode);
-  //         }
-  //       }
-  //     );
+      const subscription = InAppPurchases.setPurchaseListener(
+        async ({ responseCode, results, errorCode }) => {
+          if (
+            responseCode === InAppPurchases.IAPResponseCode.OK &&
+            results
+          ) {
+            for (const purchase of results) {
+              if (!purchase.acknowledged) {
+                try {
+                  await handleIOSPurchase(purchase);
+                } catch (e) {
+                  console.error("Error handling IAP purchase:", e);
+                } finally {
+                  // Must always finish the transaction
+                  await InAppPurchases.finishTransactionAsync(purchase, true);
+                }
+              }
+            }
+          } else if (
+            responseCode === InAppPurchases.IAPResponseCode.USER_CANCELED
+          ) {
+            console.log("User canceled IAP");
+          } else if (
+            responseCode === InAppPurchases.IAPResponseCode.DEFERRED
+          ) {
+            console.log("IAP deferred");
+          } else {
+            console.log("IAP error:", errorCode);
+          }
+        }
+      );
 
-  //     return () => {
-  //       InAppPurchases.setPurchaseListener(null as any);
-  //       endIAP();
-  //     };
-  //   }
-  // }, []);
+      return () => {
+        InAppPurchases.setPurchaseListener(null as any);
+        endIAP();
+      };
+    }
+  }, []);
 
   if (!loaded) return null;
 
