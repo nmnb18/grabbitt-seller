@@ -116,7 +116,7 @@ export default function SellerDashboard({
         ------------------------------ */}
                 <View style={styles.heroContainer}>
                     <Image
-                        source={require("@/assets/images/hero_banner.png")}
+                        source={sellerProfile?.media.banner_url ? { uri: sellerProfile?.media.banner_url } : require("@/assets/images/hero_banner.png")}
                         style={styles.heroImage}
                     />
 
@@ -251,9 +251,9 @@ const styles = StyleSheet.create({
         padding: 16,
     },
     heroShopName: { color: "#FFF", fontWeight: "700", fontSize: 22, marginBottom: 12 },
-    heroChip: { backgroundColor: "rgba(255,255,255,0.4)", marginBottom: 8 },
+    heroChip: { backgroundColor: "rgba(255,255,255,0.8)", marginBottom: 8 },
     heroChipText: { fontWeight: "600" },
-    heroSubLabel: { color: "#FFF", fontSize: 14, textAlign: "center", marginBottom: 16 },
+    heroSubLabel: { color: "#FFF", fontSize: 14, textAlign: "center", fontWeight: 500, marginBottom: 16 },
 
     statsSection: { marginBottom: 24 },
     statsGrid: { flexDirection: "row", gap: 12, marginBottom: 12 },
