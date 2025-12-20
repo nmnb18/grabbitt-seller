@@ -2,10 +2,10 @@ import { AppHeader } from '@/components/shared/app-header';
 import { Button } from '@/components/ui/paper-button';
 import { useTheme } from '@/hooks/use-theme-color';
 import api from '@/services/axiosInstance';
+import { requestIOSPurchase } from "@/services/iap";
 import { useAuthStore } from '@/store/authStore';
 import { PLANS } from '@/utils/constant';
 import { AppStyles } from '@/utils/theme';
-//import * as InAppPurchases from "expo-in-app-purchases";
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
@@ -101,40 +101,24 @@ export default function CheckoutScreen() {
             setLoading(true);
 
             const appleProductId = productIdMap[selectedPlan.id];
-
             if (!appleProductId) {
                 Alert.alert("Error", "Plan not available on iOS.");
                 return;
             }
 
-            // (Optional) ensure products are loaded, but the listener init already does
-            //const { responseCode, results } =
-            //await InAppPurchases.getProductsAsync([appleProductId]);
+            // This will trigger Apple sheet. When purchase succeeds,
+            // purchaseUpdatedListener (initIAP) will call your backend verify.
+            await requestIOSPurchase(appleProductId);
 
-            // if (
-            //     responseCode !== InAppPurchases.IAPResponseCode.OK ||
-            //     !results?.length
-            // ) {
-            //     Alert.alert("Error", "Unable to load purchase options.");
-            //     return;
-            // }
-
-            // await InAppPurchases.purchaseItemAsync(appleProductId);
-
-            // After this, the purchase listener in _layout will call handleIOSPurchase()
-            // and then your auth store refresh will update the UI
-
-            Alert.alert(
-                "Processing",
-                "Your purchase is being processed. Please wait a moment."
-            );
+            Alert.alert("Processing", "Complete payment in the Apple dialog.");
         } catch (err: any) {
             console.error("IAP error:", err);
-            Alert.alert("Error", err.message || "Purchase failed.");
+            Alert.alert("Error", err?.message || "Purchase failed.");
         } finally {
             setLoading(false);
         }
     };
+
 
 
     const handleAndroidRazorpayPayment = async () => {

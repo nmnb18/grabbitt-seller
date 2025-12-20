@@ -1,11 +1,12 @@
 import { AppHeader } from '@/components/shared/app-header';
 import { useTheme } from '@/hooks/use-theme-color';
+import { restoreIOSPurchases } from '@/services/iap';
 import { useAuthStore } from '@/store/authStore';
 import { PLANS } from '@/utils/constant';
 import { AppStyles } from '@/utils/theme';
 import { useRouter } from 'expo-router';
-import React, { useMemo } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { Button, Card, Chip, Text } from 'react-native-paper';
 
 export default function SubscriptionScreen() {
@@ -13,6 +14,7 @@ export default function SubscriptionScreen() {
     const styles = useMemo(() => createStyles(theme), [theme]);
     const router = useRouter();
     const { user } = useAuthStore();
+    const [loading, setLoading] = useState(false);
 
     const subscription = user?.user?.seller_profile?.subscription;
     const currentTier = subscription?.tier ?? 'free';
@@ -25,6 +27,26 @@ export default function SubscriptionScreen() {
         const others = PLANS.filter((p) => p.id !== currentTier);
         return activePlan ? [activePlan, ...others] : PLANS;
     }, [currentTier]);
+
+    const handleRestorePurchase = async () => {
+        try {
+            setLoading(true);
+
+            await restoreIOSPurchases();
+
+            Alert.alert(
+                "Restore initiated",
+                "If you have an active subscription, it will be restored shortly."
+            );
+        } catch (err: any) {
+            Alert.alert(
+                "Restore failed",
+                err?.message || "Unable to restore purchases."
+            );
+        } finally {
+            setLoading(false);
+        }
+    }
 
     return (
         <View style={[styles.screen, { backgroundColor: theme.colors.background }]}>
@@ -110,9 +132,22 @@ export default function SubscriptionScreen() {
                                 )}
 
                                 {isLocked && (
-                                    <Text style={styles.lockedText}>
-                                        You can purchase another plan after your current plan expires.
-                                    </Text>
+                                    <View style={{ gap: 18 }}>
+                                        <Text style={styles.lockedText}>
+                                            You can purchase another plan after your current plan expires.
+                                        </Text>
+                                        {Platform.OS === 'ios' && <Button
+                                            mode="outlined"
+                                            buttonColor={plan.color}
+                                            style={styles.buyBtn}
+                                            loading={loading}
+                                            onPress={handleRestorePurchase}
+                                        >
+                                            Restore Purchase
+                                        </Button>}
+
+                                    </View>
+
                                 )}
                             </Card.Content>
                         </Card>

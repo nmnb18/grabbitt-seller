@@ -1,65 +1,137 @@
-// src/services/iap.ts
+// services/iap.ts
 import api from "@/services/axiosInstance";
-import { useAuthStore } from "@/store/authStore";
-import * as InAppPurchases from "expo-in-app-purchases";
 import { Platform } from "react-native";
+import * as RNIap from "react-native-iap";
 
-export const IOS_PRODUCT_IDS = [
+/**
+ * iOS subscription product IDs
+ * Must match App Store Connect exactly
+ */
+export const IOS_PRODUCTS = [
     "seller_pro_30d",
     "seller_premium_1yr",
 ];
 
-// Init connection & prefetch products
+// Listener unsubscribe functions (no typing — v14 does not export them)
+let purchaseUpdateSub: any = null;
+let purchaseErrorSub: any = null;
+
+/**
+ * Initialize IAP (call once, e.g. in RootLayout)
+ */
 export async function initIAP() {
     if (Platform.OS !== "ios") return;
 
     try {
-        await InAppPurchases.connectAsync();
-        await InAppPurchases.getProductsAsync(IOS_PRODUCT_IDS);
+        await RNIap.initConnection();
 
-    } catch (e) {
-        console.log("IAP init error:", e);
+        // Helps avoid stuck sandbox transactions
+        await RNIap.clearTransactionIOS();
+
+        /**
+         * Purchase success listener
+         */
+        purchaseUpdateSub = RNIap.purchaseUpdatedListener(
+            async (purchase) => {
+                try {
+                    // RN-IAP v14: receipt exists at runtime but is not typed
+                    const receiptData = (purchase as any).transactionReceipt;
+                    const productId = purchase.productId;
+                    const transactionId = purchase.transactionId;
+
+                    if (!receiptData || !productId || !transactionId) {
+                        console.warn("IAP missing receipt fields", purchase);
+                        return;
+                    }
+
+                    // Send to backend for Apple verification
+                    await api.post("/verifyIAPPurchase", {
+                        receiptData,
+                        productId,
+                        transactionId,
+                    });
+
+                    // MUST finish transaction after backend success
+                    await RNIap.finishTransaction({
+                        purchase,
+                        isConsumable: false,
+                    });
+                } catch (err) {
+                    console.error("IAP purchase handling failed:", err);
+                    // Do NOT finish transaction if backend verification fails
+                }
+            }
+        );
+
+        /**
+         * Purchase error listener
+         */
+        purchaseErrorSub = RNIap.purchaseErrorListener((error) => {
+            console.error("IAP purchase error:", error);
+        });
+    } catch (err) {
+        console.error("IAP init failed:", err);
     }
 }
 
+/**
+ * Cleanup (call on unmount / logout)
+ */
 export async function endIAP() {
     if (Platform.OS !== "ios") return;
+
     try {
-        await InAppPurchases.disconnectAsync();
-    } catch (e) {
-        console.log("IAP disconnect error", e);
+        purchaseUpdateSub?.();
+        purchaseUpdateSub = null;
+
+        purchaseErrorSub?.();
+        purchaseErrorSub = null;
+
+        await RNIap.endConnection();
+    } catch (err) {
+        console.warn("IAP cleanup error:", err);
     }
 }
 
-// Called from purchase listener when a purchase completes
-export async function handleIOSPurchase(
-    purchase: InAppPurchases.InAppPurchase
-) {
+
+/**
+ * Start Apple subscription purchase
+ */
+export async function requestIOSPurchase(productId: string) {
+    if (Platform.OS !== "ios") return;
+
     try {
-        if (!purchase.transactionReceipt) {
-            throw new Error("Missing transaction receipt");
-        }
-
-        // Backend will use Firebase auth token from axiosInstance automatically
-        const res = await api.post("/verifyIAPPurchase", {
-            platform: "ios",
-            productId: purchase.productId,
-            receipt: purchase.transactionReceipt, // base64
+        await RNIap.requestPurchase({
+            request: {
+                ios: {
+                    sku: productId
+                }
+            },
+            type: "in-app"
         });
-
-        if (!res.data.success) {
-            throw new Error(res.data.error || "IAP verification failed");
-        }
-
-        // Refresh seller details so subscription is up to date in app
-        const { user, fetchUserDetails } = useAuthStore.getState();
-        if (user?.user?.uid) {
-            await fetchUserDetails(user.user.uid, "seller");
-        }
-
-        return res.data.subscription;
     } catch (err) {
-        console.error("handleIOSPurchase error:", err);
+        console.error("Failed to start iOS purchase:", err);
         throw err;
     }
 }
+
+
+/**
+ * REQUIRED by Apple — Restore purchases
+ */
+export async function restoreIOSPurchases() {
+    if (Platform.OS !== "ios") return;
+
+    try {
+        /**
+         * This triggers Apple restore flow.
+         * Restored purchases will come through
+         * purchaseUpdatedListener automatically.
+         */
+        await RNIap.restorePurchases();
+    } catch (err) {
+        console.error("Restore purchases failed:", err);
+        throw err;
+    }
+}
+

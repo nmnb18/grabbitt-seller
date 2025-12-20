@@ -1,7 +1,7 @@
 import { useTheme } from "@/hooks/use-theme-color";
-import { endIAP, handleIOSPurchase, initIAP } from "@/services/iap";
+import { endIAP, initIAP } from "@/services/iap";
 import { useFonts } from "expo-font";
-import * as InAppPurchases from "expo-in-app-purchases";
+
 import * as Linking from "expo-linking";
 import { Stack, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -70,49 +70,17 @@ export default function RootLayout() {
   }, []);
 
   useEffect(() => {
-    if (Platform.OS === "ios") {
-      (async () => {
-        await initIAP();
-      })();
+    if (Platform.OS !== "ios") return;
 
-      const subscription = InAppPurchases.setPurchaseListener(
-        async ({ responseCode, results, errorCode }) => {
-          if (
-            responseCode === InAppPurchases.IAPResponseCode.OK &&
-            results
-          ) {
-            for (const purchase of results) {
-              if (!purchase.acknowledged) {
-                try {
-                  await handleIOSPurchase(purchase);
-                } catch (e) {
-                  console.error("Error handling IAP purchase:", e);
-                } finally {
-                  // Must always finish the transaction
-                  await InAppPurchases.finishTransactionAsync(purchase, true);
-                }
-              }
-            }
-          } else if (
-            responseCode === InAppPurchases.IAPResponseCode.USER_CANCELED
-          ) {
-            console.log("User canceled IAP");
-          } else if (
-            responseCode === InAppPurchases.IAPResponseCode.DEFERRED
-          ) {
-            console.log("IAP deferred");
-          } else {
-            console.log("IAP error:", errorCode);
-          }
-        }
-      );
+    (async () => {
+      await initIAP();
+    })();
 
-      return () => {
-        InAppPurchases.setPurchaseListener(null as any);
-        endIAP();
-      };
-    }
+    return () => {
+      endIAP();
+    };
   }, []);
+
 
   if (!loaded) return null;
 
