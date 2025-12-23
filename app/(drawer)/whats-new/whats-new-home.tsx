@@ -32,7 +32,7 @@ export default function SellerWhatsNewScreen() {
     const [showRedeemModal, setShowRedeemModal] = useState(false);
     const [redeemedPerks, setRedeemedPerks] = useState([]);
 
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
     const [deleting, setDeleting] = useState(false);
     const [showSubscriptionBanner, setShowSubscriptionBanner] = useState(false);
@@ -43,6 +43,7 @@ export default function SellerWhatsNewScreen() {
             return;
         }
         try {
+            setLoading(true);
             const resp = await api.get("/getSellerOffers");
 
             if (resp.data.success) {

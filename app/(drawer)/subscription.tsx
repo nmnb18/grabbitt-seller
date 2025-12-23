@@ -114,6 +114,16 @@ export default function SubscriptionScreen() {
                                         >
                                             Current Active Plan
                                         </Chip>
+                                        {Platform.OS === 'ios' && currentTier !== 'free' && <Button
+                                            mode="outlined"
+                                            buttonColor={plan.color}
+                                            style={styles.buyBtn}
+                                            loading={loading}
+                                            onPress={handleRestorePurchase}
+                                            textColor={'#fff'}
+                                        >
+                                            Restore Purchase
+                                        </Button>}
                                     </View>
                                 )}
 
@@ -132,19 +142,11 @@ export default function SubscriptionScreen() {
                                 )}
 
                                 {isLocked && (
-                                    <View style={{ gap: 18 }}>
+                                    <View >
                                         <Text style={styles.lockedText}>
                                             You can purchase another plan after your current plan expires.
                                         </Text>
-                                        {Platform.OS === 'ios' && <Button
-                                            mode="outlined"
-                                            buttonColor={plan.color}
-                                            style={styles.buyBtn}
-                                            loading={loading}
-                                            onPress={handleRestorePurchase}
-                                        >
-                                            Restore Purchase
-                                        </Button>}
+
 
                                     </View>
 
@@ -213,6 +215,7 @@ const createStyles = (theme: any) =>
         ribbonContainer: {
             width: '100%',
             marginBottom: 10,
+            gap: 20
         },
         ribbon: {
             justifyContent: 'center',

@@ -207,6 +207,7 @@ export default function SellerGenerateQR() {
                   value: "dynamic",
                   label: "Dynamic",
                   icon: "clock-outline",
+                  disabled: isFree
                 },
                 {
                   value: "static",
@@ -217,6 +218,7 @@ export default function SellerGenerateQR() {
                   value: "multiple",
                   label: "Multiple",
                   icon: "grid",
+                  disabled: isFree
                 },
               ]}
               theme={{

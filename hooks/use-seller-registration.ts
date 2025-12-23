@@ -249,14 +249,14 @@ export const useSellerRegistration = () => {
         slabRules:
           formData.rewardType === "slab"
             ? slabRules
-                .filter((r) => r.max !== "" && r.points !== "")
-                .map((r) => ({
-                  min: r.min,
-                  max: r.max === "" ? null : Number(r.max),
-                  points: Number(r.points),
-                }))
+              .filter((r) => r.max !== "" && r.points !== "")
+              .map((r) => ({
+                min: r.min,
+                max: r.max === "" ? null : Number(r.max),
+                points: Number(r.points),
+              }))
             : [],
-        upi_ids: formData.upiIds,
+        upiIds: formData.upiIds || [],
       };
 
       await register(payload);

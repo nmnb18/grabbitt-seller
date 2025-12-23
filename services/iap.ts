@@ -2,6 +2,7 @@
 import api from "@/services/axiosInstance";
 import { Platform } from "react-native";
 import * as RNIap from "react-native-iap";
+import { notifyIAPError, notifyIAPSuccess, notifyIAPVerifying } from "./iapState";
 
 /**
  * iOS subscription product IDs
@@ -35,18 +36,20 @@ export async function initIAP() {
             async (purchase) => {
                 try {
                     // RN-IAP v14: receipt exists at runtime but is not typed
-                    const receiptData = (purchase as any).transactionReceipt;
+                    const purchaseToken = purchase.purchaseToken;
                     const productId = purchase.productId;
                     const transactionId = purchase.transactionId;
 
-                    if (!receiptData || !productId || !transactionId) {
+                    if (!purchaseToken || !productId || !transactionId) {
                         console.warn("IAP missing receipt fields", purchase);
                         return;
                     }
 
+                    notifyIAPVerifying();
+
                     // Send to backend for Apple verification
-                    await api.post("/verifyIAPPurchase", {
-                        receiptData,
+                    const res = await api.post("/verifyIAPPurchase", {
+                        purchaseToken,
                         productId,
                         transactionId,
                     });
@@ -56,8 +59,11 @@ export async function initIAP() {
                         purchase,
                         isConsumable: false,
                     });
+
+                    notifyIAPSuccess(res.data);
                 } catch (err) {
                     console.error("IAP purchase handling failed:", err);
+                    notifyIAPError(err);
                     // Do NOT finish transaction if backend verification fails
                 }
             }
@@ -68,6 +74,7 @@ export async function initIAP() {
          */
         purchaseErrorSub = RNIap.purchaseErrorListener((error) => {
             console.error("IAP purchase error:", error);
+            notifyIAPError(error);
         });
     } catch (err) {
         console.error("IAP init failed:", err);
@@ -81,10 +88,10 @@ export async function endIAP() {
     if (Platform.OS !== "ios") return;
 
     try {
-        purchaseUpdateSub?.();
+        purchaseUpdateSub?.remove();
         purchaseUpdateSub = null;
 
-        purchaseErrorSub?.();
+        purchaseErrorSub?.remove();
         purchaseErrorSub = null;
 
         await RNIap.endConnection();
@@ -107,7 +114,7 @@ export async function requestIOSPurchase(productId: string) {
                     sku: productId
                 }
             },
-            type: "in-app"
+            type: "subs"
         });
     } catch (err) {
         console.error("Failed to start iOS purchase:", err);

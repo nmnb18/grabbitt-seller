@@ -3,11 +3,12 @@ import { Button } from '@/components/ui/paper-button';
 import { useTheme } from '@/hooks/use-theme-color';
 import api from '@/services/axiosInstance';
 import { requestIOSPurchase } from "@/services/iap";
+import { clearIAPCallbacks, setIAPCallbacks } from '@/services/iapState';
 import { useAuthStore } from '@/store/authStore';
 import { PLANS } from '@/utils/constant';
 import { AppStyles } from '@/utils/theme';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { ActivityIndicator, Card, Divider, Text, TextInput } from 'react-native-paper';
 import RazorpayCheckout from 'react-native-razorpay';
@@ -109,8 +110,6 @@ export default function CheckoutScreen() {
             // This will trigger Apple sheet. When purchase succeeds,
             // purchaseUpdatedListener (initIAP) will call your backend verify.
             await requestIOSPurchase(appleProductId);
-
-            Alert.alert("Processing", "Complete payment in the Apple dialog.");
         } catch (err: any) {
             console.error("IAP error:", err);
             Alert.alert("Error", err?.message || "Purchase failed.");
@@ -194,6 +193,45 @@ export default function CheckoutScreen() {
         }
     };
 
+    useEffect(() => {
+        if (Platform.OS !== "ios") return;
+
+        setIAPCallbacks({
+            onVerifying: () => {
+                setVerifying(true);
+            },
+            onSuccess: async (data: any) => {
+                setVerifying(false);
+                setLoading(false);
+
+                await fetchUserDetails(user?.user.uid ?? "", "seller");
+
+                router.replace({
+                    pathname: "/(drawer)/payment-sucess",
+                    params: {
+                        orderId: data.subscription.order_id,
+                        plan: selectedPlan.id,
+                        expiresAt: data.subscription.expires_at,
+                    },
+                });
+            },
+            onError: (err) => {
+                setVerifying(false);
+                setLoading(false);
+                Alert.alert(
+                    "Payment Failed",
+                    err?.message || "Verification failed"
+                );
+            },
+        });
+
+        return () => {
+            clearIAPCallbacks();
+        };
+    }, []);
+
+
+
     if (verifying) {
         return (
             <View style={[styles.loaderWrapper]}>
@@ -207,6 +245,8 @@ export default function CheckoutScreen() {
             </View>
         );
     }
+
+
 
     return (
         <View style={[styles.screen, { backgroundColor: theme.colors.background }]}>
@@ -294,7 +334,7 @@ export default function CheckoutScreen() {
                             )}
                         </View>}
 
-                        <Divider style={styles.divider} />
+                        {Platform.OS === "android" && <Divider style={styles.divider} />}
 
                         {/* Price Breakdown */}
                         <View style={styles.priceBreakdown}>
@@ -400,16 +440,16 @@ const createStyles = (theme: any) =>
         },
         feature: {
             marginBottom: 4,
-            color: theme.colors.onSurfaceVariant,
+            color: theme.colors.onBackground,
             fontSize: 14,
         },
         divider: {
             marginVertical: AppStyles.spacing.lg,
-            backgroundColor: theme.colors.outline,
+            backgroundColor: theme.colors.accent,
         },
         thinDivider: {
             marginVertical: AppStyles.spacing.md,
-            backgroundColor: theme.colors.outline,
+            backgroundColor: theme.colors.accent,
         },
         couponSection: {
             marginBottom: AppStyles.spacing.md,
