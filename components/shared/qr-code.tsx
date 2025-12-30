@@ -15,7 +15,10 @@ import { AppStyles } from "@/utils/theme";
 import { GradientText } from "../ui/gradient-text";
 
 // ✅ Enable smooth animation on Android
-if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
+if (
+  Platform.OS === "android" &&
+  UIManager.setLayoutAnimationEnabledExperimental
+) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
@@ -46,7 +49,6 @@ export function QrCode({ qrData = [], rewards }: QrCodeProps) {
 
   return (
     <View>
-
       <Text style={styles.title}>Active QRs</Text>
       {qrData.map((qr) => {
         const isExpanded = expandedId === qr.qr_id;
@@ -58,26 +60,19 @@ export function QrCode({ qrData = [], rewards }: QrCodeProps) {
             onPress={() => toggleExpand(qr.qr_id)}
           >
             <Card.Content>
-
               {/* ✅ HEADER ROW */}
               <View style={styles.headerRow}>
                 <View style={styles.chipRow}>
-
-
                   <GradientText style={styles.headerLabel}>
                     {qr.qr_type?.toUpperCase()}
                   </GradientText>
-                  {qr.amount && <GradientText style={styles.headerLabel}>
-                    - {qr.amount}
-                  </GradientText>}
-
+                  {qr.amount && (
+                    <GradientText style={styles.headerLabel}>
+                      - {qr.amount}
+                    </GradientText>
+                  )}
                 </View>
-                <Text
-                  style={[
-
-                    { color: theme.colors.success },
-                  ]}
-                >
+                <Text style={[{ color: theme.colors.success }]}>
                   {qr.status?.toUpperCase() || "active"}
                 </Text>
                 <IconButton
@@ -89,11 +84,9 @@ export function QrCode({ qrData = [], rewards }: QrCodeProps) {
 
               {/* ✅ SUB HEADER */}
 
-
               {/* ✅ EXPANDED VIEW */}
               {isExpanded && (
                 <View style={styles.expandedBox}>
-
                   {/* ✅ QR IMAGE */}
                   <Image
                     source={{ uri: qr.qr_code_base64 }}
@@ -115,15 +108,17 @@ export function QrCode({ qrData = [], rewards }: QrCodeProps) {
                     </View>
                   )}
 
-                  {/* ✅ DYNAMIC / STATIC = SHOW REWARD LOGIC */}
-                  {qr.qr_type !== "multiple" && rewards && (
+                  {qr.qr_type === "static" && rewards && (
                     <View style={styles.infoBox}>
-                      {rewards.reward_type === "default" && (
-                        <Text style={styles.infoText}>
-                          ⭐ {rewards.default_points_value} points per scan
-                        </Text>
-                      )}
+                      <Text style={styles.infoText}>
+                        ⭐ {rewards.default_points_value} points per scan
+                      </Text>
+                    </View>
+                  )}
 
+                  {/* ✅ DYNAMIC / STATIC = SHOW REWARD LOGIC */}
+                  {qr.qr_type === "dynamic" && rewards && (
+                    <View style={styles.infoBox}>
                       {rewards.reward_type === "percentage" && (
                         <Text style={styles.infoText}>
                           🧾 {rewards.percentage_value}% of order value
@@ -180,7 +175,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  title: { fontSize: 18, fontWeight: '500', marginBottom: 10, textAlign: 'center' },
+  title: {
+    fontSize: 18,
+    fontWeight: "500",
+    marginBottom: 10,
+    textAlign: "center",
+  },
 
   chipRow: {
     flexDirection: "row",
@@ -189,14 +189,13 @@ const styles = StyleSheet.create({
   },
 
   headerLabel: {
-    fontSize: 18
+    fontSize: 18,
   },
-
 
   qrId: {
     marginTop: 6,
     opacity: 0.7,
-    alignSelf: 'center'
+    alignSelf: "center",
   },
 
   expandedBox: {
@@ -211,7 +210,7 @@ const styles = StyleSheet.create({
   },
 
   infoBox: {
-    flexDirection: 'row',
+    flexDirection: "row",
     paddingVertical: 8,
     gap: 24,
   },
