@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     paddingHorizontal: AppStyles.spacing.md,
-    paddingTop: AppStyles.spacing.xl,
+    paddingTop: AppStyles.spacing.md,
   },
   offerBlock: {
     marginBottom: 10,
