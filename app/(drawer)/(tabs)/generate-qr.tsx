@@ -97,7 +97,8 @@ export default function SellerGenerateQR() {
       }
 
       // Free + already active QR => block
-      if (activeQR) {
+      if (activeQR && activeQR.length > 0) {
+        setLoading(false);
         Alert.alert(
           "Plan Restriction",
           "You already have an active QR code. Upgrade your plan to generate multiple QR codes."
@@ -107,7 +108,8 @@ export default function SellerGenerateQR() {
     }
 
     // Pro/Premium: if there is already an active QR, confirm overwrite
-    if (activeQR && (tier === "pro" || tier === "premium") && qrMode !== 'multiple') {
+    if (activeQR && activeQR.length > 0 && (tier === "pro" || tier === "premium") && qrMode !== 'multiple') {
+      setLoading(false);
       Alert.alert(
         "Replace Active QR?",
         "You already have an active QR. Creating a new one will deactivate the previous QR. Do you want to proceed?",
@@ -161,7 +163,7 @@ export default function SellerGenerateQR() {
       case "dynamic":
         return "Expires after the set time. Best for temporary campaigns.";
       case "static":
-        return "Never expires. Can be scanned multiple times (once per day per user).";
+        return "Never expires for pro/premium member, for free member it will expire in 24hrs. Can be scanned multiple times (once per day per user).";
       case "multiple":
         return "Never expires. Rewards based on points and amount.";
       default:
@@ -401,7 +403,7 @@ export default function SellerGenerateQR() {
         </Card>
 
         {/* Active QR Preview (from shared hook) */}
-        {activeQR && <QrCode qrData={activeQR} rewards={sellerProfile?.rewards} />}
+        {activeQR.length > 0 && <QrCode qrData={activeQR} rewards={sellerProfile?.rewards} />}
 
         {/* Usage Instructions */}
         <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
