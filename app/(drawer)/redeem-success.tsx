@@ -51,7 +51,7 @@ export default function RedeemSuccess() {
           entering={FadeInUp.delay(500).duration(400)}
           style={styles.subtext}
         >
-          {`${points} points credited to ${user_name}`}
+          {`${points} points redeemed for ${user_name}`}
         </Animated.Text>
 
         <Animated.View entering={FadeInUp.delay(600).duration(400)}>
