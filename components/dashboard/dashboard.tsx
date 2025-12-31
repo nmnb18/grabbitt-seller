@@ -11,6 +11,7 @@ import {
     RefreshControl,
     ScrollView,
     StyleSheet,
+    TouchableOpacity,
     View
 } from "react-native";
 import { Card, Chip, FAB, Surface, Text } from "react-native-paper";
@@ -155,6 +156,15 @@ export default function SellerDashboard({
             STAT CARDS
         ------------------------------ */}
                 <View style={styles.statsSection}>
+                    <TouchableOpacity style={styles.refreshWrapper} onPress={onRefresh}>
+
+                        <Text>REFRESH</Text>
+                        <MaterialCommunityIcons
+                            name="refresh"
+                            size={20}
+                            color={theme.colors.onBackground}
+                        />
+                    </TouchableOpacity>
                     <View style={styles.statsGrid}>
                         <StatCard
                             icon="account-group"
@@ -256,6 +266,14 @@ const styles = StyleSheet.create({
     heroSubLabel: { color: "#FFF", fontSize: 14, textAlign: "center", fontWeight: 500, marginBottom: 16 },
 
     statsSection: { marginBottom: 24 },
+    refreshWrapper: {
+        alignContent: 'flex-end',
+        alignItems: 'flex-end',
+        justifyContent: 'flex-end',
+        gap: 5,
+        marginBottom: 10,
+        flexDirection: 'row'
+    },
     statsGrid: { flexDirection: "row", gap: 12, marginBottom: 12 },
 
 
