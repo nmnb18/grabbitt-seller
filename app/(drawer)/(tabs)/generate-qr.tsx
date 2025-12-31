@@ -73,15 +73,15 @@ export default function SellerGenerateQR() {
         return;
       }
 
-      // Monthly limit (10)
+      // Monthly limit (5)
       try {
         setLoading(true);
         const qrStats = await api.get("/countMonthlyQRCodes");
         const total = qrStats.data?.count || 0;
-        if (total >= 10) {
+        if (total >= 5) {
           Alert.alert(
             "Limit Reached",
-            "You have reached your 10 QR/month limit. Upgrade to Pro or Premium for unlimited QR generation."
+            "You have reached your 5 QR/month limit. Upgrade to Pro or Premium for unlimited QR generation."
           );
           setLoading(false);
           return;

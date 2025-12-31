@@ -260,7 +260,7 @@ export default function SellerWhatsNewScreen() {
                                 </View>
 
                                 <Text style={styles.customer}>
-                                    👤 {item.customer_name} • {item.customer_phone}
+                                    👤 {item.customer_name} • {item.customer_contact}
                                 </Text>
 
                                 <Text style={styles.offerTitle}>{item.offer_title}</Text>
