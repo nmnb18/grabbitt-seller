@@ -1,4 +1,5 @@
 import { AppHeader } from '@/components/shared/app-header';
+import { SubscriptionLegalFooter } from '@/components/shared/subscription-legal-footer';
 import { Button } from '@/components/ui/paper-button';
 import { useTheme } from '@/hooks/use-theme-color';
 import api from '@/services/axiosInstance';
@@ -366,8 +367,10 @@ export default function CheckoutScreen() {
                     </Card.Content>
                 </Card>
 
+
                 {/* Payment Button */}
                 <View style={styles.paymentSection}>
+                    {Platform.OS === "ios" && <SubscriptionLegalFooter />}
                     <Button
                         variant="contained"
                         onPress={handleProceedToPayment}

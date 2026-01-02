@@ -1,4 +1,5 @@
 import { AppHeader } from '@/components/shared/app-header';
+import { SubscriptionLegalFooter } from '@/components/shared/subscription-legal-footer';
 import { useTheme } from '@/hooks/use-theme-color';
 import { restoreIOSPurchases } from '@/services/iap';
 import { useAuthStore } from '@/store/authStore';
@@ -114,16 +115,7 @@ export default function SubscriptionScreen() {
                                         >
                                             Current Active Plan
                                         </Chip>
-                                        {Platform.OS === 'ios' && currentTier !== 'free' && <Button
-                                            mode="outlined"
-                                            buttonColor={plan.color}
-                                            style={styles.buyBtn}
-                                            loading={loading}
-                                            onPress={handleRestorePurchase}
-                                            textColor={'#fff'}
-                                        >
-                                            Restore Purchase
-                                        </Button>}
+
                                     </View>
                                 )}
 
@@ -155,7 +147,17 @@ export default function SubscriptionScreen() {
                         </Card>
                     );
                 })}
-
+                {Platform.OS === "ios" && <SubscriptionLegalFooter />}
+                {Platform.OS === 'ios' && <Button
+                    mode="outlined"
+                    buttonColor=''
+                    style={styles.buyBtn}
+                    loading={loading}
+                    onPress={handleRestorePurchase}
+                    textColor={'#fff'}
+                >
+                    Restore Purchase
+                </Button>}
                 <View style={{ height: 100 }} />
             </ScrollView>
         </View>
