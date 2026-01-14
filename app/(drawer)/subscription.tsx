@@ -150,7 +150,7 @@ export default function SubscriptionScreen() {
                 {Platform.OS === "ios" && <SubscriptionLegalFooter />}
                 {Platform.OS === 'ios' && <Button
                     mode="outlined"
-                    buttonColor=''
+                    buttonColor='#475569'
                     style={styles.buyBtn}
                     loading={loading}
                     onPress={handleRestorePurchase}
