@@ -53,7 +53,7 @@ export default function AccountInformation({
 
   const handleSave = async () => {
     if (!name) return Alert.alert("Validation", "Full name is required");
-    if (!phone) return Alert.alert("Validation", "Phone number is required");
+    //if (!phone) return Alert.alert("Validation", "Phone number is required");
 
     try {
       setSaving(true);

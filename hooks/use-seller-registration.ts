@@ -105,8 +105,7 @@ export const useSellerRegistration = () => {
           !formData.email ||
           !formData.password ||
           !formData.confirmPassword ||
-          !formData.name ||
-          !formData.phone
+          !formData.name
         ) {
           Alert.alert("Error", "Please fill all required fields");
           return false;
@@ -126,7 +125,7 @@ export const useSellerRegistration = () => {
           Alert.alert("Error", "Please enter valid email.");
           return false;
         }
-        if (!isValidPhone(formData.phone)) {
+        if (formData.phone && !isValidPhone(formData.phone)) {
           Alert.alert("Error", "Please enter valid 10 digit phone number.");
           return false;
         }

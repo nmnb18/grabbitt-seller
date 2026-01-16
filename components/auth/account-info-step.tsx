@@ -33,7 +33,7 @@ export const AccountInfoStep: React.FC<AccountInfoStepProps> = ({
             />
 
             <FormTextInput
-                label="Phone Number *"
+                label="Phone Number"
                 value={formData.phone}
                 onChangeText={(value) => onFormDataChange('phone', value)}
                 keyboardType="phone-pad"

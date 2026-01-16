@@ -16,7 +16,7 @@ export default function SellerRedeemQR() {
   const { user } = useAuthStore();
   const theme = useTheme();
   const router = useRouter();
-  const { primary, onPrimary } = theme.colors;
+  const { primary, accent } = theme.colors;
 
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
@@ -42,11 +42,13 @@ export default function SellerRedeemQR() {
   }
 
   if (!cameraPermission.granted) {
+    const isDenied = !cameraPermission.canAskAgain;
     return (
       <PermissionView
         onRequestPermission={requestCameraPermission}
         primary={primary}
-        onPrimary={onPrimary}
+        onPrimary={accent}
+        isDenied={isDenied}
       />
     );
   }
