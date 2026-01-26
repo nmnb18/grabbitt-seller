@@ -2,7 +2,7 @@
   "expo": {
     "name": "Grabbitt",
     "slug": "grabbitt",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/ios-app-icon.png",
     "scheme": "grabbitt",
@@ -14,7 +14,7 @@
       "googleServicesFile": "./GoogleService-Info.plist",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
-        "NSCameraUsageDescription":"We use your camera so you can capture store images, product photos, and documents needed to set up and manage your account.",
+        "NSCameraUsageDescription": "We use your camera so you can capture store images, product photos, and documents needed to set up and manage your account.",
         "NSPhotoLibraryUsageDescription": "We use your photo library so you can upload store images, product photos, and documents needed to set up and manage your account.",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "We use your location to automatically fill your store address and save accurate latitude and longitude. This helps us show your store to nearby users.",
         "NSLocationAlwaysUsageDescription": "We use your location to automatically fill your store address and save accurate latitude and longitude. This helps us show your store to nearby users.",
