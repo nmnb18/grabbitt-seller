@@ -3,11 +3,21 @@ import { LinearGradient } from "expo-linear-gradient";
 import { StyleSheet, View } from "react-native";
 import { Text } from "react-native-paper";
 
-export const ScannerOverlay = () => (
+interface ScannerOverlayProps {
+    title?: string;
+    subtitle?: string;
+    bottomText?: string;
+}
+
+export const ScannerOverlay = ({ 
+    title = "Scan QR Code", 
+    subtitle = "Align QR inside the frame",
+    bottomText = "Scan to award rewards"
+}: ScannerOverlayProps) => (
     <View style={styles.overlay}>
         <LinearGradient colors={["rgba(0,0,0,0.7)", "transparent"]} style={styles.topOverlay}>
-            <Text style={styles.topTitle}>Scan QR Code</Text>
-            <Text style={styles.topSubtitle}>Align QR inside the frame</Text>
+            <Text style={styles.topTitle}>{title}</Text>
+            <Text style={styles.topSubtitle}>{subtitle}</Text>
         </LinearGradient>
 
         <View style={styles.frame}>
@@ -19,7 +29,7 @@ export const ScannerOverlay = () => (
 
         <LinearGradient colors={["transparent", "rgba(0,0,0,0.7)"]} style={styles.bottomOverlay}>
             <MaterialCommunityIcons name="qrcode-scan" size={42} color="#FFF" />
-            <Text style={styles.bottomText}>Scan to earn rewards</Text>
+            <Text style={styles.bottomText}>{bottomText}</Text>
         </LinearGradient>
     </View>
 );
