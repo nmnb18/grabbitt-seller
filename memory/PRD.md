@@ -20,180 +20,198 @@ Grabbitt is a customer loyalty app that lets users earn reward points at nearby 
 - axios
 - firebase (external backend)
 
-## User Personas
-1. **Customer/User**: Earns loyalty points by showing QR at stores
-2. **Seller**: Scans customer QR to award points (separate app)
-
-## Core Requirements (Functional)
-### QR Code System
-- **User QR**: Unique, permanent, non-editable QR generated at signup
-- **Redemption QR**: Single-use, time-bound (handled by backend)
-
-### Performance Requirements
-- Work with low internet
-- Work on slow devices
-- Minimal steps at checkout
-
 ---
 
 ## What's Been Implemented
 
-### Session 1 (Jan 27, 2025) - Initial Setup & QR Feature
-
-#### ✅ QR Feature Overhaul
+### Session 1 - QR Feature Overhaul
 - Removed QR scanning feature (users show QR, sellers scan)
-- Created `MyQRCard` component (`/components/qr/my-qr-card.tsx`)
-- Created `my-qr.tsx` screen replacing scan-qr tab
+- Created `MyQRCard` component with loading/placeholder states
 - QR display on Home screen (compact tappable card)
 - QR display on Profile page (full with share)
-- Updated navigation (drawer + tabs)
 
-### Session 2 (Jan 27, 2025) - Production Readiness Refactoring
+### Session 2 - Production Readiness
 
-#### ✅ Code Architecture Improvements
-
-**Utils Layer** (`/app/utils/`)
-- `constants.ts` - Centralized app constants, business types, status metadata
-- `formatters.ts` - Date, currency, phone, points formatting utilities
-- `errorHandler.ts` - Unified error handling with alerts and logging
-- `styles.ts` - Common reusable styles (layout, card, text, button)
-- `helper.ts` - Enhanced with debounce, delay, isEmpty, safeJsonParse utilities
+#### Utils Layer (`/app/utils/`)
+- `constants.ts` - Centralized constants
+- `formatters.ts` - Date, currency, formatting utilities
+- `errorHandler.ts` - Unified error handling
+- `styles.ts` - Reusable style patterns
+- `helper.ts` - Utility functions (debounce, isEmpty, etc.)
 - `app-routes.ts` - Type-safe route definitions
-- `index.ts` - Barrel export for easy imports
 
-**Services Layer** (`/app/services/`)
-- `api.ts` - Centralized API service (user, store, wallet, redemption, perks APIs)
-- `axiosInstance.ts` - Enhanced with better error handling & token refresh
-- `userService.ts` - Refactored to use new API service
-- `index.ts` - Barrel export
+#### Services Layer (`/app/services/`)
+- `api.ts` - Centralized API service
+- `axiosInstance.ts` - Enhanced with 401 handling
 
-**Hooks Layer** (`/app/hooks/`)
-- `useRefresh.ts` - Generic data fetching with loading/error states
-- `useForm.ts` - Form state management with validation
-- `index.ts` - Barrel export
+#### Hooks Layer (`/app/hooks/`)
+- `useRefresh.ts` - Generic data fetching
+- `useForm.ts` - Form state management
 
-**Components Layer**
-- `/components/common/index.tsx` - Reusable UI: Spacer, Divider, Badge, IconButton, InfoRow, EmptyStateView, SectionHeader
-- `/components/common/ScreenWrapper.tsx` - Consistent screen layout wrapper
-- `/components/shared/loading-view.tsx` - Enhanced with LoadingPlaceholder, ErrorView components
-- `/components/shared/index.ts` - Barrel export
-- `/components/ui/index.ts` - Barrel export
+#### Common Components (`/app/components/common/`)
+- Spacer, Divider, Badge, IconButton, InfoRow, EmptyStateView, SectionHeader
 
-**Types Layer** (`/app/types/`)
-- `auth.ts` - Added UserQRCode interface
-- `index.ts` - Barrel export for all types
+### Session 3 - Navigation & Error Handling ✅
 
-#### ✅ UI/UX Improvements
-- Android swipe back gesture handling fixed (GestureHandlerRootView)
-- Drawer menu with proper test IDs for automation
-- QR card with loading/placeholder states
-- Consistent external links from constants
+#### Navigation Improvements
+1. **Enhanced GradientHeader** (`/app/components/shared/app-header.tsx`)
+   - Proper back navigation with `useNavigation().canGoBack()` check
+   - Fallback to home screen when no back history
+   - Touch feedback on back button
+   - Added `testID` support for testing
 
-#### ✅ Code Quality
-- Removed duplicate business types definition
-- Cleaned up unused imports (BackHandler, FAB)
-- Proper TypeScript types across new utilities
-- Consistent error handling pattern
+2. **BackHeader & BackHeaderV2** - Alternative header styles for different screens
+
+3. **Screen-level Navigation**
+   - All screens now use `useNavigation` for proper back handling
+   - Consistent fallback to `/(drawer)/(tabs)/home` when stack is empty
+   - Fixed redemption QR "Done" button to go home properly
+
+#### Error Handling System
+1. **New Error Components** (`/app/components/shared/screen-error.tsx`)
+   - `ScreenError` - Full-screen error with retry
+   - `NetworkError` - WiFi/connection issues
+   - `NotFoundError` - 404 cases
+   - `PermissionError` - Access denied
+   - `InlineError` - Smaller error display for sections
+
+2. **Store Details** - Now shows proper error states instead of auto-navigating back:
+   - Network error with retry
+   - Store not found
+   - General errors with message
+
+3. **Redemption Flow** - Improved error handling:
+   - Parse errors don't auto-navigate away
+   - Better error messages
+   - Consistent navigation patterns
+
+#### Fixed Issues
+- Removed unused `subscription-watcher.ts` import from authStore
+- Fixed Android swipe back gesture
+- Consistent back navigation across all screens
+- Better UX when errors occur (show error, don't auto-navigate)
 
 ---
 
-## File Structure (After Refactoring)
+## File Structure
 
 ```
 /app/
-├── app/                    # Expo Router screens
+├── app/
 │   ├── (drawer)/
 │   │   ├── (tabs)/
 │   │   │   ├── home.tsx
-│   │   │   ├── my-qr.tsx     # NEW
+│   │   │   ├── my-qr.tsx
 │   │   │   ├── wallet.tsx
 │   │   │   └── _layout.tsx
 │   │   ├── profile.tsx
 │   │   ├── store/
+│   │   │   └── store-details.tsx  ✅ Enhanced
 │   │   ├── redeem/
+│   │   │   ├── redeem-home.tsx    ✅ Enhanced
+│   │   │   ├── redemption-qr.tsx  ✅ Enhanced
+│   │   │   └── redemption-history.tsx
 │   │   └── _layout.tsx
-│   ├── auth/
-│   └── _layout.tsx
+│   └── auth/
 ├── components/
-│   ├── common/              # NEW - Reusable components
+│   ├── common/
 │   │   ├── index.tsx
 │   │   └── ScreenWrapper.tsx
-│   ├── home/
-│   ├── modals/
-│   ├── perks/
-│   ├── profile/
-│   ├── qr/                  # NEW
+│   ├── qr/
 │   │   └── my-qr-card.tsx
 │   ├── shared/
 │   │   ├── index.ts
-│   │   ├── app-header.tsx
-│   │   └── loading-view.tsx
-│   ├── store/
-│   ├── ui/
-│   │   ├── index.ts         # NEW
-│   │   └── ...
-│   ├── wallet/
-│   └── wrappers/
+│   │   ├── app-header.tsx      ✅ Enhanced
+│   │   ├── loading-view.tsx
+│   │   └── screen-error.tsx    ✅ NEW
+│   └── ui/
 ├── hooks/
-│   ├── index.ts             # NEW
-│   ├── useForm.ts           # NEW
-│   ├── useRefresh.ts        # NEW
-│   └── ...
+│   ├── index.ts
+│   ├── useForm.ts
+│   └── useRefresh.ts
 ├── services/
-│   ├── index.ts             # NEW
-│   ├── api.ts               # NEW
-│   ├── axiosInstance.ts     # IMPROVED
-│   └── ...
+│   ├── index.ts
+│   ├── api.ts
+│   └── axiosInstance.ts
 ├── store/
-│   └── authStore.ts
-├── types/
-│   ├── index.ts             # NEW
-│   ├── auth.ts              # IMPROVED
-│   └── ...
+│   └── authStore.ts            ✅ Fixed import
 └── utils/
-    ├── index.ts             # NEW
-    ├── constants.ts         # NEW (replaces constant.ts)
-    ├── errorHandler.ts      # NEW
-    ├── formatters.ts        # NEW
-    ├── styles.ts            # NEW
-    └── ...
+    ├── index.ts
+    ├── constants.ts
+    ├── errorHandler.ts
+    ├── formatters.ts
+    └── styles.ts
+```
+
+---
+
+## Navigation Flow
+
+```
+Home (default fallback)
+├── Store Details → Back to Home/Previous
+├── Redeem Home → Back to Store/Previous
+│   └── Redemption QR → Done → Home
+├── Redemption History → Back to Home/Previous
+├── Perks History → Back to Home/Previous
+└── Profile → Back to Home/Previous
+```
+
+---
+
+## Error Handling Patterns
+
+### Screen-Level Errors
+```typescript
+if (error && !loading) {
+  return (
+    <SafeAreaView>
+      <GradientHeader title="..." onBackPress={handleBack} />
+      {error.type === 'network' ? (
+        <NetworkError onRetry={fetchData} />
+      ) : error.type === 'notfound' ? (
+        <NotFoundError itemName="Store" />
+      ) : (
+        <ScreenError message={error.message} onRetry={fetchData} />
+      )}
+    </SafeAreaView>
+  );
+}
+```
+
+### Navigation Handler Pattern
+```typescript
+const handleBack = () => {
+  if (navigation.canGoBack()) {
+    router.back();
+  } else {
+    router.replace("/(drawer)/(tabs)/home");
+  }
+};
 ```
 
 ---
 
 ## Prioritized Backlog
 
-### P0 (Critical - Backend Required)
-- [ ] Backend: Generate unique QR on user registration
-- [ ] Backend: Store QR in `customer_profile.qr_code`
-- [ ] Backend: API to return QR data in user details response
+### P0 (Critical - Backend)
+- [ ] Generate unique QR on user registration
+- [ ] Return QR in user profile API
 
 ### P1 (Important)
-- [ ] Offline QR caching (store base64 locally)
-- [ ] QR brightness boost when displaying
-- [ ] Pull-to-refresh QR data
-- [ ] Error boundary implementation
+- [ ] Offline QR caching
+- [ ] QR brightness boost
+- [ ] Unit tests for utilities
 
 ### P2 (Nice to Have)
-- [ ] Save QR to photo gallery
-- [ ] QR fullscreen mode with max brightness
-- [ ] Animated QR display effect
-- [ ] Performance monitoring (Sentry)
+- [ ] Save QR to gallery
+- [ ] Error boundary for crash resilience
+- [ ] Sentry integration
 
 ---
 
 ## Next Tasks
-1. Coordinate with backend team to implement QR generation on signup
-2. Test QR display once backend returns data
-3. Add offline QR caching for low connectivity
-4. Implement brightness control for QR display
-5. Add unit tests for utility functions
-
----
-
-## Notes
-- QR is currently showing placeholder until backend returns `qr_code` in user profile
-- Backend needs to generate QR with format: `grabbitt://{unique_id}`
-- QR should be generated once and never change (permanent)
-- All external links centralized in `utils/constants.ts`
-- Use barrel exports (`import { X } from "@/utils"`) for cleaner imports
+1. Backend: Implement QR generation
+2. Add offline QR storage
+3. Test all navigation flows on Android/iOS
+4. Add error boundary wrapper
