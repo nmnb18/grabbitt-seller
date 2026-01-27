@@ -287,15 +287,6 @@ export default function UserHome({
 
                 <View style={{ height: 80 }} />
             </ScrollView>
-
-            {/* FAB */}
-            <FAB
-                icon="qrcode-scan"
-                label=""
-                style={[styles.fab, { backgroundColor: theme.colors.tertiary }]}
-                onPress={() => router.push("/(drawer)/(tabs)/scan-qr")}
-                color={theme.colors.onSurface}
-            />
         </View>
     );
 }
