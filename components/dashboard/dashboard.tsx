@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
     heroShopName: { color: "#FFF", fontWeight: "700", fontSize: 22, marginBottom: 12 },
     heroChip: { backgroundColor: "rgba(255,255,255,0.8)", marginBottom: 8 },
     heroChipText: { fontWeight: "600" },
-    heroSubLabel: { color: "#FFF", fontSize: 14, textAlign: "center", fontWeight: 500, marginBottom: 16 },
+    heroSubLabel: { color: "#FFF", fontSize: 14, textAlign: "center", fontWeight: "500", marginBottom: 16 },
 
     statsSection: { marginBottom: 24 },
     refreshWrapper: {
@@ -290,13 +290,10 @@ const styles = StyleSheet.create({
     },
     statsGrid: { flexDirection: "row", gap: 12, marginBottom: 12 },
 
-
     section: { marginBottom: 24 },
+    sectionTitle: { fontWeight: "600", marginBottom: 12 },
 
-    expiredCard: { padding: 20, borderRadius: 16 },
-    expiredText: { textAlign: "center", fontSize: 16, marginBottom: 12 },
-
-    bottomSpacer: { height: 24 },
+    bottomSpacer: { height: 100 },
 
     actionCard: { marginBottom: 12, borderRadius: 16 },
     actionCardContent: { flexDirection: "row", alignItems: "center", paddingVertical: 16 },
@@ -307,5 +304,4 @@ const styles = StyleSheet.create({
     actionTextContainer: { flex: 1 },
     actionTitle: { fontWeight: "600", marginBottom: 4 },
     actionSubtitle: { opacity: 0.8 },
-
 });
