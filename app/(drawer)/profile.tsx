@@ -1,6 +1,7 @@
 
 import AccountInformation from '@/components/profile/account-information';
 import LocationInformation from '@/components/profile/location-details';
+import MyQRCard from '@/components/qr/my-qr-card';
 import { GradientHeader } from '@/components/shared/app-header';
 import { Button as CustomButton } from '@/components/ui/paper-button';
 import { useTheme } from '@/hooks/use-theme-color';
