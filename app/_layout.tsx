@@ -1,4 +1,5 @@
 import { useTheme } from "@/hooks/use-theme-color";
+import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import { useFonts } from "expo-font";
 import * as Linking from "expo-linking";
 import { Stack, useRouter } from "expo-router";
@@ -70,12 +71,14 @@ export default function RootLayout() {
   if (!loaded) return null;
 
   return (
-    <SafeAreaProvider>
-      <PaperProvider theme={theme}>
-        {/* FIXED STATUS BAR */}
-        <StatusBar translucent backgroundColor="transparent" />
-        <Stack screenOptions={{ headerShown: false }} />
-      </PaperProvider>
-    </SafeAreaProvider>
+    <ErrorBoundary>
+      <SafeAreaProvider>
+        <PaperProvider theme={theme}>
+          {/* FIXED STATUS BAR */}
+          <StatusBar translucent backgroundColor="transparent" />
+          <Stack screenOptions={{ headerShown: false }} />
+        </PaperProvider>
+      </SafeAreaProvider>
+    </ErrorBoundary>
   );
 }
