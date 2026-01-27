@@ -23,11 +23,18 @@ export interface UserSettings {
     email_notifications: boolean;
     push_notifications: boolean;
 }
+
+export interface UserQRCode {
+    qr_id: string;
+    qr_code_base64: string;
+    created_at?: FirebaseTimestamp;
+}
 export interface UserProfile {
     user_id: string;
     account: UserAccount;
     location: UserLocation;
     preferences: UserSettings;
+    qr_code?: UserQRCode;
     created_at?: FirebaseTimestamp;
     updated_at?: FirebaseTimestamp;
     last_active?: FirebaseTimestamp;
