@@ -1,4 +1,3 @@
-import { QrCode } from "@/components/shared/qr-code";
 import { Button } from "@/components/ui/paper-button";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useAuthStore } from "@/store/authStore";
