@@ -1,20 +1,13 @@
 import SellerDashboard from "@/components/dashboard/dashboard";
 import DashboardSkeleton from "@/components/skeletons/dashboard";
 import withSkeletonTransition from "@/components/wrappers/withSkeletonTransition";
-import { useSellerQR } from "@/hooks/use-qr";
 import { useTheme } from "@/hooks/use-theme-color";
 import api from "@/services/axiosInstance";
 import { useFocusEffect } from "expo-router";
 import React, { useCallback, useState } from "react";
-import {
-  Alert,
-  StyleSheet
-} from "react-native";
+import { Alert, StyleSheet } from "react-native";
 
 const DashboardContainer = withSkeletonTransition(DashboardSkeleton)(SellerDashboard);
-
-
-
 
 // ------------------------------
 // MAIN DASHBOARD
@@ -23,18 +16,10 @@ const DashboardContainer = withSkeletonTransition(DashboardSkeleton)(SellerDashb
 export default function SellerDashboardContainer() {
   const theme = useTheme();
 
-
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing,] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [hasData, setHasData] = useState(false);
-
-
-  // Shared QR hook
-  const { activeQR, fetchActiveQR, loadingQR } = useSellerQR({
-    autoLoad: true,
-    pollIntervalMs: 60000,
-  });
 
   // ------------------------------
   // LOAD DASHBOARD DATA
