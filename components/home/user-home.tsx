@@ -22,6 +22,7 @@ import { useTheme, useThemeColor } from "@/hooks/use-theme-color";
 import { SimplifiedSeller } from "@/types/seller";
 import { PulsingChip } from "../ui/pluse-chip";
 import MyQRCard from "@/components/qr/my-qr-card";
+import { BUSINESS_TYPES, PLACEHOLDER_IMAGES } from "@/utils/constants";
 
 export const BUSINESS_TYPES = [
     { label: 'All', value: 'all' },
