@@ -75,21 +75,24 @@ Grabbitt is a customer loyalty app that lets users earn reward points at nearby 
    - `PermissionError` - Access denied
    - `InlineError` - Smaller error display for sections
 
-2. **Store Details** - Now shows proper error states instead of auto-navigating back:
-   - Network error with retry
-   - Store not found
-   - General errors with message
+2. **Global Error Boundary** (`/app/components/shared/ErrorBoundary.tsx`) ✅ NEW
+   - Catches all React crashes app-wide
+   - Shows friendly "Oops!" screen with restart options
+   - "Restart App" button uses Expo Updates to reload
+   - "Try Again" button attempts state reset
+   - Shows error details in development mode
+   - Contact support info displayed
 
-3. **Redemption Flow** - Improved error handling:
-   - Parse errors don't auto-navigate away
-   - Better error messages
-   - Consistent navigation patterns
+3. **Screen Error Boundary** (`/app/components/shared/ScreenErrorBoundary.tsx`) ✅ NEW
+   - Lightweight boundary for individual screens
+   - Allows screen-level recovery without full app restart
+
+4. **Store Details** - Now shows proper error states instead of auto-navigating back
 
 #### Fixed Issues
 - Removed unused `subscription-watcher.ts` import from authStore
 - Fixed Android swipe back gesture
 - Consistent back navigation across all screens
-- Better UX when errors occur (show error, don't auto-navigate)
 
 ---
 
