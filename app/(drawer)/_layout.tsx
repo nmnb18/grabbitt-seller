@@ -2,6 +2,7 @@ import BlurLoader from "@/components/ui/blur-loader";
 import { GradientIcon } from "@/components/ui/gradient-icon";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useAuthStore } from "@/store/authStore";
+import { EXTERNAL_LINKS } from "@/utils/constants";
 import { Ionicons } from "@expo/vector-icons";
 import Constants from "expo-constants";
 import { useRouter } from "expo-router";
@@ -17,29 +18,37 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export default function DrawerLayout() {
   const theme = useTheme();
 
   return (
-    <Drawer
-      screenOptions={{
-        headerShown: false,
-        drawerActiveTintColor: theme.colors.primary,
-        drawerLabelStyle: { fontSize: 16, color: theme.colors.onBackground },
-      }}
-      drawerContent={() => <CustomDrawerContent />}
-    >
-      <Drawer.Screen
-        name="(tabs)"
-        options={{
-          title: "Dashboard",
-          drawerIcon: ({ color, size }) => (
-            <Ionicons name="home-outline" size={size} color={color} />
-          ),
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Drawer
+        screenOptions={{
+          headerShown: false,
+          drawerActiveTintColor: theme.colors.primary,
+          drawerLabelStyle: { fontSize: 16, color: theme.colors.onBackground },
+          swipeEnabled: true,
+          swipeEdgeWidth: 50,
+          gestureHandlerProps: {
+            activeOffsetX: [-20, 20],
+          },
         }}
-      />
-    </Drawer>
+        drawerContent={() => <CustomDrawerContent />}
+      >
+        <Drawer.Screen
+          name="(tabs)"
+          options={{
+            title: "Dashboard",
+            drawerIcon: ({ color, size }) => (
+              <Ionicons name="home-outline" size={size} color={color} />
+            ),
+          }}
+        />
+      </Drawer>
+    </GestureHandlerRootView>
   );
 }
 
@@ -56,9 +65,8 @@ function CustomDrawerContent() {
       { text: "Cancel", style: "cancel" },
       {
         text: "Logout",
+        style: "destructive",
         onPress: async () => {
-          // Close drawer immediately
-          // Add small delay so drawer animation finishes
           await logout(user?.uid ?? "");
           router.replace("/auth/login");
         },
@@ -66,8 +74,13 @@ function CustomDrawerContent() {
     ]);
   };
 
-  const MenuItem = ({ label, icon, onPress }: any) => (
-    <TouchableOpacity style={styles.menuItem} onPress={onPress}>
+  const MenuItem = ({ label, icon, onPress, testID }: { label: string; icon: string; onPress: () => void; testID?: string }) => (
+    <TouchableOpacity 
+      style={styles.menuItem} 
+      onPress={onPress}
+      data-testid={testID}
+      activeOpacity={0.7}
+    >
       <GradientIcon name={icon} size={22} />
       <Text style={styles.menuLabel}>{label}</Text>
     </TouchableOpacity>
@@ -78,33 +91,80 @@ function CustomDrawerContent() {
       {loading && <BlurLoader />}
 
       <View style={styles.container}>
-        <ScrollView style={styles.menuContainer}>
+        <ScrollView style={styles.menuContainer} showsVerticalScrollIndicator={false}>
 
           <MenuItem
             label="Dashboard"
             icon="grid"
+            testID="drawer-dashboard"
             onPress={() => router.push("/(drawer)/(tabs)/dashboard")}
           />
-          <MenuItem label="Profile" icon="account" onPress={() => router.push("/(drawer)/profile-setup")} />
+          
+          <MenuItem 
+            label="Profile" 
+            icon="account" 
+            testID="drawer-profile"
+            onPress={() => router.push("/(drawer)/profile-setup")} 
+          />
 
-          <MenuItem label="Plans" icon="star" onPress={() => router.push("/(drawer)/subscription")} />
+          <MenuItem 
+            label="Plans" 
+            icon="star" 
+            testID="drawer-plans"
+            onPress={() => router.push("/(drawer)/subscription")} 
+          />
 
+          <MenuItem 
+            label="Plans History" 
+            icon="history" 
+            testID="drawer-plans-history"
+            onPress={() => router.push("/(drawer)/subscription-history")} 
+          />
 
-          <MenuItem label="Plans History" icon="history" onPress={() => router.push("/(drawer)/subscription-history")} />
+          <MenuItem 
+            label="Redemption" 
+            icon="star-four-points-outline" 
+            testID="drawer-redemption"
+            onPress={() => router.push("/(drawer)/redeem")} 
+          />
+          
+          <MenuItem 
+            label="What's New" 
+            icon="gift-outline" 
+            testID="drawer-whats-new"
+            onPress={() => router.push("/(drawer)/whats-new/whats-new-home")} 
+          />
+          
+          <MenuItem 
+            label="Contact Us" 
+            icon="mail" 
+            testID="drawer-contact"
+            onPress={() => Linking.openURL(`mailto:${EXTERNAL_LINKS.SUPPORT_EMAIL}`)} 
+          />
 
+          <MenuItem 
+            label="Privacy Policy" 
+            icon="lock" 
+            testID="drawer-privacy"
+            onPress={() => Linking.openURL(EXTERNAL_LINKS.PRIVACY_POLICY)} 
+          />
 
-          <MenuItem label="Redemption" icon="star-four-points-outline" onPress={() => router.push("/(drawer)/redeem")} />
-          <MenuItem label="What's New" icon="gift-outline" onPress={() => router.push("/(drawer)/whats-new/whats-new-home")} />
-          <MenuItem label="Contact Us" icon="mail" onPress={() => Linking.openURL("mailto:support@grabbitt.in")} />
-
-          <MenuItem label="Privacy Policy" icon="lock" onPress={() => Linking.openURL("https://grabbitt.in/privacy")} />
-
-          <MenuItem label="Terms & Conditions" icon="file" onPress={() => Linking.openURL("https://grabbitt.in/terms")} />
+          <MenuItem 
+            label="Terms & Conditions" 
+            icon="file" 
+            testID="drawer-terms"
+            onPress={() => Linking.openURL(EXTERNAL_LINKS.TERMS_CONDITIONS)} 
+          />
 
         </ScrollView>
 
         <View style={styles.logoutContainer}>
-          <MenuItem label="Logout" icon="logout" onPress={handleLogout} />
+          <MenuItem 
+            label="Logout" 
+            icon="logout" 
+            testID="drawer-logout"
+            onPress={handleLogout} 
+          />
         </View>
 
         <View style={styles.footer}>
