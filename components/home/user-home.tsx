@@ -24,14 +24,7 @@ import { PulsingChip } from "../ui/pluse-chip";
 import MyQRCard from "@/components/qr/my-qr-card";
 import { BUSINESS_TYPES, PLACEHOLDER_IMAGES } from "@/utils/constants";
 
-export const BUSINESS_TYPES = [
-    { label: 'All', value: 'all' },
-    { label: 'Restaurant/Cafe', value: 'restaurant' },
-    { label: 'Retail Store', value: 'retail' },
-    { label: 'Professional Services', value: 'service' },
-    { label: 'FMCG/Manufacturer', value: 'fmcg' },
-    { label: 'Other', value: 'other' },
-];
+import { BUSINESS_TYPES, PLACEHOLDER_IMAGES } from "@/utils/constants";
 
 // Props interface
 interface UserHomeProps {
