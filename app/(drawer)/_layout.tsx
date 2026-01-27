@@ -94,6 +94,13 @@ function CustomDrawerContent() {
             icon="home"
             onPress={() => router.push("/(drawer)/(tabs)/home")}
           />
+          
+          <MenuItem
+            label="My QR Code"
+            icon="qrcode"
+            onPress={() => router.push("/(drawer)/(tabs)/my-qr")}
+          />
+          
           <MenuItem label="Redemptions" icon="history" onPress={() => router.push("/(drawer)/redeem/redemption-history")} />
 
           <MenuItem label="Perks" icon="gift" onPress={() => router.push("/(drawer)/perks-history")} />
