@@ -2,6 +2,7 @@ import BlurLoader from "@/components/ui/blur-loader";
 import { GradientIcon } from "@/components/ui/gradient-icon";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useAuthStore } from "@/store/authStore";
+import { EXTERNAL_LINKS } from "@/utils/constants";
 import { Ionicons } from "@expo/vector-icons";
 import Constants from "expo-constants";
 import { useRouter } from "expo-router";
@@ -15,7 +16,6 @@ import {
   Text,
   TouchableOpacity,
   View,
-  BackHandler,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -65,9 +65,8 @@ function CustomDrawerContent() {
       { text: "Cancel", style: "cancel" },
       {
         text: "Logout",
+        style: "destructive",
         onPress: async () => {
-          // Close drawer immediately
-          // Add small delay so drawer animation finishes
           await logout(user?.uid ?? "");
           router.replace("/auth/login");
         },
@@ -75,8 +74,13 @@ function CustomDrawerContent() {
     ]);
   };
 
-  const MenuItem = ({ label, icon, onPress }: any) => (
-    <TouchableOpacity style={styles.menuItem} onPress={onPress}>
+  const MenuItem = ({ label, icon, onPress, testID }: { label: string; icon: string; onPress: () => void; testID?: string }) => (
+    <TouchableOpacity 
+      style={styles.menuItem} 
+      onPress={onPress}
+      data-testid={testID}
+      activeOpacity={0.7}
+    >
       <GradientIcon name={icon} size={22} />
       <Text style={styles.menuLabel}>{label}</Text>
     </TouchableOpacity>
@@ -87,43 +91,82 @@ function CustomDrawerContent() {
       {loading && <BlurLoader />}
 
       <View style={styles.container}>
-        <ScrollView style={styles.menuContainer}>
-
+        <ScrollView 
+          style={styles.menuContainer}
+          showsVerticalScrollIndicator={false}
+        >
           <MenuItem
             label="Home"
             icon="home"
+            testID="drawer-home"
             onPress={() => router.push("/(drawer)/(tabs)/home")}
           />
           
           <MenuItem
             label="My QR Code"
             icon="qrcode"
+            testID="drawer-my-qr"
             onPress={() => router.push("/(drawer)/(tabs)/my-qr")}
           />
           
-          <MenuItem label="Redemptions" icon="history" onPress={() => router.push("/(drawer)/redeem/redemption-history")} />
+          <MenuItem 
+            label="Redemptions" 
+            icon="history" 
+            testID="drawer-redemptions"
+            onPress={() => router.push("/(drawer)/redeem/redemption-history")} 
+          />
 
-          <MenuItem label="Perks" icon="gift" onPress={() => router.push("/(drawer)/perks-history")} />
+          <MenuItem 
+            label="Perks" 
+            icon="gift" 
+            testID="drawer-perks"
+            onPress={() => router.push("/(drawer)/perks-history")} 
+          />
 
-          <MenuItem label="Profile" icon="account" onPress={() => router.push("/(drawer)/profile")} />
+          <MenuItem 
+            label="Profile" 
+            icon="account" 
+            testID="drawer-profile"
+            onPress={() => router.push("/(drawer)/profile")} 
+          />
 
-          <MenuItem label="Contact Us" icon="mail" onPress={() => Linking.openURL("mailto:support@grabbitt.in")} />
+          <MenuItem 
+            label="Contact Us" 
+            icon="mail" 
+            testID="drawer-contact"
+            onPress={() => Linking.openURL(`mailto:${EXTERNAL_LINKS.SUPPORT_EMAIL}`)} 
+          />
 
-          <MenuItem label="Privacy Policy" icon="lock" onPress={() => Linking.openURL("https://grabbitt.in/privacy")} />
+          <MenuItem 
+            label="Privacy Policy" 
+            icon="lock" 
+            testID="drawer-privacy"
+            onPress={() => Linking.openURL(EXTERNAL_LINKS.PRIVACY_POLICY)} 
+          />
 
-          <MenuItem label="Terms & Conditions" icon="file" onPress={() => Linking.openURL("https://grabbitt.in/terms")} />
-
+          <MenuItem 
+            label="Terms & Conditions" 
+            icon="file" 
+            testID="drawer-terms"
+            onPress={() => Linking.openURL(EXTERNAL_LINKS.TERMS_CONDITIONS)} 
+          />
         </ScrollView>
 
         <View style={styles.logoutContainer}>
-          <MenuItem label="Logout" icon="logout" onPress={handleLogout} />
+          <MenuItem 
+            label="Logout" 
+            icon="logout" 
+            testID="drawer-logout"
+            onPress={handleLogout} 
+          />
         </View>
 
         <View style={styles.footer}>
           <Text style={styles.footerText}>
             Version {version}
             {"\n"}
-            Maintained & Developed by <Text style={styles.footerHighlight}>Grabbitt Team</Text>
+            Maintained & Developed by{" "}
+            <Text style={styles.footerHighlight}>Grabbitt Team</Text>
           </Text>
         </View>
       </View>
