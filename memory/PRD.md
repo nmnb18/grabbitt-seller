@@ -207,11 +207,12 @@ const handleBack = () => {
 - [ ] Offline QR caching
 - [ ] QR brightness boost
 - [ ] Unit tests for utilities
+- [ ] Sentry integration for production error tracking
 
 ### P2 (Nice to Have)
 - [ ] Save QR to gallery
-- [ ] Error boundary for crash resilience
-- [ ] Sentry integration
+- [ ] Biometric lock for QR display
+- [ ] Push notification for points earned
 
 ---
 
