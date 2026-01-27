@@ -182,7 +182,7 @@ export default function RedemptionQRScreen() {
                 Alert.alert(
                     "Redemption Updated",
                     `Your redemption is now: ${updated.status.toUpperCase()}`,
-                    [{ text: "OK", onPress: () => router.navigate('/(drawer)/(tabs)/home') }]
+                    [{ text: "OK", onPress: handleGoHome }]
                 );
             }
         } catch (error) {
