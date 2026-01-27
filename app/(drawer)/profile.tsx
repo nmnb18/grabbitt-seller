@@ -247,6 +247,7 @@ const styles = StyleSheet.create({
     container: { flex: 1 },
     content: { flex: 1, marginTop: 24 },
     scrollContent: { paddingHorizontal: 16, paddingTop: 8 },
+    qrCard: { marginBottom: 16 },
 
     card: { marginBottom: 16, borderRadius: 16 },
     cardTitle: { fontWeight: '600', marginBottom: 12 },
