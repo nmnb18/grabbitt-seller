@@ -1,19 +1,30 @@
-import api from "@/services/axiosInstance";
+/**
+ * User Service
+ * User-related API calls and utilities
+ */
 
-export async function fetchNearbySellers(lat?: number, lng?: number) {
-    try {
-        const params: any = {};
+import { storeApi } from "./api";
+import { logError } from "@/utils/errorHandler";
+import { SimplifiedSeller } from "@/types/seller";
 
-        if (lat && lng) {
-            params.lat = lat;
-            params.lng = lng;
-        }
-
-        const response = await api.get("/getNearbySellers", { params });
-
-        return response.data;
-    } catch (error: any) {
-        console.log("getNearbySellers error:", error?.response?.data || error);
-        throw error;
-    }
+/**
+ * Fetch nearby sellers based on location
+ */
+export async function fetchNearbySellers(
+  lat?: number,
+  lng?: number
+): Promise<{ success: boolean; sellers: SimplifiedSeller[]; error?: string }> {
+  try {
+    return await storeApi.getNearbySellers(lat, lng);
+  } catch (error: any) {
+    logError("fetchNearbySellers", error);
+    return {
+      success: false,
+      sellers: [],
+      error: error?.response?.data?.error || "Failed to load sellers",
+    };
+  }
 }
+
+// Re-export from api service for convenience
+export { storeApi, userApi, walletApi, redemptionApi, perksApi } from "./api";
