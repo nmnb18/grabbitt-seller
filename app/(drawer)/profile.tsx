@@ -113,6 +113,9 @@ export default function UserProfile() {
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.scrollContent}
             >
+                {/* My QR Code Section */}
+                <MyQRCard size="large" showActions={true} style={styles.qrCard} />
+
                 {/* Profile Sections */}
                 <AccountInformation onOpenChangePassword={() => setShowPasswordSheet(true)} />
                 <LocationInformation />
