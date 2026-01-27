@@ -18,6 +18,7 @@ import { useTheme } from "@/hooks/use-theme-color";
 const StoreDetailsWithSkeleton = withSkeletonTransition(StoreDetailsSkeleton)(
     StoreDetailsScreen
 );
+
 interface StoreDetailsContainerProps {
     loading?: boolean;
     hasData?: boolean;
