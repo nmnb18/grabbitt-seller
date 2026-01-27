@@ -72,8 +72,6 @@ const ActionCard = ({
 interface SellerDashboardProps {
     // Data
     stats: any;
-    activeQR: any;
-
 
     // Loading states
     loading?: boolean;
@@ -87,7 +85,6 @@ export default function SellerDashboard({
     stats = {},
     loading = false,
     hasData = false,
-    activeQR = {},
     refreshing = false,
     onRefresh
 }: SellerDashboardProps) {
