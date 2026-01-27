@@ -295,6 +295,9 @@ export default function UserHome({
 const styles = StyleSheet.create({
     // ... your existing styles remain exactly the same
     container: { flex: 1 },
+    qrCard: {
+        marginBottom: 16,
+    },
 
     contact: {
         paddingHorizontal: 14,
