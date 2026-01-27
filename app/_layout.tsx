@@ -1,4 +1,5 @@
 import { useTheme } from "@/hooks/use-theme-color";
+import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import { endIAP, initIAP } from "@/services/iap";
 import { useFonts } from "expo-font";
 
@@ -27,7 +28,7 @@ export default function RootLayout() {
 
     const backAction = () => {
       if (exitAppRef.current) {
-        BackHandler.exitApp(); // EXIT APP
+        BackHandler.exitApp();
         return true;
       }
 
@@ -36,9 +37,9 @@ export default function RootLayout() {
 
       setTimeout(() => {
         exitAppRef.current = false;
-      }, 2000); // reset after 2 sec
+      }, 2000);
 
-      return true; // prevent default behavior
+      return true;
     };
 
     const backHandler = BackHandler.addEventListener(
@@ -49,7 +50,6 @@ export default function RootLayout() {
     return () => backHandler.remove();
   }, []);
 
-  // deep link handler
   useEffect(() => {
     const subscription = Linking.addEventListener("url", (event) => {
       const parsed = Linking.parse(event.url);
@@ -65,7 +65,6 @@ export default function RootLayout() {
   }, []);
 
   useEffect(() => {
-    // enables transparent status bar on Android
     SystemUI.setBackgroundColorAsync("transparent");
   }, []);
 
@@ -81,17 +80,16 @@ export default function RootLayout() {
     };
   }, []);
 
-
   if (!loaded) return null;
 
   return (
-    <SafeAreaProvider>
-      <PaperProvider theme={theme}>
-        {/* FIXED STATUS BAR */}
-        <StatusBar translucent backgroundColor={"transparent"} />
-
-        <Stack screenOptions={{ headerShown: false }} />
-      </PaperProvider>
-    </SafeAreaProvider>
+    <ErrorBoundary>
+      <SafeAreaProvider>
+        <PaperProvider theme={theme}>
+          <StatusBar translucent backgroundColor={"transparent"} />
+          <Stack screenOptions={{ headerShown: false }} />
+        </PaperProvider>
+      </SafeAreaProvider>
+    </ErrorBoundary>
   );
 }
