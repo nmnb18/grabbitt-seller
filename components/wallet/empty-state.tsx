@@ -22,7 +22,7 @@ export function EmptyState({ icon, title, message, onAction }: EmptyStateProps) 
         if (onAction) {
             onAction();
         } else {
-            router.navigate('/(drawer)/(tabs)/my-qr')
+            router.navigate('/(drawer)/(tabs)/redeem-qr')
         }
     };
 
@@ -52,9 +52,9 @@ export function EmptyState({ icon, title, message, onAction }: EmptyStateProps) 
                 <Button
                     variant="contained"
                     onPress={handleAction}
-                    icon="qrcode"
+                    icon="qrcode-scan"
                 >
-                    Show My QR
+                    Scan QR Code
                 </Button>
             </Card.Content>
         </Card>
