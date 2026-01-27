@@ -25,7 +25,7 @@ export default function MyQRCard({
   style,
 }: MyQRCardProps) {
   const theme = useTheme();
-  const { user } = useAuthStore();
+  const { user, loading } = useAuthStore();
 
   const qrData = user?.user?.customer_profile?.qr_code;
   const qrBase64 = qrData?.qr_code_base64;
@@ -33,9 +33,10 @@ export default function MyQRCard({
   const userName = user?.user?.customer_profile?.account?.name || user?.user?.name || "User";
 
   const isSmall = size === "small";
-  const qrSize = isSmall ? 120 : Dimensions.get("window").width - 100;
+  const qrSize = isSmall ? 100 : Math.min(Dimensions.get("window").width - 120, 280);
 
   const handleShare = async () => {
+    if (!qrId) return;
     try {
       await Share.share({
         message: `Scan my Grabbitt QR to earn rewards! My ID: ${qrId}`,
@@ -46,7 +47,8 @@ export default function MyQRCard({
     }
   };
 
-  if (!qrBase64) {
+  // Loading state
+  if (loading) {
     return (
       <Card
         style={[
@@ -58,7 +60,7 @@ export default function MyQRCard({
       >
         <Card.Content style={styles.loadingContent}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
-          <Text style={{ color: theme.colors.onSurface, marginTop: 12 }}>
+          <Text style={[styles.loadingText, { color: theme.colors.onSurfaceDisabled }]}>
             Loading your QR code...
           </Text>
         </Card.Content>
@@ -66,6 +68,51 @@ export default function MyQRCard({
     );
   }
 
+  // No QR state - show placeholder
+  if (!qrBase64) {
+    return (
+      <Card
+        style={[
+          styles.card,
+          { backgroundColor: theme.colors.surface },
+          isSmall && styles.cardSmall,
+          style,
+        ]}
+      >
+        <Card.Content style={styles.placeholderContent}>
+          <View style={[styles.placeholderIcon, { backgroundColor: theme.colors.surfaceVariant }]}>
+            <MaterialCommunityIcons
+              name="qrcode"
+              size={isSmall ? 40 : 64}
+              color={theme.colors.onSurfaceDisabled}
+            />
+          </View>
+          {!isSmall && (
+            <>
+              <Text style={[styles.placeholderTitle, { color: theme.colors.onSurface }]}>
+                QR Code Pending
+              </Text>
+              <Text style={[styles.placeholderText, { color: theme.colors.onSurfaceDisabled }]}>
+                Your unique QR code will appear here once generated
+              </Text>
+            </>
+          )}
+          {isSmall && (
+            <View style={styles.smallInfo}>
+              <Text style={[styles.smallTitle, { color: theme.colors.onSurface }]}>
+                My QR Code
+              </Text>
+              <Text style={[styles.smallSubtitle, { color: theme.colors.onSurfaceDisabled }]}>
+                Pending generation...
+              </Text>
+            </View>
+          )}
+        </Card.Content>
+      </Card>
+    );
+  }
+
+  // Small card variant
   if (isSmall) {
     return (
       <TouchableOpacity activeOpacity={0.9} style={style}>
