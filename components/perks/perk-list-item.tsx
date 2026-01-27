@@ -3,7 +3,7 @@ import { View, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { Surface, Text, Chip } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTheme } from "@/hooks/use-theme-color";
-import { PERK_STATUS_META } from "@/utils/constant";
+import { PERK_STATUS_META } from "@/utils/constants";
 import { UserPerkItem } from "@/types/perks";
 import { GradientText } from "../ui/gradient-text";
 
