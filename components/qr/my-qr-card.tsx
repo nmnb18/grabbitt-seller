@@ -352,4 +352,33 @@ const styles = StyleSheet.create({
     fontSize: 13,
     marginTop: 2,
   },
+  // Loading/placeholder styles
+  loadingText: {
+    marginTop: 12,
+    fontSize: 14,
+  },
+  placeholderContent: {
+    alignItems: "center",
+    paddingVertical: 40,
+    flexDirection: "row",
+    gap: 16,
+  },
+  placeholderIcon: {
+    width: 80,
+    height: 80,
+    borderRadius: 16,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  placeholderTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginTop: 16,
+  },
+  placeholderText: {
+    fontSize: 14,
+    textAlign: "center",
+    marginTop: 8,
+    paddingHorizontal: 20,
+  },
 });
