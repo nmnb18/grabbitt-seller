@@ -1,7 +1,7 @@
 // screens/wallet/redemption-history-container.tsx
 import React, { useState, useEffect, useCallback } from "react";
 import { Alert } from "react-native";
-import { useFocusEffect, useRouter } from "expo-router";
+import { useFocusEffect, useRouter, useNavigation } from "expo-router";
 
 import withSkeletonTransition from "@/components/wrappers/withSkeletonTransition";
 
