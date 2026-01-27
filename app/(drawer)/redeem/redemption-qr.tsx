@@ -14,7 +14,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTheme } from "@/hooks/use-theme-color";
 import { Button } from "@/components/ui/paper-button";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import { useRouter, useLocalSearchParams, useNavigation } from "expo-router";
 import { GradientHeader } from "@/components/shared/app-header";
 import { Redemption } from "@/types/redemptions";
 import api from "@/services/axiosInstance";
