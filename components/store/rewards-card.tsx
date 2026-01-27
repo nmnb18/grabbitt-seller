@@ -72,7 +72,7 @@ export const RewardsCard: React.FC<RewardsCardProps> = ({
   };
 
   return (
-    <Surface style={[styles.card, { backgroundColor: theme.colors.backdrop }]}>
+    <Surface style={[styles.card, { backgroundColor: theme.dark ? theme.colors.backdrop : theme.colors.surfaceVariant }]}>
       <TouchableOpacity style={styles.cardHeader} onPress={onToggle}>
         <View style={styles.cardTitleRow}>
           <MaterialCommunityIcons
