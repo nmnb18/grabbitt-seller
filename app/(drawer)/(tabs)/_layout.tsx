@@ -131,11 +131,11 @@ export default function UserTabsLayout() {
       />
 
       <Tabs.Screen
-        name="scan-qr"
+        name="my-qr"
         options={{
-          title: "Scan",
+          title: "My QR",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="qr-code-outline" size={size} color={color} />
+            <Ionicons name="qr-code" size={size} color={color} />
           ),
         }}
       />
