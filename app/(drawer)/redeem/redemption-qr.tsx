@@ -382,7 +382,7 @@ export default function RedemptionQRScreen() {
 
                     <Button
                         variant="contained"
-                        onPress={() => router.back()}
+                        onPress={handleGoHome}
                         icon="check"
                     >
                         Done
