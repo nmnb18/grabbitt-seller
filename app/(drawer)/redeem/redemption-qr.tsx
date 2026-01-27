@@ -22,6 +22,7 @@ import api from "@/services/axiosInstance";
 export default function RedemptionQRScreen() {
     const theme = useTheme();
     const router = useRouter();
+    const navigation = useNavigation();
     const params = useLocalSearchParams();
 
     const [redemption, setRedemption] = useState<Redemption | null>(null);
@@ -29,16 +30,29 @@ export default function RedemptionQRScreen() {
     const [refreshing, setRefreshing] = useState(false);
     const [qrData, setQrData] = useState<string | undefined>('');
 
+    const handleBack = () => {
+        if (navigation.canGoBack()) {
+            router.back();
+        } else {
+            router.replace("/(drawer)/(tabs)/home");
+        }
+    };
+
+    const handleGoHome = () => {
+        router.replace("/(drawer)/(tabs)/home");
+    };
+
     useEffect(() => {
         if (params.redemption) {
             try {
                 const parsedRedemption = JSON.parse(params.redemption as string);
                 setRedemption(parsedRedemption);
                 setQrData(parsedRedemption?.qr_code_base64)
-            } catch (error) {
-                console.error("Failed to parse redemption:", error);
-                Alert.alert("Error", "Invalid redemption data");
-                router.back();
+            } catch (err) {
+                console.error("Failed to parse redemption:", err);
+                Alert.alert("Error", "Invalid redemption data", [
+                    { text: "OK", onPress: handleBack }
+                ]);
             }
         }
     }, [params.redemption]);
