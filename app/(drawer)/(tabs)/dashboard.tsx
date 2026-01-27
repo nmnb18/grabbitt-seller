@@ -46,10 +46,7 @@ export default function SellerDashboardContainer() {
         seller_name: s.seller_name,
       });
 
-      await fetchActiveQR();
-      if (!loadingQR) {
-        setHasData(true);
-      }
+      setHasData(true);
     } catch (error: any) {
       console.error(error);
       Alert.alert(
@@ -60,7 +57,7 @@ export default function SellerDashboardContainer() {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [fetchActiveQR]);
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
