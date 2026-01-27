@@ -93,6 +93,14 @@ export default function UserHome({
                     />
                 }
             >
+                {/* My QR Card - Prominent at top */}
+                <TouchableOpacity
+                    activeOpacity={0.9}
+                    onPress={() => router.push("/(drawer)/(tabs)/my-qr")}
+                >
+                    <MyQRCard size="small" showActions={false} style={styles.qrCard} />
+                </TouchableOpacity>
+
                 {/* Search */}
                 <Searchbar
                     placeholder="Search stores..."
