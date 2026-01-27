@@ -236,7 +236,7 @@ export default function SellerGenerateQR() {
             <Card
               style={[
                 styles.infoCard,
-                { backgroundColor: 'trasnparent', elevation: 3, borderColor: theme.colors.accent, borderWidth: 1 },
+                { backgroundColor: theme.colors.surfaceVariant, elevation: 0, borderColor: theme.colors.accent, borderWidth: 1 },
               ]}
             >
               <Card.Content style={[styles.infoContent]}>
