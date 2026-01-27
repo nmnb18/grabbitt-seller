@@ -153,13 +153,11 @@ export const useSellerRegistration = () => {
           Alert.alert("Error", "Please fill all address fields");
           return false;
         }
-        if (
-          formData.enableLocation &&
-          (!formData.latitude || !formData.longitude)
-        ) {
+        // Location is now mandatory
+        if (!formData.latitude || !formData.longitude) {
           Alert.alert(
-            "Error",
-            "Please enable and save your location coordinates"
+            "Location Required",
+            "Please enable location and save your coordinates. This helps customers find your store."
           );
           return false;
         }
