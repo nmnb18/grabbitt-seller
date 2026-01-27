@@ -1,5 +1,4 @@
 import { LoginResponse as User, UserPayload } from "@/types/auth";
-import { startSubscriptionWatcher } from "@/utils/subscription-watcher";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import Constants from "expo-constants";
