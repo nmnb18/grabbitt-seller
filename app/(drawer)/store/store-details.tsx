@@ -1,7 +1,7 @@
 // screens/store/store-details-container.tsx
 import React, { useState, useEffect, useCallback } from "react";
-import { Alert } from "react-native";
-import { useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
+import { Alert, View, StyleSheet } from "react-native";
+import { useRouter, useLocalSearchParams, useFocusEffect, useNavigation } from "expo-router";
 
 import withSkeletonTransition from "@/components/wrappers/withSkeletonTransition";
 
@@ -9,6 +9,11 @@ import { ApiResponse, StoreDetails } from "@/types/seller";
 import api from "@/services/axiosInstance";
 import StoreDetailsScreen from "@/components/store/store-details-screen";
 import StoreDetailsSkeleton from "@/components/skeletons/store-details";
+import { ScreenError, NotFoundError, NetworkError } from "@/components/shared/screen-error";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { GradientHeader } from "@/components/shared/app-header";
+import { useTheme } from "@/hooks/use-theme-color";
+
 // Wrap with skeleton transition
 const StoreDetailsWithSkeleton = withSkeletonTransition(StoreDetailsSkeleton)(
     StoreDetailsScreen
@@ -20,7 +25,9 @@ interface StoreDetailsContainerProps {
 
 export default function StoreDetailsContainer(props: StoreDetailsContainerProps) {
     const router = useRouter();
+    const navigation = useNavigation();
     const params = useLocalSearchParams();
+    const theme = useTheme();
 
     const [store, setStore] = useState<StoreDetails | null>(null);
     const [todayOffer, setTodayOffer] = useState(null);
@@ -28,7 +35,7 @@ export default function StoreDetailsContainer(props: StoreDetailsContainerProps)
     const [hasData, setHasData] = useState(false);
     const [redemptionCode, setRedemptionCode] = useState();
     const [redemptionStatus, setRedemptionStatus] = useState();
-    const [error, setError] = useState<string | null>(null);
+    const [error, setError] = useState<{ type: 'network' | 'notfound' | 'general'; message: string } | null>(null);
 
     const storeId = params.storeId as string;
 
@@ -41,7 +48,7 @@ export default function StoreDetailsContainer(props: StoreDetailsContainerProps)
         try {
             const resp = await api.get(`/getSellerOfferById?seller_id=${storeId}`);
             if (resp.data.active?.length > 0) {
-                setTodayOffer(resp.data.active[0]); // today’s single entry
+                setTodayOffer(resp.data.active[0]); // today's single entry
             } else {
                 setTodayOffer(null);
             }
@@ -65,9 +72,8 @@ export default function StoreDetailsContainer(props: StoreDetailsContainerProps)
 
     const fetchStoreDetails = async () => {
         if (!storeId) {
-            setError("Store ID is required");
-            Alert.alert("Error", "Store ID is required");
-            router.back();
+            setError({ type: 'general', message: 'Store ID is required' });
+            setLoading(false);
             return;
         }
 
@@ -84,19 +90,26 @@ export default function StoreDetailsContainer(props: StoreDetailsContainerProps)
 
             if (response.data.success && response.data.user.seller_profile) {
                 setStore(response.data.user.seller_profile);
-
             } else {
-                const errorMsg = response.data.error || "Failed to load store details";
-                setError(errorMsg);
-                Alert.alert("Error", errorMsg);
-                router.back();
+                setError({ 
+                    type: 'notfound', 
+                    message: response.data.error || "Store not found" 
+                });
             }
-        } catch (error: any) {
-            console.error("Store details error:", error);
-            const errorMsg = error.response?.data?.error || "Failed to load store details";
-            setError(errorMsg);
-            Alert.alert("Error", errorMsg);
-            router.back();
+        } catch (err: any) {
+            console.error("Store details error:", err);
+            
+            // Determine error type
+            if (err.message?.includes('Network') || err.code === 'ECONNABORTED') {
+                setError({ type: 'network', message: 'Network error' });
+            } else if (err.response?.status === 404) {
+                setError({ type: 'notfound', message: 'Store not found' });
+            } else {
+                setError({ 
+                    type: 'general', 
+                    message: err.response?.data?.error || "Failed to load store details" 
+                });
+            }
         } finally {
             setLoading(false);
             setHasData(true);
@@ -112,7 +125,7 @@ export default function StoreDetailsContainer(props: StoreDetailsContainerProps)
                 }
             })
             if (!store.data.can_redeem) {
-                Alert.alert("Redeem", "You don't have enough rewards points! Scan more to redeem points")
+                Alert.alert("Redeem", "You don't have enough rewards points! Earn more to redeem points")
                 return;
             } else {
                 router.push({
@@ -120,23 +133,44 @@ export default function StoreDetailsContainer(props: StoreDetailsContainerProps)
                     params: { store: JSON.stringify(store.data) },
                 });
             }
-        } catch (error: any) {
-            const errorMsg = error.response?.data?.error || "Failed to redeem";
+        } catch (err: any) {
+            const errorMsg = err.response?.data?.error || "Failed to redeem";
             Alert.alert("Error", errorMsg);
         } finally {
             setLoading(false);
         }
-
-
     };
 
     const handleBack = () => {
-        router.back();
+        if (navigation.canGoBack()) {
+            router.back();
+        } else {
+            router.replace("/(drawer)/(tabs)/home");
+        }
     };
+
+    // Show error states
+    if (error && !loading) {
+        return (
+            <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+                <GradientHeader title="Store Details" onBackPress={handleBack} />
+                {error.type === 'network' ? (
+                    <NetworkError onRetry={fetchStoreDetails} />
+                ) : error.type === 'notfound' ? (
+                    <NotFoundError itemName="Store" />
+                ) : (
+                    <ScreenError 
+                        title="Unable to Load Store"
+                        message={error.message}
+                        onRetry={fetchStoreDetails}
+                    />
+                )}
+            </SafeAreaView>
+        );
+    }
 
     // Combine container loading with props loading
     const isLoading = loading || props.loading;
-
 
     return (
         <StoreDetailsWithSkeleton
@@ -151,9 +185,13 @@ export default function StoreDetailsContainer(props: StoreDetailsContainerProps)
             setRedemptionStatus={setRedemptionStatus}
             storeId={storeId}
             hasData={hasData}
-            // Pass through other props if needed
             {...props}
         />
     );
 }
 
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+    },
+});
