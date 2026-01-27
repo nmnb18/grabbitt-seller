@@ -15,31 +15,40 @@ import {
   Text,
   TouchableOpacity,
   View,
+  BackHandler,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export default function DrawerLayout() {
   const theme = useTheme();
 
   return (
-    <Drawer
-      screenOptions={{
-        headerShown: false,
-        drawerActiveTintColor: theme.colors.primary,
-        drawerLabelStyle: { fontSize: 16, color: theme.colors.onBackground },
-      }}
-      drawerContent={() => <CustomDrawerContent />}
-    >
-      <Drawer.Screen
-        name="(tabs)"
-        options={{
-          title: "Dashboard",
-          drawerIcon: ({ color, size }) => (
-            <Ionicons name="home-outline" size={size} color={color} />
-          ),
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Drawer
+        screenOptions={{
+          headerShown: false,
+          drawerActiveTintColor: theme.colors.primary,
+          drawerLabelStyle: { fontSize: 16, color: theme.colors.onBackground },
+          swipeEnabled: true,
+          swipeEdgeWidth: 50,
+          gestureHandlerProps: {
+            activeOffsetX: [-20, 20],
+          },
         }}
-      />
-    </Drawer>
+        drawerContent={() => <CustomDrawerContent />}
+      >
+        <Drawer.Screen
+          name="(tabs)"
+          options={{
+            title: "Dashboard",
+            drawerIcon: ({ color, size }) => (
+              <Ionicons name="home-outline" size={size} color={color} />
+            ),
+          }}
+        />
+      </Drawer>
+    </GestureHandlerRootView>
   );
 }
 
