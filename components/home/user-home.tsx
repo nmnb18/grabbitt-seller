@@ -159,9 +159,7 @@ export default function UserHome({
                                 <View style={styles.bannerWrapper}>
                                     <Image
                                         source={{
-                                            uri:
-                                                seller.banner ||
-                                                "https://images.unsplash.com/photo-1528698827591-e19ccd7bc23d",
+                                            uri: seller.banner || PLACEHOLDER_IMAGES.STORE_BANNER,
                                         }}
                                         style={styles.bannerImage}
                                     />
