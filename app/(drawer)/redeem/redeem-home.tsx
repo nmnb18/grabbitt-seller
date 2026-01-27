@@ -1,7 +1,7 @@
 // screens/wallet/redemption-container.tsx
 import React, { useState, useEffect } from "react";
 import { Alert } from "react-native";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import { useRouter, useLocalSearchParams, useNavigation } from "expo-router";
 import { useAuthStore } from "@/store/authStore";
 
 import withSkeletonTransition from "@/components/wrappers/withSkeletonTransition";
@@ -21,6 +21,7 @@ interface RedemptionContainerProps {
 
 export default function RedemptionContainer(props: RedemptionContainerProps) {
     const router = useRouter();
+    const navigation = useNavigation();
     const params = useLocalSearchParams();
     const { user } = useAuthStore();
 
@@ -38,16 +39,18 @@ export default function RedemptionContainer(props: RedemptionContainerProps) {
             try {
                 const parsedStore = JSON.parse(params.store as string);
                 setStore(parsedStore);
-            } catch (error) {
-                console.error("Failed to parse store data:", error);
-                Alert.alert("Error", "Invalid store data");
-                router.back();
+            } catch (err) {
+                console.error("Failed to parse store data:", err);
+                Alert.alert("Error", "Invalid store data", [
+                    { text: "OK", onPress: handleBack }
+                ]);
             } finally {
                 setLoading(false);
             }
         } else {
-            Alert.alert("Error", "Store information is required");
-            router.back();
+            Alert.alert("Error", "Store information is required", [
+                { text: "OK", onPress: handleBack }
+            ]);
         }
     }, [params.store]);
 
@@ -153,11 +156,11 @@ export default function RedemptionContainer(props: RedemptionContainerProps) {
             } else {
                 Alert.alert("Error", "Failed to create redemption");
             }
-        } catch (error: any) {
-            console.error("Create redemption error:", error);
+        } catch (err: any) {
+            console.error("Create redemption error:", err);
             Alert.alert(
                 "Error",
-                error.response?.data?.error || "Failed to create redemption"
+                err.response?.data?.error || "Failed to create redemption"
             );
         } finally {
             setProcessing(false);
@@ -165,7 +168,11 @@ export default function RedemptionContainer(props: RedemptionContainerProps) {
     };
 
     const handleBack = () => {
-        router.back();
+        if (navigation.canGoBack()) {
+            router.back();
+        } else {
+            router.replace("/(drawer)/(tabs)/home");
+        }
     };
 
     // Calculate hasData for skeleton wrapper
