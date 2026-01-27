@@ -1,98 +1,88 @@
-# Grabbitt User App - PRD
+# Grabbitt Seller App - PRD
 
 ## Project Overview
-Grabbitt is a customer loyalty app that lets users earn reward points at nearby stores by showing a personal QR code. Users earn points when a seller scans their QR during a purchase and can later redeem those points for rewards or discounts.
+Grabbitt Seller is the merchant-side app for the Grabbitt loyalty platform. Sellers use this app to:
+- Generate QR codes for customers to scan (earn points)
+- Scan customer redemption QR codes
+- Manage offers and promotions ("What's New")
+- View analytics and insights
+- Manage subscription plans
 
 ## Architecture
-- **Platform**: React Native / Expo (SDK 53)
-- **State Management**: Zustand (authStore)
+- **Platform**: React Native / Expo (SDK 54)
+- **State Management**: Zustand
 - **UI Framework**: React Native Paper
 - **Navigation**: Expo Router with Drawer + Tabs
 - **Backend**: Firebase (external API)
-- **Styling**: Custom theme system with light/dark mode support
+- **In-App Purchases**: react-native-iap (iOS)
 
 ## Tech Stack
-- React Native 0.79.2
-- Expo ~53.0.17
-- expo-router ~6.0.22
-- react-native-paper ^5.14.4
-- zustand ^5.0.5
-- axios
-- firebase (external backend)
+- React Native 0.81.5
+- Expo ~54.0.0
+- expo-router ~6.0.13
+- react-native-paper ^5.14.5
+- zustand ^5.0.8
+- expo-camera (QR scanning)
+- react-native-iap
 
 ---
 
-## What's Been Implemented
+## What's Been Implemented (Jan 27, 2025)
 
-### Session 1 - QR Feature Overhaul
-- Removed QR scanning feature (users show QR, sellers scan)
-- Created `MyQRCard` component with loading/placeholder states
-- QR display on Home screen (compact tappable card)
-- QR display on Profile page (full with share)
+### ✅ Refactoring & Production Readiness
 
-### Session 2 - Production Readiness
+#### 1. Global Error Boundary
+- Added `ErrorBoundary` wrapper in `_layout.tsx`
+- Catches all React crashes with friendly recovery UI
+- "Restart App" and "Try Again" options
+- Error details in development mode
 
-#### Utils Layer (`/app/utils/`)
-- `constants.ts` - Centralized constants
-- `formatters.ts` - Date, currency, formatting utilities
-- `errorHandler.ts` - Unified error handling
-- `styles.ts` - Reusable style patterns
-- `helper.ts` - Utility functions (debounce, isEmpty, etc.)
-- `app-routes.ts` - Type-safe route definitions
+#### 2. Navigation & Gesture Handling
+- Updated drawer layout with `GestureHandlerRootView`
+- Proper swipe gesture configuration
+- Enhanced back navigation in `app-header.tsx`
+- Uses `navigation.canGoBack()` with home fallback
 
-#### Services Layer (`/app/services/`)
-- `api.ts` - Centralized API service
-- `axiosInstance.ts` - Enhanced with 401 handling
+#### 3. Drawer Menu Improvements
+- Added `testID` props for testing
+- Uses `EXTERNAL_LINKS` from constants
+- Proper logout with destructive style
+- Touch feedback with `activeOpacity`
 
-#### Hooks Layer (`/app/hooks/`)
-- `useRefresh.ts` - Generic data fetching
-- `useForm.ts` - Form state management
+### ✅ Bug Fixes
 
-#### Common Components (`/app/components/common/`)
-- Spacer, Divider, Badge, IconButton, InfoRow, EmptyStateView, SectionHeader
+#### 1. Generate QR Screen - Notes Section (Light Theme)
+- **Issue**: White background on Dynamic QR notes card
+- **Fix**: Changed `backgroundColor: 'transparent'` to `theme.colors.surfaceVariant`
+- **File**: `/app/app/(drawer)/(tabs)/generate-qr.tsx`
 
-### Session 3 - Navigation & Error Handling ✅
+#### 2. Registration - Location Mandatory
+- **Issue**: Location was optional during registration
+- **Fix**: Made latitude/longitude mandatory with proper error message
+- **File**: `/app/hooks/use-seller-registration.ts`
 
-#### Navigation Improvements
-1. **Enhanced GradientHeader** (`/app/components/shared/app-header.tsx`)
-   - Proper back navigation with `useNavigation().canGoBack()` check
-   - Fallback to home screen when no back history
-   - Touch feedback on back button
-   - Added `testID` support for testing
+#### 3. Business Verification Validation
+- **Issue**: No format validation for GST/PAN numbers
+- **Fix**: Added regex validation with helper text
+  - GST: `22AAAAA0000A1Z5` format
+  - PAN: `ABCDE1234F` format
+- **File**: `/app/components/auth/verification-step.tsx`
 
-2. **BackHeader & BackHeaderV2** - Alternative header styles for different screens
+#### 4. Scan QR Button on Wallet Page
+- **Issue**: Button navigated to wrong route (`my-qr`)
+- **Fix**: Now navigates to `/(drawer)/(tabs)/redeem-qr`
+- **File**: `/app/components/wallet/empty-state.tsx`
 
-3. **Screen-level Navigation**
-   - All screens now use `useNavigation` for proper back handling
-   - Consistent fallback to `/(drawer)/(tabs)/home` when stack is empty
-   - Fixed redemption QR "Done" button to go home properly
+#### 5. Rewards Accordion Color (Light Theme)
+- **Issue**: Poor visibility with backdrop color in light theme
+- **Fix**: Uses `surfaceVariant` for light theme, `backdrop` for dark
+- **File**: `/app/components/store/rewards-card.tsx`
 
-#### Error Handling System
-1. **New Error Components** (`/app/components/shared/screen-error.tsx`)
-   - `ScreenError` - Full-screen error with retry
-   - `NetworkError` - WiFi/connection issues
-   - `NotFoundError` - 404 cases
-   - `PermissionError` - Access denied
-   - `InlineError` - Smaller error display for sections
-
-2. **Global Error Boundary** (`/app/components/shared/ErrorBoundary.tsx`) ✅ NEW
-   - Catches all React crashes app-wide
-   - Shows friendly "Oops!" screen with restart options
-   - "Restart App" button uses Expo Updates to reload
-   - "Try Again" button attempts state reset
-   - Shows error details in development mode
-   - Contact support info displayed
-
-3. **Screen Error Boundary** (`/app/components/shared/ScreenErrorBoundary.tsx`) ✅ NEW
-   - Lightweight boundary for individual screens
-   - Allows screen-level recovery without full app restart
-
-4. **Store Details** - Now shows proper error states instead of auto-navigating back
-
-#### Fixed Issues
-- Removed unused `subscription-watcher.ts` import from authStore
-- Fixed Android swipe back gesture
-- Consistent back navigation across all screens
+#### 6. Calendar Date Range for What's New
+- **Issue**: Could only select single date for offers
+- **Fix**: Added date range mode with "Single Day" / "Date Range" toggle
+- Saves offers for all dates in selected range
+- **File**: `/app/app/(drawer)/whats-new/offer-add.tsx`
 
 ---
 
@@ -101,123 +91,71 @@ Grabbitt is a customer loyalty app that lets users earn reward points at nearby 
 ```
 /app/
 ├── app/
+│   ├── _layout.tsx              ✅ ErrorBoundary added
 │   ├── (drawer)/
+│   │   ├── _layout.tsx          ✅ GestureHandlerRootView
 │   │   ├── (tabs)/
-│   │   │   ├── home.tsx
-│   │   │   ├── my-qr.tsx
-│   │   │   ├── wallet.tsx
-│   │   │   └── _layout.tsx
-│   │   ├── profile.tsx
-│   │   ├── store/
-│   │   │   └── store-details.tsx  ✅ Enhanced
-│   │   ├── redeem/
-│   │   │   ├── redeem-home.tsx    ✅ Enhanced
-│   │   │   ├── redemption-qr.tsx  ✅ Enhanced
-│   │   │   └── redemption-history.tsx
-│   │   └── _layout.tsx
+│   │   │   ├── dashboard.tsx
+│   │   │   ├── generate-qr.tsx  ✅ Fixed light theme
+│   │   │   ├── redeem-qr.tsx
+│   │   │   └── ai-insights.tsx
+│   │   ├── whats-new/
+│   │   │   ├── whats-new-home.tsx
+│   │   │   └── offer-add.tsx    ✅ Date range added
+│   │   └── ...
 │   └── auth/
+│       └── register.tsx
 ├── components/
-│   ├── common/
-│   │   ├── index.tsx
-│   │   └── ScreenWrapper.tsx
-│   ├── qr/
-│   │   └── my-qr-card.tsx
+│   ├── auth/
+│   │   ├── location-step.tsx
+│   │   └── verification-step.tsx ✅ GST/PAN validation
 │   ├── shared/
-│   │   ├── index.ts
-│   │   ├── app-header.tsx
-│   │   ├── loading-view.tsx
-│   │   ├── screen-error.tsx
-│   │   ├── ErrorBoundary.tsx      ✅ NEW
-│   │   └── ScreenErrorBoundary.tsx ✅ NEW
-│   └── ui/
+│   │   ├── app-header.tsx       ✅ Enhanced navigation
+│   │   └── ErrorBoundary.tsx
+│   ├── store/
+│   │   └── rewards-card.tsx     ✅ Fixed accordion color
+│   └── wallet/
+│       └── empty-state.tsx      ✅ Fixed scan button
 ├── hooks/
-│   ├── index.ts
-│   ├── useForm.ts
-│   └── useRefresh.ts
-├── services/
-│   ├── index.ts
-│   ├── api.ts
-│   └── axiosInstance.ts
-├── store/
-│   └── authStore.ts            ✅ Fixed import
+│   └── use-seller-registration.ts ✅ Location mandatory
 └── utils/
-    ├── index.ts
-    ├── constants.ts
-    ├── errorHandler.ts
-    ├── formatters.ts
-    └── styles.ts
+    └── constants.ts
 ```
 
 ---
 
-## Navigation Flow
+## Validation Rules Added
 
-```
-Home (default fallback)
-├── Store Details → Back to Home/Previous
-├── Redeem Home → Back to Store/Previous
-│   └── Redemption QR → Done → Home
-├── Redemption History → Back to Home/Previous
-├── Perks History → Back to Home/Previous
-└── Profile → Back to Home/Previous
-```
+### GST Number
+- Format: `22AAAAA0000A1Z5`
+- Regex: `/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/`
 
----
-
-## Error Handling Patterns
-
-### Screen-Level Errors
-```typescript
-if (error && !loading) {
-  return (
-    <SafeAreaView>
-      <GradientHeader title="..." onBackPress={handleBack} />
-      {error.type === 'network' ? (
-        <NetworkError onRetry={fetchData} />
-      ) : error.type === 'notfound' ? (
-        <NotFoundError itemName="Store" />
-      ) : (
-        <ScreenError message={error.message} onRetry={fetchData} />
-      )}
-    </SafeAreaView>
-  );
-}
-```
-
-### Navigation Handler Pattern
-```typescript
-const handleBack = () => {
-  if (navigation.canGoBack()) {
-    router.back();
-  } else {
-    router.replace("/(drawer)/(tabs)/home");
-  }
-};
-```
+### PAN Number
+- Format: `ABCDE1234F`
+- Regex: `/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/`
 
 ---
 
 ## Prioritized Backlog
 
-### P0 (Critical - Backend)
-- [ ] Generate unique QR on user registration
-- [ ] Return QR in user profile API
+### P0 (Critical)
+- [ ] Test all QR code generation flows
+- [ ] Verify redemption QR scanning works
 
 ### P1 (Important)
-- [ ] Offline QR caching
-- [ ] QR brightness boost
-- [ ] Unit tests for utilities
-- [ ] Sentry integration for production error tracking
+- [ ] Add offline support for QR generation
+- [ ] Performance optimization for dashboard
+- [ ] Analytics improvements
 
 ### P2 (Nice to Have)
-- [ ] Save QR to gallery
-- [ ] Biometric lock for QR display
-- [ ] Push notification for points earned
+- [ ] Dark/light theme toggle in settings
+- [ ] Export transaction history
+- [ ] Push notifications for redemptions
 
 ---
 
 ## Next Tasks
-1. Backend: Implement QR generation
-2. Add offline QR storage
-3. Test all navigation flows on Android/iOS
-4. Add error boundary wrapper
+1. Test all fixed bugs on device
+2. Add unit tests for validation functions
+3. Implement Sentry for error tracking
+4. Review UI consistency across all screens
