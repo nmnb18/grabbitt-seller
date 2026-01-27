@@ -74,7 +74,6 @@ export default function SellerDashboardContainer() {
     <DashboardContainer
       stats={stats}
       loading={loading}
-      activeQR={activeQR}
       hasData={hasData}
       refreshing={refreshing}
       onRefresh={handleRefresh}
