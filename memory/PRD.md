@@ -124,9 +124,11 @@ Grabbitt is a customer loyalty app that lets users earn reward points at nearby 
 │   │   └── my-qr-card.tsx
 │   ├── shared/
 │   │   ├── index.ts
-│   │   ├── app-header.tsx      ✅ Enhanced
+│   │   ├── app-header.tsx
 │   │   ├── loading-view.tsx
-│   │   └── screen-error.tsx    ✅ NEW
+│   │   ├── screen-error.tsx
+│   │   ├── ErrorBoundary.tsx      ✅ NEW
+│   │   └── ScreenErrorBoundary.tsx ✅ NEW
 │   └── ui/
 ├── hooks/
 │   ├── index.ts
