@@ -447,5 +447,4 @@ const styles = StyleSheet.create({
     sectionSubtitle: { fontSize: 14, color: "#6B7280", marginBottom: 16 },
     emptyCard: { borderRadius: 16, padding: 20 },
     emptyTitle: { marginTop: 12, fontSize: 16, fontWeight: "600" },
-    fab: { position: "absolute", bottom: 50, right: 16 },
 });
