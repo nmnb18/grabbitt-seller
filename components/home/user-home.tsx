@@ -5,6 +5,7 @@ import {
     ScrollView,
     RefreshControl,
     Image,
+    TouchableOpacity,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useAuthStore } from "@/store/authStore";
@@ -13,7 +14,6 @@ import {
     Card,
     Searchbar,
     Chip,
-    FAB,
     Surface,
 } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -21,6 +21,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTheme, useThemeColor } from "@/hooks/use-theme-color";
 import { SimplifiedSeller } from "@/types/seller";
 import { PulsingChip } from "../ui/pluse-chip";
+import MyQRCard from "@/components/qr/my-qr-card";
 
 export const BUSINESS_TYPES = [
     { label: 'All', value: 'all' },
