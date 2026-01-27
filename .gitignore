@@ -41,4 +41,7 @@ yarn-error.*
 /android
 /.metro-cache
 
-.env
+.env-e 
+# Environment files
+*.env
+*.env.*
