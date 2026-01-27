@@ -197,35 +197,49 @@ export default function SellerDashboard({
                 </View>
 
                 {/* ------------------------------
-            ACTIVE QR CODE
+            QUICK ACTIONS
         ------------------------------ */}
                 <View style={styles.section}>
-                    {!activeQR && !loading && (
-                        <Card style={[styles.expiredCard, { backgroundColor: theme.colors.surface }]}>
-                            <Text style={[styles.expiredText, { color: theme.colors.onSurface }]}>
-                                Your QR code has expired. Generate a new one.
-                            </Text>
-
-                            <Button
-                                variant="contained"
-                                onPress={() => router.push("/(drawer)/(tabs)/generate-qr")}
-                            >
-                                Generate New QR
-                            </Button>
-                        </Card>
-                    )}
-                    {activeQR && <QrCode qrData={activeQR} rewards={sellerProfile?.rewards} />}
+                    <Text variant="titleMedium" style={[styles.sectionTitle, { color: theme.colors.onSurface }]}>
+                        Quick Actions
+                    </Text>
+                    
+                    <ActionCard
+                        title="Scan Customer QR"
+                        subtitle="Award reward points"
+                        icon="qrcode-scan"
+                        iconColor={theme.colors.primary}
+                        onPress={() => router.push("/(drawer)/(tabs)/scan-customer")}
+                    />
+                    
+                    <ActionCard
+                        title="Redeem Points"
+                        subtitle="Scan redemption QR"
+                        icon="gift-outline"
+                        iconColor={theme.colors.secondary}
+                        onPress={() => router.push("/(drawer)/(tabs)/redeem-qr")}
+                    />
+                    
+                    <ActionCard
+                        title="What's New"
+                        subtitle="Manage daily offers"
+                        icon="newspaper-variant-outline"
+                        iconColor={theme.colors.tertiary}
+                        onPress={() => router.push("/(drawer)/whats-new/whats-new-home")}
+                    />
                 </View>
 
                 <View style={styles.bottomSpacer} />
-                <FAB
-                    icon="qrcode-scan"
-                    label=""
-                    style={[styles.fab, { backgroundColor: theme.colors.tertiary }]}
-                    onPress={() => router.push("/(drawer)/(tabs)/redeem-qr")}
-                    color={theme.colors.onSurface}
-                />
             </ScrollView>
+            
+            {/* Floating Scan Button */}
+            <FAB
+                icon="qrcode-scan"
+                label="Scan"
+                style={[styles.fab, { backgroundColor: theme.colors.primary }]}
+                onPress={() => router.push("/(drawer)/(tabs)/scan-customer")}
+                color="#fff"
+            />
         </View>
     );
 }
