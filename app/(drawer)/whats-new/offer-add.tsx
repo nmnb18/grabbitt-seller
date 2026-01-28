@@ -213,8 +213,14 @@ export default function SellerAddOfferScreen() {
                   onPress={() => setDateMode("single")}
                   style={[
                     styles.modeChip,
-                    dateMode === "single" && { backgroundColor: theme.colors.primaryContainer }
+                    {
+                      backgroundColor: dateMode === "single"
+                        ? theme.colors.primary
+                        : theme.colors.surfaceVariant,
+                    },
                   ]}
+                  textStyle={{ color: theme.colors.onPrimary }}
+                  selectedColor={theme.colors.onPrimary}
                 >
                   Single Day
                 </Chip>
@@ -223,8 +229,14 @@ export default function SellerAddOfferScreen() {
                   onPress={() => setDateMode("range")}
                   style={[
                     styles.modeChip,
-                    dateMode === "range" && { backgroundColor: theme.colors.primaryContainer }
+                    {
+                      backgroundColor: dateMode === "range"
+                        ? theme.colors.primary
+                        : theme.colors.surfaceVariant,
+                    },
                   ]}
+                  textStyle={{ color: theme.colors.onPrimary }}
+                  selectedColor={theme.colors.onPrimary}
                 >
                   Date Range
                 </Chip>
@@ -237,7 +249,7 @@ export default function SellerAddOfferScreen() {
               >
                 {getDateButtonText()}
               </Button>
-              
+
               {showPicker && (
                 <DatePicker
                   mode={dateMode}

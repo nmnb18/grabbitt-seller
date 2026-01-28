@@ -84,7 +84,7 @@ interface SellerDashboardProps {
     onRefresh?: () => void;
 }
 export default function SellerDashboard({
-    stats = {},
+    //stats = {},
     loading = false,
     hasData = false,
     refreshing = false,
@@ -166,13 +166,13 @@ export default function SellerDashboard({
                     <View style={styles.statsGrid}>
                         <StatCard
                             icon="account-group"
-                            value={stats?.total_users || 0}
+                            value={sellerProfile?.stats?.active_customers || 0}
                             label="Total Users"
                             backgroundColor={theme.colors.surface}
                         />
                         <StatCard
                             icon="star-circle"
-                            value={stats?.total_points_issued || 0}
+                            value={sellerProfile?.stats?.total_points_distributed || 0}
                             label="Points Issued"
                             backgroundColor={theme.colors.surface}
                         />
@@ -181,14 +181,14 @@ export default function SellerDashboard({
                     <View style={styles.statsGrid}>
                         <StatCard
                             icon="gift"
-                            value={stats?.total_redemptions || 0}
+                            value={sellerProfile?.stats?.total_redemptions || 0}
                             label="Redemptions"
                             backgroundColor={theme.colors.surface}
                         />
                         <StatCard
                             icon="qrcode"
-                            value={stats?.total_qrs || 0}
-                            label="Total QRs"
+                            value={sellerProfile?.stats?.total_scans || 0}
+                            label="Total Scans"
                             backgroundColor={theme.colors.surface}
                         />
                     </View>

@@ -356,7 +356,7 @@ export default function SellerProAnalyticsInsights({
             </Card>
 
             {/* D: QR Type performance */}
-            <Card style={styles.card}>
+            {/* <Card style={styles.card}>
                 <Card.Content>
                     <View style={styles.cardHeaderRow}>
                         <Text style={styles.cardTitle}>QR Type Performance</Text>
@@ -378,7 +378,7 @@ export default function SellerProAnalyticsInsights({
                         <Text style={styles.emptyText}>No QR scan data yet.</Text>
                     )}
                 </Card.Content>
-            </Card>
+            </Card> */}
 
             {/* E: Top customers */}
             <Card style={styles.card}>

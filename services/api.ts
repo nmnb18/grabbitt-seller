@@ -3,10 +3,10 @@
  * Centralized API calls with proper error handling
  */
 
-import api from "./axiosInstance";
-import { getErrorMessage, logError } from "@/utils/errorHandler";
+import { SimplifiedSeller, StoreDetails } from "@/types/seller";
 import { WalletData } from "@/types/wallet";
-import { StoreDetails, SimplifiedSeller } from "@/types/seller";
+import { logError } from "@/utils/errorHandler";
+import api from "./axiosInstance";
 
 // ============================================
 // User APIs
@@ -161,13 +161,7 @@ export const redemptionApi = {
 // ============================================
 
 export const perksApi = {
-  /**
-   * Get perks history
-   */
-  getHistory: async () => {
-    const response = await api.get("/getPerksHistory");
-    return response.data;
-  },
+
 
   /**
    * Claim a perk

@@ -3,26 +3,25 @@
  * Shows after successfully awarding points to customer
  */
 
-import React, { useEffect } from "react";
-import { View, StyleSheet, BackHandler } from "react-native";
-import { Text, Surface } from "react-native-paper";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useTheme } from "@/hooks/use-theme-color";
 import { Button } from "@/components/ui/paper-button";
+import { useTheme } from "@/hooks/use-theme-color";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import React, { useEffect } from "react";
+import { BackHandler, StyleSheet, View } from "react-native";
+import { Surface, Text } from "react-native-paper";
 import Animated, {
-  useSharedValue,
   useAnimatedStyle,
-  withSpring,
-  withSequence,
+  useSharedValue,
   withDelay,
+  withSequence,
+  withSpring,
 } from "react-native-reanimated";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 interface ScanSuccessProps {
   customerName?: string;
   pointsAwarded: number;
-  transactionId?: string;
   onDone: () => void;
   onScanAnother: () => void;
 }
@@ -30,7 +29,6 @@ interface ScanSuccessProps {
 export function ScanSuccess({
   customerName,
   pointsAwarded,
-  transactionId,
   onDone,
   onScanAnother,
 }: ScanSuccessProps) {
@@ -103,12 +101,6 @@ export function ScanSuccess({
               points
             </Text>
           </Surface>
-
-          {transactionId && (
-            <Text style={[styles.transactionId, { color: theme.colors.onSurfaceDisabled }]}>
-              Transaction: {transactionId.slice(0, 12)}...
-            </Text>
-          )}
         </Animated.View>
 
         {/* Actions */}

@@ -3,10 +3,9 @@
  * Handles scanning customer QR codes and awarding points
  */
 
-import { useState, useCallback } from "react";
-import { Alert } from "react-native";
 import api from "@/services/axiosInstance";
 import { useAuthStore } from "@/store/authStore";
+import { useCallback, useState } from "react";
 
 export type RewardType = "default" | "percentage" | "slab" | "flat";
 
@@ -22,7 +21,6 @@ export interface AwardResult {
   success: boolean;
   points_awarded?: number;
   customer_name?: string;
-  transaction_id?: string;
   error?: string;
 }
 
@@ -60,34 +58,6 @@ export function useCustomerScan(options?: UseCustomerScanOptions) {
     return rewardType === "percentage" || rewardType === "slab";
   }, [rewardType]);
 
-  /**
-   * Calculate points based on reward type and order amount
-   */
-  const calculatePoints = useCallback(
-    (orderAmount: number): number => {
-      switch (rewardType) {
-        case "default":
-          return defaultPoints;
-
-        case "flat":
-          return flatPoints;
-
-        case "percentage":
-          return Math.floor((orderAmount * percentageValue) / 100);
-
-        case "slab":
-          // Find matching slab
-          const matchingSlab = slabRules.find(
-            (slab) => orderAmount >= slab.min && orderAmount <= slab.max
-          );
-          return matchingSlab?.points || 0;
-
-        default:
-          return defaultPoints;
-      }
-    },
-    [rewardType, defaultPoints, flatPoints, percentageValue, slabRules]
-  );
 
   /**
    * Validate scanned QR data
@@ -102,7 +72,7 @@ export function useCustomerScan(options?: UseCustomerScanOptions) {
 
       // Try parsing as JSON (for QR codes with more data)
       const parsed = JSON.parse(data);
-      
+
       if (parsed.customer_id || parsed.qr_id) {
         return { valid: true, parsed: { ...parsed, type: "json" } };
       }
@@ -134,22 +104,21 @@ export function useCustomerScan(options?: UseCustomerScanOptions) {
         }
 
         // Call API to validate customer QR
-        const response = await api.post("/validateCustomerQR", {
-          qr_data: qrData,
-          customer_id: validation.parsed?.customer_id,
-        });
+        // const response = await api.post("/validateCustomerQR", {
+        //   qr_data: qrData,
+        //   customer_id: validation.parsed?.customer_id,
+        // });
 
-        if (!response.data.success) {
-          const error = response.data.error || "Invalid customer QR";
-          options?.onError?.(error);
-          return { success: false, error };
-        }
+        // if (!response.data.success) {
+        //   const error = response.data.error || "Invalid customer QR";
+        //   options?.onError?.(error);
+        //   return { success: false, error };
+        // }
 
         const result: ScanResult = {
           success: true,
-          customer_id: response.data.customer_id,
-          customer_name: response.data.customer_name,
-          qr_id: response.data.qr_id,
+          customer_id: validation.parsed?.user_id,
+          customer_name: validation.parsed?.name,
         };
 
         setScanResult(result);
@@ -175,21 +144,10 @@ export function useCustomerScan(options?: UseCustomerScanOptions) {
       setProcessing(true);
 
       try {
-        const points = orderAmount 
-          ? calculatePoints(orderAmount) 
-          : (rewardType === "default" ? defaultPoints : 0);
 
-        if (points <= 0) {
-          const error = "Could not calculate reward points";
-          options?.onError?.(error);
-          return { success: false, error };
-        }
-
-        const response = await api.post("/awardPointsToCustomer", {
-          customer_id: customerId,
-          points,
-          order_amount: orderAmount,
-          reward_type: rewardType,
+        const response = await api.post("/scanUserQRCode", {
+          user_id: customerId,
+          amount: orderAmount,
         });
 
         if (!response.data.success) {
@@ -200,9 +158,8 @@ export function useCustomerScan(options?: UseCustomerScanOptions) {
 
         const result: AwardResult = {
           success: true,
-          points_awarded: response.data.points_awarded || points,
+          points_awarded: response.data.points_earned,
           customer_name: response.data.customer_name,
-          transaction_id: response.data.transaction_id,
         };
 
         options?.onAwardSuccess?.(result);
@@ -215,7 +172,7 @@ export function useCustomerScan(options?: UseCustomerScanOptions) {
         setProcessing(false);
       }
     },
-    [calculatePoints, rewardType, defaultPoints, options]
+    [rewardType, defaultPoints, options]
   );
 
   /**
@@ -241,7 +198,6 @@ export function useCustomerScan(options?: UseCustomerScanOptions) {
     // Actions
     processScan,
     awardPoints,
-    calculatePoints,
     validateQRData,
     resetScan,
 

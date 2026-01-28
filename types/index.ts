@@ -7,41 +7,27 @@
 export * from "./auth";
 
 // Wallet types - rename Redemption to avoid conflict
-export type { 
+export type {
   Offer,
   StoreBalance,
-  Transaction,
-  WalletStats,
-  WalletData,
-  Redemption as WalletRedemption 
+  Transaction, WalletData,
+  Redemption as WalletRedemption, WalletStats
 } from "./wallet";
 
 // Seller types - only export unique types
-export type { 
-  BusinessType,
-  SubscriptionTier,
-  QRCodeType,
-  RewardType,
-  SubscriptionInfo,
-  UPIInfo,
-  SimplifiedSeller,
-  SellersResponse,
-  SellerQr,
-  StoreDetails,
-  ApiResponse
+export type {
+  ApiResponse, BusinessType, QRCodeType,
+  RewardType, SellerQr, SellersResponse, SimplifiedSeller, StoreDetails, SubscriptionInfo, SubscriptionTier, UPIInfo
 } from "./seller";
 
-// Perks types
-export * from "./perks";
 
 // Redemptions types - rename Redemption to avoid conflict
 export type {
-  Redemption as RedemptionRecord,
+  RedemptionHistoryItem,
+  RedemptionHistoryResponse, Redemption as RedemptionRecord,
   RedemptionRequest,
   RedemptionResponse,
-  UserRedemptionsResponse,
-  RedemptionHistoryItem,
-  RedemptionHistoryResponse
+  UserRedemptionsResponse
 } from "./redemptions";
 
 // Scan QR types

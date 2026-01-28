@@ -3,21 +3,21 @@
  * Main screen for sellers to scan customer QR codes and award points
  */
 
-import React, { useState, useCallback } from "react";
-import { View, StyleSheet, Alert } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { useRouter } from "expo-router";
+import React, { useCallback, useState } from "react";
+import { Alert, StyleSheet, View } from "react-native";
 
 import { useTheme } from "@/hooks/use-theme-color";
 import { useCustomerScan } from "@/hooks/useCustomerScan";
 import { useAuthStore } from "@/store/authStore";
 
+import { OrderAmountInput } from "@/components/scan/OrderAmountInput";
+import { ScanSuccess } from "@/components/scan/ScanSuccess";
 import { LoadingView } from "@/components/shared/loading-view";
 import { PermissionView } from "@/components/shared/permission-view";
 import { ScannerOverlay } from "@/components/shared/scan-overlay";
-import { OrderAmountInput } from "@/components/scan/OrderAmountInput";
-import { ScanSuccess } from "@/components/scan/ScanSuccess";
 
 type ScreenState = "scanning" | "amount_input" | "processing" | "success";
 
@@ -36,7 +36,6 @@ export default function ScanCustomerQR() {
   const [awardResult, setAwardResult] = useState<{
     customerName?: string;
     pointsAwarded: number;
-    transactionId?: string;
   } | null>(null);
 
   // Use our custom scan hook
@@ -111,7 +110,6 @@ export default function ScanCustomerQR() {
       setAwardResult({
         customerName: result.customer_name,
         pointsAwarded: result.points_awarded || 0,
-        transactionId: result.transaction_id,
       });
       setScreenState("success");
     } else {
@@ -190,7 +188,6 @@ export default function ScanCustomerQR() {
       <ScanSuccess
         customerName={awardResult.customerName}
         pointsAwarded={awardResult.pointsAwarded}
-        transactionId={awardResult.transactionId}
         onDone={handleDone}
         onScanAnother={handleReset}
       />
