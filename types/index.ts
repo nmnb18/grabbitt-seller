@@ -28,8 +28,7 @@ export type {
   SellersResponse,
   SellerQr,
   StoreDetails,
-  ApiResponse,
-  Seller
+  ApiResponse
 } from "./seller";
 
 // Perks types
