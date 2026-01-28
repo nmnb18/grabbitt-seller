@@ -218,7 +218,7 @@ export function OrderAmountInput({
               icon="check"
               style={styles.submitButton}
             >
-              Award {calculatedPoints || 0} Points
+              {`Award ${calculatedPoints || 0} Points`}
             </Button>
           </View>
         </ScrollView>
