@@ -17,7 +17,7 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-import { Button, Card, Divider, Text } from "react-native-paper";
+import { Button, Card, Chip, Divider, Text } from "react-native-paper";
 import DatePicker from "react-native-ui-datepicker";
 
 type Offer = {
@@ -31,7 +31,9 @@ export default function SellerAddOfferScreen() {
   const theme = useTheme();
   const router = useRouter();
 
-  const [date, setDate] = useState(dayjs().add(1, "day"));
+  const [startDate, setStartDate] = useState(dayjs().add(1, "day"));
+  const [endDate, setEndDate] = useState(dayjs().add(1, "day"));
+  const [dateMode, setDateMode] = useState<"single" | "range">("single");
 
   const [showPicker, setShowPicker] = useState(false);
 
@@ -41,7 +43,7 @@ export default function SellerAddOfferScreen() {
     const showSub = Keyboard.addListener(
       Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow",
       (event) => {
-        setKeyboardHeight(event.endCoordinates.height + 20); // add small cushion
+        setKeyboardHeight(event.endCoordinates.height + 20);
       }
     );
 
@@ -88,20 +90,19 @@ export default function SellerAddOfferScreen() {
   };
 
   const removeOffer = (index: number) => {
-    if (offers.length <= 5)
-      return Alert.alert("Minimum", "At least 5 offers are required.");
+    if (offers.length <= 2)
+      return Alert.alert("Minimum", "At least 2 offers are required.");
     const updated = offers.filter((_, i) => i !== index);
     setOffers(updated);
   };
 
   const saveOffer = async () => {
-    if (!date) return Alert.alert("Error", "Select a date");
-
-    const formatted = date.format("YYYY-MM-DD");
+    if (!startDate) return Alert.alert("Error", "Select a date");
 
     const today = dayjs().format("YYYY-MM-DD");
+    const formattedStart = startDate.format("YYYY-MM-DD");
 
-    if (formatted <= today)
+    if (formattedStart <= today)
       return Alert.alert("Validation", "Pick a future date only");
 
     for (let o of offers) {
@@ -112,24 +113,73 @@ export default function SellerAddOfferScreen() {
     try {
       setSaving(true);
 
-      await api.post("/saveSellerOffer", {
-        date: formatted,
-        offers: offers.map((o) => ({
-          id: o.id.toString(),
-          title: o.title,
-          min_spend: Number(o.min_spend),
-          terms: o.terms,
-        })),
-      });
+      // If range mode, save for each date in range
+      if (dateMode === "range" && endDate) {
+        const dates: string[] = [];
+        let current = startDate;
+        while (current.isBefore(endDate) || current.isSame(endDate, "day")) {
+          if (current.format("YYYY-MM-DD") > today) {
+            dates.push(current.format("YYYY-MM-DD"));
+          }
+          current = current.add(1, "day");
+        }
 
-      Alert.alert("Success", "Saved!", [
-        { text: "OK", onPress: () => router.back() },
-      ]);
+        // Save for each date
+        for (const date of dates) {
+          await api.post("/saveSellerOffer", {
+            date: date,
+            offers: offers.map((o) => ({
+              id: o.id.toString(),
+              title: o.title,
+              min_spend: Number(o.min_spend),
+              terms: o.terms,
+            })),
+          });
+        }
+
+        Alert.alert("Success", `Saved offers for ${dates.length} days!`, [
+          { text: "OK", onPress: () => router.back() },
+        ]);
+      } else {
+        // Single date mode
+        await api.post("/saveSellerOffer", {
+          date: formattedStart,
+          offers: offers.map((o) => ({
+            id: o.id.toString(),
+            title: o.title,
+            min_spend: Number(o.min_spend),
+            terms: o.terms,
+          })),
+        });
+
+        Alert.alert("Success", "Saved!", [
+          { text: "OK", onPress: () => router.back() },
+        ]);
+      }
     } catch (e: any) {
       Alert.alert("Error", e?.response?.data?.error || "Failed to save offer");
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleDateChange = (params: any) => {
+    if (dateMode === "range") {
+      if (params?.startDate) setStartDate(dayjs(params.startDate));
+      if (params?.endDate) setEndDate(dayjs(params.endDate));
+    } else {
+      if (params?.date) {
+        setStartDate(dayjs(params.date));
+        setEndDate(dayjs(params.date));
+      }
+    }
+  };
+
+  const getDateButtonText = () => {
+    if (dateMode === "range" && startDate && endDate && !startDate.isSame(endDate, "day")) {
+      return `${startDate.format("DD MMM")} - ${endDate.format("DD MMM YYYY")}`;
+    }
+    return startDate ? startDate.format("DD MMM YYYY") : "Select a future date";
   };
 
   return (
@@ -156,20 +206,57 @@ export default function SellerAddOfferScreen() {
                 📅 Select Offer Date
               </Text>
 
+              {/* Date Mode Toggle */}
+              <View style={styles.dateModeRow}>
+                <Chip
+                  selected={dateMode === "single"}
+                  onPress={() => setDateMode("single")}
+                  style={[
+                    styles.modeChip,
+                    {
+                      backgroundColor: dateMode === "single"
+                        ? theme.colors.primary
+                        : theme.colors.surfaceVariant,
+                    },
+                  ]}
+                  textStyle={{ color: theme.colors.onPrimary }}
+                  selectedColor={theme.colors.onPrimary}
+                >
+                  Single Day
+                </Chip>
+                <Chip
+                  selected={dateMode === "range"}
+                  onPress={() => setDateMode("range")}
+                  style={[
+                    styles.modeChip,
+                    {
+                      backgroundColor: dateMode === "range"
+                        ? theme.colors.primary
+                        : theme.colors.surfaceVariant,
+                    },
+                  ]}
+                  textStyle={{ color: theme.colors.onPrimary }}
+                  selectedColor={theme.colors.onPrimary}
+                >
+                  Date Range
+                </Chip>
+              </View>
+
               <Button
                 mode="outlined"
-                onPress={() => setShowPicker(true)}
+                onPress={() => setShowPicker(!showPicker)}
                 style={{ marginTop: 5 }}
               >
-                {date ? date.format("DD MMM YYYY") : "Select a future date"}
+                {getDateButtonText()}
               </Button>
+
               {showPicker && (
                 <DatePicker
-                  mode="single"
-                  date={date}
-                  onChange={(params) => {
-                    if (params?.date) setDate(dayjs(params.date));
-                  }}
+                  mode={dateMode}
+                  date={dateMode === "single" ? startDate : undefined}
+                  startDate={dateMode === "range" ? startDate : undefined}
+                  endDate={dateMode === "range" ? endDate : undefined}
+                  onChange={handleDateChange}
                   minDate={dayjs().add(1, "day")}
                   style={{
                     backgroundColor: theme.colors.backdrop,
@@ -181,24 +268,27 @@ export default function SellerAddOfferScreen() {
                       color: theme.colors.onBackground,
                     },
                     weekday_label: {
-                      fontWeight: 600,
+                      fontWeight: "600",
                       color: theme.colors.onBackground,
                     },
                     year_selector_label: {
-                      fontWeight: 600,
+                      fontWeight: "600",
                       color: theme.colors.onBackground,
                     },
                     month_selector_label: {
-                      fontWeight: 600,
+                      fontWeight: "600",
                       color: theme.colors.onBackground,
                     },
                     disabled_label: {
                       color: theme.colors.onSurfaceDisabled,
                     },
                     selected: {
-                      color: theme.colors.primary,
+                      color: "#fff",
                       backgroundColor: theme.colors.primary,
                       borderRadius: 10,
+                    },
+                    selected_label: {
+                      color: "#fff",
                     },
                   }}
                 />
@@ -334,5 +424,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     zIndex: 50,
+  },
+  dateModeRow: {
+    flexDirection: "row",
+    gap: 10,
+    marginBottom: 12,
+  },
+  modeChip: {
+    flex: 1,
   },
 });

@@ -3,6 +3,7 @@ export interface SellerStats {
     total_points_distributed: number;
     active_customers: number;
     monthly_scans: number;
+    total_redemptions: number;
 }
 export interface SellerMedia {
     logo_url?: string | null;

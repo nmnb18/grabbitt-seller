@@ -121,6 +121,8 @@ export const LightTheme = {
     outline: Colors.light.outline,
     surfaceDisabled: Colors.light.surfaceDisabled,
     onSurfaceDisabled: Colors.light.onSurfaceDisabled,
+    // Alias for backward compatibility
+    text: Colors.light.text,
   },
   roundness: 12,
   fonts: {
@@ -183,6 +185,8 @@ export const DarkTheme = {
     outline: Colors.dark.outline,
     surfaceDisabled: Colors.dark.surfaceDisabled,
     onSurfaceDisabled: Colors.dark.onSurfaceDisabled,
+    // Alias for backward compatibility
+    text: Colors.dark.text,
   },
 };
 

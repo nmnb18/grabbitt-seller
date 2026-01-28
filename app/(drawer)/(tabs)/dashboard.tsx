@@ -1,20 +1,12 @@
 import SellerDashboard from "@/components/dashboard/dashboard";
 import DashboardSkeleton from "@/components/skeletons/dashboard";
 import withSkeletonTransition from "@/components/wrappers/withSkeletonTransition";
-import { useSellerQR } from "@/hooks/use-qr";
 import { useTheme } from "@/hooks/use-theme-color";
 import api from "@/services/axiosInstance";
-import { useFocusEffect } from "expo-router";
 import React, { useCallback, useState } from "react";
-import {
-  Alert,
-  StyleSheet
-} from "react-native";
+import { Alert, StyleSheet } from "react-native";
 
 const DashboardContainer = withSkeletonTransition(DashboardSkeleton)(SellerDashboard);
-
-
-
 
 // ------------------------------
 // MAIN DASHBOARD
@@ -23,18 +15,10 @@ const DashboardContainer = withSkeletonTransition(DashboardSkeleton)(SellerDashb
 export default function SellerDashboardContainer() {
   const theme = useTheme();
 
-
   const [stats, setStats] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing,] = useState(false);
-  const [hasData, setHasData] = useState(false);
-
-
-  // Shared QR hook
-  const { activeQR, fetchActiveQR, loadingQR } = useSellerQR({
-    autoLoad: true,
-    pollIntervalMs: 60000,
-  });
+  const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [hasData, setHasData] = useState(true);
 
   // ------------------------------
   // LOAD DASHBOARD DATA
@@ -61,10 +45,7 @@ export default function SellerDashboardContainer() {
         seller_name: s.seller_name,
       });
 
-      await fetchActiveQR();
-      if (!loadingQR) {
-        setHasData(true);
-      }
+      setHasData(true);
     } catch (error: any) {
       console.error(error);
       Alert.alert(
@@ -75,24 +56,23 @@ export default function SellerDashboardContainer() {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [fetchActiveQR]);
+  }, []);
 
-  useFocusEffect(
-    useCallback(() => {
-      loadData();
-    }, [loadData])
-  );
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     loadData();
+  //   }, [loadData])
+  // );
 
   const handleRefresh = () => {
     setRefreshing(true);
-    loadData();
+    //loadData();
   };
 
   return (
     <DashboardContainer
       stats={stats}
       loading={loading}
-      activeQR={activeQR}
       hasData={hasData}
       refreshing={refreshing}
       onRefresh={handleRefresh}

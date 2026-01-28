@@ -176,11 +176,11 @@ export default function SellerFreeAIInsights({
                     icon="star-circle-outline"
                 />
 
-                <StatTile
+                {/* <StatTile
                     label="QR Codes"
                     value={stats?.total_qrs ?? 0}
                     icon="qrcode"
-                />
+                /> */}
 
                 <StatTile
                     label="Redemptions"

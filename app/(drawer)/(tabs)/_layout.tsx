@@ -12,7 +12,7 @@ export default function SellerLayout() {
   const sellerTheme = useTheme();
 
   const backgroundColor = useThemeColor({}, "background");
-  const navigation = useNavigation<any>(); // <— use `any` to silence openDrawer TS issue
+  const navigation = useNavigation<any>();
 
   return (
     <Tabs
@@ -36,12 +36,11 @@ export default function SellerLayout() {
         headerStyle: {
           height: Platform.OS === "ios" ? 120 : 90,
           backgroundColor,
-          elevation: 0, // Android shadow
-          shadowOpacity: 0, // iOS shadow
-          borderBottomWidth: 0, // Remove bottom border line
+          elevation: 0,
+          shadowOpacity: 0,
+          borderBottomWidth: 0,
         },
 
-        /** ---------- custom header ---------- */
         headerTitle: () => (
           <GradientText
             style={{
@@ -96,11 +95,12 @@ export default function SellerLayout() {
         }}
       />
       <Tabs.Screen
-        name="generate-qr"
+        name="scan-customer"
         options={{
-          title: "QR Codes",
+          title: "Scan QR",
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="qrcode" size={size} color={color} />
+            <MaterialCommunityIcons name="qrcode-scan" size={size} color={color} />
           ),
         }}
       />
@@ -108,9 +108,10 @@ export default function SellerLayout() {
         name="redeem-qr"
         options={{
           title: "Redeem",
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <Ionicons
-              name="qr-code-outline"
+              name="gift-outline"
               size={size}
               color={color}
             />
@@ -130,6 +131,7 @@ export default function SellerLayout() {
           ),
         }}
       />
+
     </Tabs>
   );
 }

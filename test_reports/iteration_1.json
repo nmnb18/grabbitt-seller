@@ -1,0 +1,133 @@
+{
+  "summary": "Code review and TypeScript compilation analysis for Grabbitt Seller App - React Native/Expo mobile application. This is NOT a web app, so Playwright browser testing is not applicable. Focused on reward-settings.tsx component redesign and overall codebase health.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [],
+    "typescript_errors": [
+      {
+        "file": "app/(drawer)/_layout.tsx",
+        "line": 45,
+        "issue": "Binding element 'color' and 'size' implicitly have 'any' type - needs type annotation",
+        "priority": "LOW"
+      },
+      {
+        "file": "app/(drawer)/whats-new/offer-add.tsx",
+        "line": 7,
+        "issue": "Cannot find module 'dayjs' - but dayjs IS in package.json, likely a tsconfig issue",
+        "priority": "MEDIUM"
+      },
+      {
+        "file": "components/scan/OrderAmountInput.tsx",
+        "line": 209,
+        "issue": "Property 'style' does not exist on type 'ButtonProps' - custom Button component doesn't accept style prop",
+        "priority": "MEDIUM"
+      },
+      {
+        "file": "components/scan/ScanSuccess.tsx",
+        "line": 120,
+        "issue": "Property 'style' does not exist on type 'ButtonProps' - same issue as OrderAmountInput",
+        "priority": "MEDIUM"
+      },
+      {
+        "file": "components/shared/index.ts",
+        "line": 5,
+        "issue": "Module has no exported member 'BackHeaderV2', 'InlineLoader', 'LoadingPlaceholder', 'ErrorView'",
+        "priority": "HIGH"
+      },
+      {
+        "file": "Multiple wallet/store components",
+        "line": "various",
+        "issue": "Property 'text' does not exist on theme colors - theme.colors.text should be theme.colors.onSurface",
+        "priority": "MEDIUM"
+      },
+      {
+        "file": "types/index.ts",
+        "line": 8,
+        "issue": "Duplicate exports from auth and seller modules - ambiguous re-exports",
+        "priority": "MEDIUM"
+      }
+    ]
+  },
+  "code_review": {
+    "reward_settings_component": {
+      "file": "/app/components/profile/reward-settings.tsx",
+      "status": "WELL_STRUCTURED",
+      "positive_findings": [
+        "Clean separation of view and edit modes",
+        "Proper use of data-testid attributes for testing (reward-settings-card, edit-reward-btn, cancel-edit-btn, save-reward-btn, reward-type-default, reward-type-percentage, reward-type-slab, points-input, percentage-input)",
+        "Good validation logic for percentage (1-100), points (>0), and slab rules",
+        "Proper error handling with Alert.alert for user feedback",
+        "Collapsible advanced section for Offers and UPI IDs reduces UI clutter",
+        "Color-coded reward types (green for Fixed, amber for Percentage, purple for Tiered)",
+        "Horizontal pill selector for reward types in edit mode",
+        "UPI validation with regex pattern",
+        "Proper API integration with PATCH /updateSellerProfile"
+      ],
+      "issues": [
+        {
+          "issue": "data-testid attributes use React Native syntax but won't work in React Native - should use testID prop instead",
+          "severity": "HIGH",
+          "fix": "Change all data-testid='...' to testID='...' for React Native compatibility"
+        },
+        {
+          "issue": "No loading state shown when fetching initial user data",
+          "severity": "LOW"
+        },
+        {
+          "issue": "slabRules state initialized from rewards but doesn't update when rewards prop changes",
+          "severity": "MEDIUM",
+          "fix": "Add useEffect to sync state when rewards changes"
+        }
+      ]
+    },
+    "profile_setup_screen": {
+      "file": "/app/app/(drawer)/profile-setup.tsx",
+      "status": "GOOD",
+      "positive_findings": [
+        "RewardsSettings component properly imported and rendered",
+        "Profile accessible from drawer menu via router.push('/(drawer)/profile-setup')",
+        "Proper modal handling for password change and account deletion"
+      ]
+    },
+    "locked_overlay_component": {
+      "file": "/app/components/shared/locked-overlay.tsx",
+      "status": "GOOD",
+      "positive_findings": [
+        "Properly blocks editing for free tier users",
+        "Adapts to dark/light mode",
+        "Clear upgrade CTA"
+      ]
+    }
+  },
+  "test_report_links": [],
+  "action_items": [
+    "FIXED: Changed all 'data-testid' to 'testID' in reward-settings.tsx for React Native compatibility",
+    "Fix missing exports in components/shared/index.ts - BackHeaderV2, InlineLoader, LoadingPlaceholder, ErrorView",
+    "Fix theme.colors.text references - should be theme.colors.onSurface in multiple components",
+    "Add 'style' prop to ButtonProps type in components/ui/paper-button.tsx if style customization is needed",
+    "Fix duplicate type exports in types/index.ts",
+    "Add useEffect in reward-settings.tsx to sync state when rewards prop changes from parent"
+  ],
+  "critical_code_review_comments": [
+    "data-testid is a web/DOM attribute - React Native uses testID prop. All data-testid attributes in reward-settings.tsx will NOT work for testing",
+    "The Button component in components/ui/paper-button.tsx doesn't accept a 'style' prop, causing TS errors in OrderAmountInput.tsx and ScanSuccess.tsx",
+    "Multiple components reference theme.colors.text which doesn't exist in the theme - should use theme.colors.onSurface",
+    "components/shared/index.ts exports members that don't exist in their source modules"
+  ],
+  "updated_files": ["/app/components/profile/reward-settings.tsx - Fixed data-testid to testID for React Native compatibility"],
+  "success_rate": {
+    "backend": "N/A - Backend testing skipped as requested",
+    "frontend": "N/A - React Native app cannot be tested with Playwright"
+  },
+  "test_credentials": "N/A",
+  "seed_data_creation": "N/A",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "This is a React Native/Expo mobile app, NOT a web app. Playwright browser automation cannot be used. Testing should focus on: 1) TypeScript compilation (npx tsc --noEmit), 2) Code review, 3) Running the app in Expo simulator. The reward-settings.tsx component has been redesigned with view/edit modes. Key issue: all data-testid attributes need to be changed to testID for React Native.",
+  "testing_limitations": "React Native/Expo apps cannot be tested with Playwright browser automation. Would need Detox, Appium, or Expo's testing tools for E2E testing. Current testing limited to static code analysis and TypeScript compilation checks."
+}

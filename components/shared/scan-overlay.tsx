@@ -3,11 +3,21 @@ import { LinearGradient } from "expo-linear-gradient";
 import { StyleSheet, View } from "react-native";
 import { Text } from "react-native-paper";
 
-export const ScannerOverlay = () => (
+interface ScannerOverlayProps {
+    title?: string;
+    subtitle?: string;
+    bottomText?: string;
+}
+
+export const ScannerOverlay = ({
+    title = "Scan QR Code",
+    subtitle = "Align QR inside the frame",
+    bottomText = "Scan to award rewards"
+}: ScannerOverlayProps) => (
     <View style={styles.overlay}>
         <LinearGradient colors={["rgba(0,0,0,0.7)", "transparent"]} style={styles.topOverlay}>
-            <Text style={styles.topTitle}>Scan QR Code</Text>
-            <Text style={styles.topSubtitle}>Align QR inside the frame</Text>
+            <Text style={styles.topTitle}>{title}</Text>
+            <Text style={styles.topSubtitle}>{subtitle}</Text>
         </LinearGradient>
 
         <View style={styles.frame}>
@@ -19,7 +29,7 @@ export const ScannerOverlay = () => (
 
         <LinearGradient colors={["transparent", "rgba(0,0,0,0.7)"]} style={styles.bottomOverlay}>
             <MaterialCommunityIcons name="qrcode-scan" size={42} color="#FFF" />
-            <Text style={styles.bottomText}>Scan to earn rewards</Text>
+            <Text style={styles.bottomText}>{bottomText}</Text>
         </LinearGradient>
     </View>
 );
@@ -33,7 +43,7 @@ const styles = StyleSheet.create({
     cornerBL: { bottom: 0, left: 0, borderBottomWidth: 4, borderLeftWidth: 4 },
     cornerBR: { bottom: 0, right: 0, borderBottomWidth: 4, borderRightWidth: 4 },
     overlay: { ...StyleSheet.absoluteFillObject, paddingTop: 50, justifyContent: "space-between" },
-    topOverlay: { paddingTop: 60, paddingHorizontal: 24, paddingBottom: 40, alignSelf: 'center' },
+    topOverlay: { paddingTop: 60, paddingHorizontal: 24, paddingBottom: 40, alignSelf: 'center', alignItems: 'center' },
     topTitle: { color: "#FFF", fontWeight: "700", marginBottom: 8, fontSize: 22 },
     topSubtitle: { color: "#EEE" },
     bottomOverlay: { paddingTop: 30, paddingBottom: 100, alignItems: "center" },
