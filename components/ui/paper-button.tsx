@@ -143,6 +143,7 @@ export function Button({
                     styles.outlineContainer,
                     fullWidth && styles.fullWidth,
                     (disabled || loading) && styles.disabledButton,
+                    style,
                 ]}
             >
                 <LinearGradient
@@ -174,6 +175,7 @@ export function Button({
                 fullWidth && styles.fullWidth,
                 (disabled || loading) && styles.disabledButton,
                 styles.contentContainer,
+                style,
             ]}
         >
             {renderContent()}
