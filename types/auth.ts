@@ -29,6 +29,7 @@ export interface SellerRewards {
         reward_description: string;
     }[];
     percentage_value?: string;
+    noEdit?: boolean;
 
     reward_type?: string;
     flat_points?: string;

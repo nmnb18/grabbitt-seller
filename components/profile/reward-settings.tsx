@@ -280,11 +280,11 @@ export default function RewardsSettings() {
             {!isEditing ? (
               <Button
                 mode="text"
-                icon="pencil"
+                icon={rewards?.noEdit ? 'eye' : 'pencil'}
                 compact
                 onPress={() => setIsEditing(true)}
               >
-                Edit
+                {rewards?.noEdit ? 'Show' : 'Edit'}
               </Button>
             ) : (
               <View style={styles.headerButtons}>
@@ -297,7 +297,7 @@ export default function RewardsSettings() {
                 >
                   Cancel
                 </Button>
-                <Button
+                {!rewards?.noEdit && <Button
                   mode="text"
                   onPress={handleSave}
                   icon="content-save-outline"
@@ -306,7 +306,7 @@ export default function RewardsSettings() {
                   compact
                 >
                   Save
-                </Button>
+                </Button>}
               </View>
             )}
           </View>
@@ -583,7 +583,7 @@ export default function RewardsSettings() {
                         <Chip compact style={{ backgroundColor: theme.colors.primary + "90" }}>
                           <Text style={{ color: theme.colors.onPrimary, fontSize: 12 }}>Offer {index + 1}</Text>
                         </Chip>
-                        {offers.length > 1 && (
+                        {offers.length > 1 && !rewards?.noEdit && (
                           <TouchableOpacity onPress={() => removeOffer(index)}>
                             <MaterialCommunityIcons name="trash-can-outline" size={20} color={theme.colors.error} />
                           </TouchableOpacity>
@@ -631,6 +631,7 @@ export default function RewardsSettings() {
                     onPress={addOffer}
                     style={styles.addBtn}
                     compact
+                    disabled={rewards?.noEdit}
                   >
                     Add Offer
                   </Button>
