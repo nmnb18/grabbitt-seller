@@ -7,6 +7,7 @@ Grabbitt Seller is the merchant-side app for the Grabbitt loyalty platform. Sell
 - Manage offers and promotions ("What's New")
 - View analytics and insights
 - Manage subscription plans
+- **Configure reward programs** via Profile Settings (redesigned UI)
 
 ## Architecture
 - **Platform**: React Native / Expo (SDK 54)
@@ -42,6 +43,38 @@ Grabbitt Seller is the merchant-side app for the Grabbitt loyalty platform. Sell
   - `default` → Fixed points (immediate award)
   - `percentage` → % of order amount (requires amount input)
   - `slab` → Tier-based points (requires amount input)
+
+### Session 3 - Reward Settings UI Redesign ✅ (December 2025)
+
+#### 🎨 Redesigned Reward Settings Component
+
+**Changes Made:**
+- **Cleaner View Mode**: Active reward type displayed in a color-coded card with status badge
+- **Horizontal Pill Selector**: Replaced vertical cards with compact horizontal pills for reward type selection
+- **Color-Coded Types**: 
+  - Fixed Points: Green (#10B981)
+  - Percentage: Amber (#F59E0B)
+  - Tiered: Purple (#8B5CF6)
+- **Collapsible Advanced Section**: Offers and UPI IDs hidden by default to reduce UI clutter
+- **Better Visual Hierarchy**: Icon badge in header, clear section titles
+- **React Native Compatibility**: Changed `data-testid` to `testID` throughout
+- **State Sync**: Added `useEffect` to sync state when rewards data changes from store
+
+**Files Modified:**
+- `/app/components/profile/reward-settings.tsx` - Complete redesign
+- `/app/components/shared/index.ts` - Fixed export errors
+- `/app/components/shared/app-header.tsx` - Fixed testID attributes
+
+**Test IDs Added:**
+- `reward-settings-card`
+- `edit-reward-btn`
+- `cancel-edit-btn`
+- `save-reward-btn`
+- `reward-type-default`
+- `reward-type-percentage`
+- `reward-type-slab`
+- `points-input`
+- `percentage-input`
 
 #### New Files Created
 
