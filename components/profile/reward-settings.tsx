@@ -403,7 +403,7 @@ export default function RewardsSettings() {
                           borderColor: isSelected ? type.color : theme.colors.outline,
                         },
                       ]}
-                      data-testid={`reward-type-${type.id}`}
+                      testID={`reward-type-${type.id}`}
                     >
                       <MaterialCommunityIcons
                         name={type.icon as any}
@@ -439,7 +439,7 @@ export default function RewardsSettings() {
                         style={[styles.configInput, { backgroundColor: theme.colors.surface }]}
                         outlineColor={theme.colors.outline}
                         activeOutlineColor={theme.colors.primary}
-                        data-testid="points-input"
+                        testID="points-input"
                       />
                       <Text style={[styles.inputSuffix, { color: theme.colors.onSurfaceDisabled }]}>points</Text>
                     </View>
@@ -463,7 +463,7 @@ export default function RewardsSettings() {
                         style={[styles.configInput, { backgroundColor: theme.colors.surface }]}
                         outlineColor={theme.colors.outline}
                         activeOutlineColor={theme.colors.primary}
-                        data-testid="percentage-input"
+                        testID="percentage-input"
                       />
                       <Text style={[styles.inputSuffix, { color: theme.colors.onSurfaceDisabled }]}>%</Text>
                     </View>
