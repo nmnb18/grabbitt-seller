@@ -248,19 +248,31 @@ Response: {
 ## Prioritized Backlog
 
 ### P0 (Critical)
+- [x] Redesign Reward Settings UI for better UX
 - [ ] Backend: Implement /validateCustomerQR endpoint
 - [ ] Backend: Implement /awardPointsToCustomer endpoint
 - [ ] Test full scan → award flow on device
 
 ### P1 (Important)
+- [ ] Comprehensive E2E testing with Detox or Appium
 - [ ] Add transaction history for points awarded
-- [ ] Add sound/haptic feedback on successful scan
+- [x] Add sound/haptic feedback on successful scan
 - [ ] Offline queue for poor connectivity
 
 ### P2 (Nice to Have)
 - [ ] Bulk scan mode for high-volume periods
 - [ ] Daily/weekly points limit per customer
 - [ ] Receipt generation
+- [ ] Sentry error monitoring integration
+
+---
+
+## Known TypeScript Issues (Pre-existing)
+These issues exist in the codebase but don't affect app functionality:
+- `theme.colors.text` should be `theme.colors.onSurface` in multiple components
+- `dayjs` module type declarations missing
+- Custom Button component doesn't accept `style` prop
+- Some missing type declarations for expo-updates
 
 ---
 
@@ -269,3 +281,4 @@ Response: {
 2. Test scan flow with real customer QR codes
 3. Add analytics tracking for scans
 4. Consider offline caching for customer data
+5. Fix remaining TypeScript errors for cleaner builds
