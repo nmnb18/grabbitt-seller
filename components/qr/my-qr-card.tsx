@@ -27,10 +27,12 @@ export default function MyQRCard({
   const theme = useTheme();
   const { user, loading } = useAuthStore();
 
-  const qrData = user?.user?.customer_profile?.qr_code;
-  const qrBase64 = qrData?.qr_code_base64;
-  const qrId = qrData?.qr_id;
-  const userName = user?.user?.customer_profile?.account?.name || user?.user?.name || "User";
+  // Try seller_profile first, then fall back to customer_profile for user app compatibility
+  const sellerProfile = user?.user?.seller_profile;
+  const qrData = sellerProfile?.qr_settings;
+  const qrBase64 = (qrData as any)?.qr_code_base64;
+  const qrId = (qrData as any)?.qr_id;
+  const userName = sellerProfile?.account?.name || user?.user?.name || "User";
 
   const isSmall = size === "small";
   const qrSize = isSmall ? 100 : Math.min(Dimensions.get("window").width - 120, 280);
