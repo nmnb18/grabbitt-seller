@@ -33,8 +33,8 @@ export const VerificationStep: React.FC<VerificationStepProps> = ({
     const accentColor = useThemeColor({}, 'accent');
     const errorColor = useThemeColor({}, 'error');
     
-    const gstError = formData.gstNumber && !isValidGST(formData.gstNumber);
-    const panError = formData.panNumber && !isValidPAN(formData.panNumber);
+    const gstError = Boolean(formData.gstNumber) && !isValidGST(formData.gstNumber);
+    const panError = Boolean(formData.panNumber) && !isValidPAN(formData.panNumber);
 
     return (
         <View style={styles.container}>
