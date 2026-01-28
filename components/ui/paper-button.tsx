@@ -115,6 +115,7 @@ export function Button({
                     fullWidth && styles.fullWidth,
                     isLarge && styles.largeButton,
                     (disabled || loading) && styles.disabledButton,
+                    style,
                 ]}
             >
                 <LinearGradient
