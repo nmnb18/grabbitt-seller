@@ -245,7 +245,7 @@ export default function RewardsSettings() {
   };
 
   return (
-    <Card style={[styles.card, { backgroundColor: theme.colors.surface }]} data-testid="reward-settings-card">
+    <Card style={[styles.card, { backgroundColor: theme.colors.surface }]} testID="reward-settings-card">
       <View style={{ position: "relative" }}>
         <Card.Content>
           {/* Header */}
@@ -268,7 +268,7 @@ export default function RewardsSettings() {
               <TouchableOpacity 
                 onPress={() => canEdit && setIsEditing(true)}
                 style={[styles.editBtn, { backgroundColor: theme.colors.primary + "15" }]}
-                data-testid="edit-reward-btn"
+                testID="edit-reward-btn"
               >
                 <MaterialCommunityIcons name="pencil" size={18} color={theme.colors.primary} />
               </TouchableOpacity>
@@ -278,7 +278,7 @@ export default function RewardsSettings() {
                   onPress={handleCancel} 
                   disabled={saving}
                   style={[styles.cancelBtn, { borderColor: theme.colors.outline }]}
-                  data-testid="cancel-edit-btn"
+                  testID="cancel-edit-btn"
                 >
                   <Text style={{ color: theme.colors.onSurface, fontSize: 14 }}>Cancel</Text>
                 </TouchableOpacity>
@@ -286,7 +286,7 @@ export default function RewardsSettings() {
                   onPress={handleSave}
                   disabled={saving}
                   style={[styles.saveBtn, { backgroundColor: theme.colors.primary }]}
-                  data-testid="save-reward-btn"
+                  testID="save-reward-btn"
                 >
                   {saving ? (
                     <ActivityIndicator size="small" color="#fff" />
