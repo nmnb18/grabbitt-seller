@@ -1,16 +1,15 @@
 /**
- * Reward Settings - Redesigned UI
- * Clear, visual, step-by-step reward configuration
+ * Reward Settings - Clean, Intuitive UI
+ * Focused on simplicity and clear visual hierarchy
  */
 
 import api from "@/services/axiosInstance";
 import { useAuthStore } from "@/store/authStore";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
-  ScrollView,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -39,28 +38,28 @@ interface Offer {
   reward_description: string;
 }
 
-// Reward type options with descriptions
+// Simplified reward types with clearer descriptions
 const REWARD_TYPES = [
   {
     id: "default",
     title: "Fixed Points",
-    description: "Same points for every scan",
+    shortDesc: "Same points every visit",
     icon: "star-circle",
-    example: "e.g., 10 points per visit",
+    color: "#10B981", // Green
   },
   {
     id: "percentage",
     title: "Percentage",
-    description: "Points based on bill amount",
+    shortDesc: "Based on bill amount",
     icon: "percent-circle",
-    example: "e.g., 2% of ₹500 = 10 points",
+    color: "#F59E0B", // Amber
   },
   {
     id: "slab",
-    title: "Tiered Rewards",
-    description: "Different points for spending ranges",
+    title: "Tiered",
+    shortDesc: "Spend more, earn more",
     icon: "chart-timeline-variant",
-    example: "e.g., ₹0-500: 5pts, ₹501-1000: 15pts",
+    color: "#8B5CF6", // Purple
   },
 ];
 
@@ -77,6 +76,7 @@ export default function RewardsSettings() {
 
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   // Form state
   const [rewardType, setRewardType] = useState(rewards?.reward_type || "default");
@@ -110,7 +110,6 @@ export default function RewardsSettings() {
   const [upiIds, setUpiIds] = useState<string[]>(upiFromProfile);
   const [newUpi, setNewUpi] = useState("");
 
-  // Get the currently selected reward type config
   const selectedType = REWARD_TYPES.find((t) => t.id === rewardType);
 
   const handleCancel = () => {
@@ -121,6 +120,7 @@ export default function RewardsSettings() {
     setOffers(initialOffers);
     setUpiIds(upiFromProfile);
     setIsEditing(false);
+    setShowAdvanced(false);
   };
 
   const buildNumericSlabs = (): { min: number; max: number; points: number }[] => {
@@ -148,7 +148,6 @@ export default function RewardsSettings() {
   };
 
   const handleSave = async () => {
-    // Validate based on reward type
     if (rewardType === "percentage") {
       const pct = Number(percentageValue);
       if (!percentageValue || isNaN(pct) || pct <= 0 || pct > 100) {
@@ -190,7 +189,8 @@ export default function RewardsSettings() {
 
       if (uid) await fetchUserDetails(uid, "seller");
       setIsEditing(false);
-      Alert.alert("✓ Saved", "Reward settings updated successfully.");
+      setShowAdvanced(false);
+      Alert.alert("Saved", "Reward settings updated successfully.");
     } catch (err: any) {
       console.error("Save Error:", err?.response || err);
       Alert.alert("Error", err?.response?.data?.message || "Failed to save settings.");
@@ -236,409 +236,425 @@ export default function RewardsSettings() {
     setNewUpi("");
   };
 
-  // Calculate preview points
-  const getPreviewPoints = (amount: number): number => {
-    if (rewardType === "default") return Number(pointsPerVisit) || 0;
-    if (rewardType === "percentage") return Math.floor((amount * (Number(percentageValue) || 0)) / 100);
-    if (rewardType === "slab") {
-      let lastMax = -1;
-      for (const slab of slabRules) {
-        const min = lastMax + 1;
-        const max = Number(slab.max);
-        if (amount >= min && amount <= max) return Number(slab.points) || 0;
-        lastMax = max;
-      }
-    }
-    return 0;
+  // Get current value display
+  const getCurrentValueDisplay = () => {
+    if (rewardType === "default") return `${pointsPerVisit} pts/scan`;
+    if (rewardType === "percentage") return `${percentageValue}% of bill`;
+    if (rewardType === "slab") return `${slabRules.length} tiers`;
+    return "";
   };
 
   return (
-    <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
+    <Card style={[styles.card, { backgroundColor: theme.colors.surface }]} data-testid="reward-settings-card">
       <View style={{ position: "relative" }}>
         <Card.Content>
           {/* Header */}
           <View style={styles.header}>
             <View style={styles.headerLeft}>
-              <MaterialCommunityIcons name="gift" size={24} color={theme.colors.primary} />
-              <Text variant="titleMedium" style={[styles.title, { color: theme.colors.onSurface }]}>
-                Reward Settings
-              </Text>
+              <View style={[styles.iconBadge, { backgroundColor: theme.colors.primary + "20" }]}>
+                <MaterialCommunityIcons name="gift-outline" size={22} color={theme.colors.primary} />
+              </View>
+              <View>
+                <Text variant="titleMedium" style={[styles.title, { color: theme.colors.onSurface }]}>
+                  Reward Program
+                </Text>
+                <Text style={[styles.subtitle, { color: theme.colors.onSurfaceDisabled }]}>
+                  How customers earn points
+                </Text>
+              </View>
             </View>
 
             {!isEditing ? (
-              <Button mode="text" icon="pencil" compact onPress={() => canEdit && setIsEditing(true)}>
-                Edit
-              </Button>
+              <TouchableOpacity 
+                onPress={() => canEdit && setIsEditing(true)}
+                style={[styles.editBtn, { backgroundColor: theme.colors.primary + "15" }]}
+                data-testid="edit-reward-btn"
+              >
+                <MaterialCommunityIcons name="pencil" size={18} color={theme.colors.primary} />
+              </TouchableOpacity>
             ) : (
               <View style={styles.headerButtons}>
-                <Button mode="text" icon="close" compact onPress={handleCancel} disabled={saving}>
-                  Cancel
-                </Button>
-                <Button mode="contained" compact onPress={handleSave} loading={saving} disabled={saving}>
-                  Save
-                </Button>
+                <TouchableOpacity 
+                  onPress={handleCancel} 
+                  disabled={saving}
+                  style={[styles.cancelBtn, { borderColor: theme.colors.outline }]}
+                  data-testid="cancel-edit-btn"
+                >
+                  <Text style={{ color: theme.colors.onSurface, fontSize: 14 }}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  onPress={handleSave}
+                  disabled={saving}
+                  style={[styles.saveBtn, { backgroundColor: theme.colors.primary }]}
+                  data-testid="save-reward-btn"
+                >
+                  {saving ? (
+                    <ActivityIndicator size="small" color="#fff" />
+                  ) : (
+                    <Text style={{ color: "#fff", fontWeight: "600", fontSize: 14 }}>Save</Text>
+                  )}
+                </TouchableOpacity>
               </View>
             )}
           </View>
 
-          <Divider style={[styles.divider, { backgroundColor: theme.colors.outline }]} />
-
-          {/* VIEW MODE */}
+          {/* VIEW MODE - Clean Summary */}
           {!isEditing ? (
-            <View>
-              {/* Current Reward Type */}
-              <Surface style={[styles.typePreview, { backgroundColor: theme.colors.primaryContainer }]}>
-                <MaterialCommunityIcons
-                  name={selectedType?.icon as any}
-                  size={40}
-                  color={theme.colors.primary}
-                />
-                <View style={styles.typePreviewText}>
-                  <Text style={[styles.typePreviewTitle, { color: theme.colors.onPrimaryContainer }]}>
+            <View style={styles.viewMode}>
+              {/* Active Reward Type Card */}
+              <Surface 
+                style={[
+                  styles.activeTypeCard, 
+                  { 
+                    backgroundColor: selectedType?.color + "15",
+                    borderColor: selectedType?.color + "40",
+                  }
+                ]}
+              >
+                <View style={[styles.activeTypeIcon, { backgroundColor: selectedType?.color + "25" }]}>
+                  <MaterialCommunityIcons
+                    name={selectedType?.icon as any}
+                    size={28}
+                    color={selectedType?.color}
+                  />
+                </View>
+                <View style={styles.activeTypeInfo}>
+                  <Text style={[styles.activeTypeTitle, { color: theme.colors.onSurface }]}>
                     {selectedType?.title}
                   </Text>
-                  <Text style={[styles.typePreviewDesc, { color: theme.colors.onPrimaryContainer }]}>
-                    {rewardType === "default" && `${pointsPerVisit} points per scan`}
-                    {rewardType === "percentage" && `${percentageValue}% of bill amount`}
-                    {rewardType === "slab" && `${slabRules.length} reward tiers`}
+                  <Text style={[styles.activeTypeValue, { color: selectedType?.color }]}>
+                    {getCurrentValueDisplay()}
                   </Text>
                 </View>
+                <Chip 
+                  compact 
+                  style={{ backgroundColor: theme.colors.success + "20" }}
+                  textStyle={{ color: theme.colors.success, fontWeight: "600", fontSize: 11 }}
+                >
+                  Active
+                </Chip>
               </Surface>
 
-              {/* Slab preview */}
+              {/* Slab Tiers Preview */}
               {rewardType === "slab" && (
-                <View style={styles.slabPreview}>
-                  <Text style={[styles.sectionLabel, { color: theme.colors.onSurfaceDisabled }]}>
-                    Reward Tiers
-                  </Text>
+                <View style={styles.tiersPreview}>
                   {slabRules.map((slab, index) => {
                     const prevMax = Number(slabRules[index - 1]?.max || -1);
                     const min = index === 0 ? 0 : prevMax + 1;
                     return (
-                      <View key={index} style={[styles.slabPreviewItem, { backgroundColor: theme.colors.surfaceVariant }]}>
-                        <Text style={{ color: theme.colors.onSurface }}>
-                          ₹{min} - ₹{slab.max || "∞"}
+                      <View 
+                        key={index} 
+                        style={[
+                          styles.tierRow, 
+                          { backgroundColor: theme.colors.surfaceVariant }
+                        ]}
+                      >
+                        <Text style={[styles.tierRange, { color: theme.colors.onSurface }]}>
+                          ₹{min} - ₹{slab.max}
                         </Text>
-                        <Chip compact style={{ backgroundColor: theme.colors.primary }}>
-                          <Text style={{ color: "#fff", fontWeight: "600" }}>{slab.points} pts</Text>
-                        </Chip>
+                        <View style={[styles.tierPoints, { backgroundColor: theme.colors.primary }]}>
+                          <Text style={styles.tierPointsText}>{slab.points}</Text>
+                        </View>
                       </View>
                     );
                   })}
                 </View>
               )}
 
-              {/* Offers preview */}
-              <View style={styles.offersPreview}>
-                <Text style={[styles.sectionLabel, { color: theme.colors.onSurfaceDisabled }]}>
-                  Redemption Offers ({offers.length})
-                </Text>
-                {offers.slice(0, 3).map((offer, index) => (
-                  <View key={index} style={[styles.offerItem, { borderColor: theme.colors.outline }]}>
-                    <View style={styles.offerItemLeft}>
-                      <MaterialCommunityIcons name="tag" size={18} color={theme.colors.primary} />
-                      <Text style={{ color: theme.colors.onSurface, fontWeight: "500" }}>
-                        {offer.reward_name || "Unnamed Offer"}
-                      </Text>
-                    </View>
-                    <Chip compact>{offer.reward_points} pts</Chip>
-                  </View>
-                ))}
+              {/* Quick Stats */}
+              <View style={styles.statsRow}>
+                <View style={[styles.statBox, { backgroundColor: theme.colors.surfaceVariant }]}>
+                  <MaterialCommunityIcons name="tag-multiple" size={18} color={theme.colors.primary} />
+                  <Text style={[styles.statValue, { color: theme.colors.onSurface }]}>{offers.length}</Text>
+                  <Text style={[styles.statLabel, { color: theme.colors.onSurfaceDisabled }]}>Offers</Text>
+                </View>
+                <View style={[styles.statBox, { backgroundColor: theme.colors.surfaceVariant }]}>
+                  <MaterialCommunityIcons name="bank" size={18} color={theme.colors.primary} />
+                  <Text style={[styles.statValue, { color: theme.colors.onSurface }]}>{upiIds.length}</Text>
+                  <Text style={[styles.statLabel, { color: theme.colors.onSurfaceDisabled }]}>UPI IDs</Text>
+                </View>
               </View>
 
-              {/* UPI preview */}
-              {upiIds.length > 0 && (
-                <View style={styles.upiPreview}>
-                  <Text style={[styles.sectionLabel, { color: theme.colors.onSurfaceDisabled }]}>
-                    Linked UPI IDs
-                  </Text>
-                  <View style={styles.chipRow}>
-                    {upiIds.map((id) => (
-                      <Chip key={id} icon="bank" compact style={styles.upiChip}>
-                        {id}
-                      </Chip>
-                    ))}
-                  </View>
-                </View>
-              )}
-
               {subscriptionTier === "free" && (
-                <HelperText type="error" style={{ marginTop: 12 }}>
-                  Rewards are locked on the Free plan. Upgrade to customize.
+                <HelperText type="info" style={styles.upgradeHint}>
+                  Upgrade your plan to customize rewards
                 </HelperText>
               )}
             </View>
           ) : (
-            /* EDIT MODE */
-            <View>
-              {/* Step 1: Choose Reward Type */}
-              <Text style={[styles.stepTitle, { color: theme.colors.onSurface }]}>
-                Step 1: Choose how customers earn points
+            /* EDIT MODE - Simplified */
+            <View style={styles.editMode}>
+              {/* Reward Type Selector - Horizontal Pills */}
+              <Text style={[styles.sectionTitle, { color: theme.colors.onSurface }]}>
+                Reward Type
               </Text>
-
-              <View style={styles.typeCards}>
+              
+              <View style={styles.typeSelector}>
                 {REWARD_TYPES.map((type) => {
                   const isSelected = rewardType === type.id;
                   return (
                     <TouchableOpacity
                       key={type.id}
                       onPress={() => setRewardType(type.id)}
-                      activeOpacity={0.8}
+                      style={[
+                        styles.typePill,
+                        {
+                          backgroundColor: isSelected ? type.color : theme.colors.surfaceVariant,
+                          borderColor: isSelected ? type.color : theme.colors.outline,
+                        },
+                      ]}
+                      data-testid={`reward-type-${type.id}`}
                     >
-                      <Surface
+                      <MaterialCommunityIcons
+                        name={type.icon as any}
+                        size={20}
+                        color={isSelected ? "#fff" : theme.colors.onSurfaceDisabled}
+                      />
+                      <Text
                         style={[
-                          styles.typeCard,
-                          {
-                            backgroundColor: isSelected
-                              ? theme.colors.primaryContainer
-                              : theme.colors.surfaceVariant,
-                            borderColor: isSelected ? theme.colors.primary : "transparent",
-                            borderWidth: isSelected ? 2 : 0,
-                          },
+                          styles.typePillText,
+                          { color: isSelected ? "#fff" : theme.colors.onSurface },
                         ]}
                       >
-                        <MaterialCommunityIcons
-                          name={type.icon as any}
-                          size={32}
-                          color={isSelected ? theme.colors.primary : theme.colors.onSurfaceDisabled}
-                        />
-                        <Text
-                          style={[
-                            styles.typeCardTitle,
-                            { color: isSelected ? theme.colors.primary : theme.colors.onSurface },
-                          ]}
-                        >
-                          {type.title}
-                        </Text>
-                        <Text style={[styles.typeCardDesc, { color: theme.colors.onSurfaceDisabled }]}>
-                          {type.description}
-                        </Text>
-                        {isSelected && (
-                          <View style={[styles.selectedBadge, { backgroundColor: theme.colors.primary }]}>
-                            <MaterialCommunityIcons name="check" size={14} color="#fff" />
-                          </View>
-                        )}
-                      </Surface>
+                        {type.title}
+                      </Text>
                     </TouchableOpacity>
                   );
                 })}
               </View>
 
-              {/* Step 2: Configure based on type */}
-              <Text style={[styles.stepTitle, { color: theme.colors.onSurface, marginTop: 24 }]}>
-                Step 2: Configure your {selectedType?.title?.toLowerCase()} rewards
-              </Text>
-
-              {rewardType === "default" && (
-                <View style={styles.configSection}>
-                  <TextInput
-                    label="Points per scan"
-                    value={pointsPerVisit}
-                    onChangeText={setPointsPerVisit}
-                    keyboardType="numeric"
-                    mode="outlined"
-                    style={styles.input}
-                    left={<TextInput.Icon icon="star" />}
-                  />
-                  <HelperText type="info">
-                    Every customer scan earns {pointsPerVisit || "0"} points
-                  </HelperText>
-                </View>
-              )}
-
-              {rewardType === "percentage" && (
-                <View style={styles.configSection}>
-                  <TextInput
-                    label="Percentage of bill (%)"
-                    value={percentageValue}
-                    onChangeText={setPercentageValue}
-                    keyboardType="numeric"
-                    mode="outlined"
-                    style={styles.input}
-                    left={<TextInput.Icon icon="percent" />}
-                  />
-                  <Surface style={[styles.previewBox, { backgroundColor: theme.colors.surfaceVariant }]}>
-                    <Text style={{ color: theme.colors.onSurfaceDisabled }}>Preview:</Text>
-                    <Text style={{ color: theme.colors.onSurface, fontWeight: "600" }}>
-                      ₹500 bill → {getPreviewPoints(500)} points
+              {/* Configuration Based on Type */}
+              <Surface style={[styles.configCard, { backgroundColor: theme.colors.surfaceVariant }]}>
+                {rewardType === "default" && (
+                  <View>
+                    <Text style={[styles.configLabel, { color: theme.colors.onSurfaceDisabled }]}>
+                      Points awarded per scan
                     </Text>
-                  </Surface>
-                </View>
-              )}
+                    <View style={styles.inputRow}>
+                      <TextInput
+                        value={pointsPerVisit}
+                        onChangeText={setPointsPerVisit}
+                        keyboardType="numeric"
+                        mode="outlined"
+                        style={[styles.configInput, { backgroundColor: theme.colors.surface }]}
+                        outlineColor={theme.colors.outline}
+                        activeOutlineColor={theme.colors.primary}
+                        data-testid="points-input"
+                      />
+                      <Text style={[styles.inputSuffix, { color: theme.colors.onSurfaceDisabled }]}>points</Text>
+                    </View>
+                    <Text style={[styles.configHint, { color: theme.colors.onSurfaceDisabled }]}>
+                      Customer scans your QR → Gets {pointsPerVisit || "0"} points instantly
+                    </Text>
+                  </View>
+                )}
 
-              {rewardType === "slab" && (
-                <View style={styles.configSection}>
-                  {slabRules.map((rule, index) => {
-                    const prevMax = Number(slabRules[index - 1]?.max || -1);
-                    const min = index === 0 ? 0 : prevMax + 1;
-                    return (
-                      <Surface
-                        key={index}
-                        style={[styles.slabCard, { backgroundColor: theme.colors.surfaceVariant }]}
-                      >
-                        <View style={styles.slabHeader}>
-                          <Text style={[styles.slabLabel, { color: theme.colors.primary }]}>
-                            Tier {index + 1}
-                          </Text>
-                          {slabRules.length > 1 && (
-                            <TouchableOpacity onPress={() => removeSlab(index)}>
-                              <MaterialCommunityIcons name="close-circle" size={22} color={theme.colors.error} />
-                            </TouchableOpacity>
-                          )}
-                        </View>
+                {rewardType === "percentage" && (
+                  <View>
+                    <Text style={[styles.configLabel, { color: theme.colors.onSurfaceDisabled }]}>
+                      Percentage of bill as points
+                    </Text>
+                    <View style={styles.inputRow}>
+                      <TextInput
+                        value={percentageValue}
+                        onChangeText={setPercentageValue}
+                        keyboardType="numeric"
+                        mode="outlined"
+                        style={[styles.configInput, { backgroundColor: theme.colors.surface }]}
+                        outlineColor={theme.colors.outline}
+                        activeOutlineColor={theme.colors.primary}
+                        data-testid="percentage-input"
+                      />
+                      <Text style={[styles.inputSuffix, { color: theme.colors.onSurfaceDisabled }]}>%</Text>
+                    </View>
+                    <View style={[styles.exampleBox, { backgroundColor: theme.colors.surface }]}>
+                      <Text style={[styles.exampleText, { color: theme.colors.onSurface }]}>
+                        Example: ₹500 bill → {Math.floor(500 * (Number(percentageValue) || 0) / 100)} points
+                      </Text>
+                    </View>
+                  </View>
+                )}
 
-                        <View style={styles.slabInputRow}>
-                          <View style={styles.slabInputHalf}>
-                            <Text style={[styles.slabInputLabel, { color: theme.colors.onSurfaceDisabled }]}>
-                              From ₹
-                            </Text>
-                            <TextInput
-                              value={String(min)}
-                              mode="outlined"
-                              editable={false}
-                              dense
-                              style={styles.slabInput}
-                            />
-                          </View>
-                          <View style={styles.slabInputHalf}>
-                            <Text style={[styles.slabInputLabel, { color: theme.colors.onSurfaceDisabled }]}>
-                              To ₹
+                {rewardType === "slab" && (
+                  <View>
+                    <Text style={[styles.configLabel, { color: theme.colors.onSurfaceDisabled }]}>
+                      Set spending tiers
+                    </Text>
+                    
+                    {slabRules.map((rule, index) => {
+                      const prevMax = Number(slabRules[index - 1]?.max || -1);
+                      const min = index === 0 ? 0 : prevMax + 1;
+                      return (
+                        <View key={index} style={styles.slabRow}>
+                          <View style={styles.slabRangeCol}>
+                            <Text style={[styles.slabFieldLabel, { color: theme.colors.onSurfaceDisabled }]}>
+                              ₹{min} to
                             </Text>
                             <TextInput
                               value={rule.max}
                               onChangeText={(v) => updateSlab(index, "max", v)}
-                              mode="outlined"
                               keyboardType="numeric"
+                              mode="outlined"
                               dense
-                              style={styles.slabInput}
+                              placeholder="Max"
+                              style={[styles.slabInput, { backgroundColor: theme.colors.surface }]}
+                              outlineColor={theme.colors.outline}
                             />
                           </View>
-                          <View style={styles.slabInputHalf}>
-                            <Text style={[styles.slabInputLabel, { color: theme.colors.onSurfaceDisabled }]}>
+                          <View style={styles.slabPointsCol}>
+                            <Text style={[styles.slabFieldLabel, { color: theme.colors.onSurfaceDisabled }]}>
                               Points
                             </Text>
                             <TextInput
                               value={rule.points}
                               onChangeText={(v) => updateSlab(index, "points", v)}
-                              mode="outlined"
                               keyboardType="numeric"
+                              mode="outlined"
                               dense
-                              style={styles.slabInput}
+                              placeholder="Pts"
+                              style={[styles.slabInput, { backgroundColor: theme.colors.surface }]}
+                              outlineColor={theme.colors.outline}
                             />
                           </View>
+                          {slabRules.length > 1 && (
+                            <TouchableOpacity 
+                              onPress={() => removeSlab(index)}
+                              style={styles.removeBtn}
+                            >
+                              <MaterialCommunityIcons name="close-circle" size={24} color={theme.colors.error} />
+                            </TouchableOpacity>
+                          )}
                         </View>
-                      </Surface>
-                    );
-                  })}
+                      );
+                    })}
 
-                  <Button mode="outlined" icon="plus" onPress={addSlab} style={styles.addButton}>
-                    Add Tier
-                  </Button>
-                </View>
-              )}
-
-              {/* Step 3: Redemption Offers */}
-              <Text style={[styles.stepTitle, { color: theme.colors.onSurface, marginTop: 24 }]}>
-                Step 3: Set up redemption offers
-              </Text>
-
-              <View style={styles.configSection}>
-                {offers.map((offer, index) => (
-                  <Surface
-                    key={index}
-                    style={[styles.offerCard, { backgroundColor: theme.colors.surfaceVariant }]}
-                  >
-                    <View style={styles.offerCardHeader}>
-                      <Text style={[styles.offerCardLabel, { color: theme.colors.primary }]}>
-                        Offer {index + 1}
-                      </Text>
-                      {offers.length > 1 && (
-                        <TouchableOpacity onPress={() => removeOffer(index)}>
-                          <MaterialCommunityIcons name="close-circle" size={22} color={theme.colors.error} />
-                        </TouchableOpacity>
-                      )}
-                    </View>
-
-                    <TextInput
-                      label="Offer Name"
-                      value={offer.reward_name}
-                      onChangeText={(v) => updateOffer(index, "reward_name", v)}
-                      mode="outlined"
-                      dense
-                      style={styles.offerInput}
-                      left={<TextInput.Icon icon="tag" />}
-                    />
-                    <TextInput
-                      label="Points Required"
-                      value={offer.reward_points}
-                      onChangeText={(v) => updateOffer(index, "reward_points", v)}
-                      mode="outlined"
-                      keyboardType="numeric"
-                      dense
-                      style={styles.offerInput}
-                      left={<TextInput.Icon icon="star" />}
-                    />
-                    <TextInput
-                      label="Description (optional)"
-                      value={offer.reward_description}
-                      onChangeText={(v) => updateOffer(index, "reward_description", v)}
-                      mode="outlined"
-                      dense
-                      multiline
-                      style={styles.offerInput}
-                    />
-                  </Surface>
-                ))}
-
-                <Button mode="outlined" icon="plus" onPress={addOffer} style={styles.addButton}>
-                  Add Offer
-                </Button>
-              </View>
-
-              {/* Optional: UPI IDs */}
-              <Text style={[styles.stepTitle, { color: theme.colors.onSurface, marginTop: 24 }]}>
-                Optional: Link UPI IDs
-              </Text>
-
-              <View style={styles.configSection}>
-                <View style={styles.upiInputRow}>
-                  <TextInput
-                    label="UPI ID"
-                    value={newUpi}
-                    onChangeText={setNewUpi}
-                    mode="outlined"
-                    dense
-                    style={styles.upiInput}
-                    placeholder="shop@upi"
-                  />
-                  <Button mode="contained" onPress={handleAddUpi} style={styles.upiAddBtn}>
-                    Add
-                  </Button>
-                </View>
-
-                {upiIds.length > 0 && (
-                  <View style={styles.chipRow}>
-                    {upiIds.map((id) => (
-                      <Chip key={id} onClose={() => setUpiIds(upiIds.filter((u) => u !== id))}>
-                        {id}
-                      </Chip>
-                    ))}
+                    <TouchableOpacity 
+                      onPress={addSlab}
+                      style={[styles.addTierBtn, { borderColor: theme.colors.primary }]}
+                    >
+                      <MaterialCommunityIcons name="plus" size={18} color={theme.colors.primary} />
+                      <Text style={{ color: theme.colors.primary, fontWeight: "500" }}>Add Tier</Text>
+                    </TouchableOpacity>
                   </View>
                 )}
-              </View>
+              </Surface>
+
+              {/* Collapsible Advanced Section */}
+              <TouchableOpacity 
+                onPress={() => setShowAdvanced(!showAdvanced)}
+                style={styles.advancedToggle}
+              >
+                <Text style={[styles.advancedToggleText, { color: theme.colors.primary }]}>
+                  {showAdvanced ? "Hide" : "Show"} Advanced Options
+                </Text>
+                <MaterialCommunityIcons 
+                  name={showAdvanced ? "chevron-up" : "chevron-down"} 
+                  size={20} 
+                  color={theme.colors.primary} 
+                />
+              </TouchableOpacity>
+
+              {showAdvanced && (
+                <View style={styles.advancedSection}>
+                  {/* Redemption Offers */}
+                  <Text style={[styles.sectionTitle, { color: theme.colors.onSurface, marginTop: 8 }]}>
+                    Redemption Offers
+                  </Text>
+                  <Text style={[styles.sectionHint, { color: theme.colors.onSurfaceDisabled }]}>
+                    What can customers redeem points for?
+                  </Text>
+
+                  {offers.map((offer, index) => (
+                    <Surface
+                      key={index}
+                      style={[styles.offerCard, { backgroundColor: theme.colors.surfaceVariant }]}
+                    >
+                      <View style={styles.offerHeader}>
+                        <Chip compact style={{ backgroundColor: theme.colors.primary + "20" }}>
+                          <Text style={{ color: theme.colors.primary, fontSize: 12 }}>Offer {index + 1}</Text>
+                        </Chip>
+                        {offers.length > 1 && (
+                          <TouchableOpacity onPress={() => removeOffer(index)}>
+                            <MaterialCommunityIcons name="trash-can-outline" size={20} color={theme.colors.error} />
+                          </TouchableOpacity>
+                        )}
+                      </View>
+
+                      <TextInput
+                        label="Offer Name"
+                        value={offer.reward_name}
+                        onChangeText={(v) => updateOffer(index, "reward_name", v)}
+                        mode="outlined"
+                        dense
+                        style={[styles.offerInput, { backgroundColor: theme.colors.surface }]}
+                        placeholder="e.g., Free Coffee"
+                      />
+                      <TextInput
+                        label="Points Required"
+                        value={offer.reward_points}
+                        onChangeText={(v) => updateOffer(index, "reward_points", v)}
+                        mode="outlined"
+                        keyboardType="numeric"
+                        dense
+                        style={[styles.offerInput, { backgroundColor: theme.colors.surface }]}
+                      />
+                    </Surface>
+                  ))}
+
+                  <Button 
+                    mode="outlined" 
+                    icon="plus" 
+                    onPress={addOffer} 
+                    style={styles.addBtn}
+                    compact
+                  >
+                    Add Offer
+                  </Button>
+
+                  <Divider style={[styles.sectionDivider, { backgroundColor: theme.colors.outline }]} />
+
+                  {/* UPI IDs */}
+                  <Text style={[styles.sectionTitle, { color: theme.colors.onSurface }]}>
+                    Linked UPI IDs
+                  </Text>
+                  <Text style={[styles.sectionHint, { color: theme.colors.onSurfaceDisabled }]}>
+                    Optional: For payment-based rewards
+                  </Text>
+
+                  <View style={styles.upiInputRow}>
+                    <TextInput
+                      value={newUpi}
+                      onChangeText={setNewUpi}
+                      mode="outlined"
+                      dense
+                      style={[styles.upiInput, { backgroundColor: theme.colors.surface }]}
+                      placeholder="yourshop@upi"
+                    />
+                    <Button mode="contained" onPress={handleAddUpi} compact style={styles.upiAddBtn}>
+                      Add
+                    </Button>
+                  </View>
+
+                  {upiIds.length > 0 && (
+                    <View style={styles.upiChips}>
+                      {upiIds.map((id) => (
+                        <Chip 
+                          key={id} 
+                          onClose={() => setUpiIds(upiIds.filter((u) => u !== id))}
+                          style={{ marginRight: 8, marginBottom: 8 }}
+                        >
+                          {id}
+                        </Chip>
+                      ))}
+                    </View>
+                  )}
+                </View>
+              )}
             </View>
           )}
         </Card.Content>
 
-        {/* Saving Overlay */}
-        {saving && (
-          <View style={[styles.overlay, { backgroundColor: theme.dark ? "rgba(0,0,0,0.5)" : "rgba(255,255,255,0.8)" }]}>
-            <ActivityIndicator size="large" color={theme.colors.primary} />
-            <Text style={{ marginTop: 8, color: theme.colors.onSurface }}>Saving...</Text>
-          </View>
-        )}
-
-        {/* Locked for Free Plan */}
+        {/* Locked Overlay for Free Plan */}
         {!canEdit && <LockedOverlay message="Upgrade to customize rewards" />}
       </View>
     </Card>
@@ -649,214 +665,290 @@ const styles = StyleSheet.create({
   card: {
     marginBottom: 16,
     borderRadius: 16,
-    paddingVertical: 12,
+    overflow: "hidden",
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    paddingVertical: 4,
   },
   headerLeft: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
+    gap: 12,
+  },
+  iconBadge: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  title: {
+    fontWeight: "700",
+    fontSize: 16,
+  },
+  subtitle: {
+    fontSize: 12,
+    marginTop: 2,
+  },
+  editBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
   },
   headerButtons: {
     flexDirection: "row",
     gap: 8,
   },
-  title: {
-    fontWeight: "700",
-  },
-  divider: {
-    marginVertical: 16,
-  },
-
-  // View mode
-  typePreview: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 16,
-    padding: 16,
-    borderRadius: 12,
-  },
-  typePreviewText: {
-    flex: 1,
-  },
-  typePreviewTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-  },
-  typePreviewDesc: {
-    fontSize: 14,
-    marginTop: 2,
-  },
-  sectionLabel: {
-    fontSize: 13,
-    fontWeight: "600",
-    marginTop: 16,
-    marginBottom: 8,
-  },
-  slabPreview: {
-    marginTop: 8,
-  },
-  slabPreviewItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 12,
+  cancelBtn: {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
     borderRadius: 8,
-    marginBottom: 6,
+    borderWidth: 1,
   },
-  offersPreview: {
-    marginTop: 8,
-  },
-  offerItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+  saveBtn: {
+    paddingHorizontal: 18,
+    paddingVertical: 8,
+    borderRadius: 8,
+    minWidth: 70,
     alignItems: "center",
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-  },
-  offerItemLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  upiPreview: {
-    marginTop: 8,
-  },
-  chipRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-  },
-  upiChip: {
-    marginRight: 4,
   },
 
-  // Edit mode
-  stepTitle: {
-    fontSize: 15,
-    fontWeight: "600",
-    marginBottom: 12,
+  // View Mode
+  viewMode: {
+    marginTop: 16,
   },
-  typeCards: {
-    gap: 12,
-  },
-  typeCard: {
+  activeTypeCard: {
+    flexDirection: "row",
+    alignItems: "center",
     padding: 16,
     borderRadius: 12,
-    position: "relative",
+    borderWidth: 1,
   },
-  typeCardTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginTop: 8,
-  },
-  typeCardDesc: {
-    fontSize: 13,
-    marginTop: 4,
-  },
-  selectedBadge: {
-    position: "absolute",
-    top: 10,
-    right: 10,
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+  activeTypeIcon: {
+    width: 52,
+    height: 52,
+    borderRadius: 14,
     justifyContent: "center",
     alignItems: "center",
   },
-  configSection: {
-    marginTop: 8,
+  activeTypeInfo: {
+    flex: 1,
+    marginLeft: 14,
   },
-  input: {
-    marginBottom: 8,
+  activeTypeTitle: {
+    fontSize: 16,
+    fontWeight: "600",
   },
-  previewBox: {
-    flexDirection: "row",
-    gap: 8,
-    padding: 12,
-    borderRadius: 8,
-    marginTop: 8,
+  activeTypeValue: {
+    fontSize: 14,
+    fontWeight: "700",
+    marginTop: 2,
   },
-
-  // Slab edit
-  slabCard: {
-    padding: 12,
-    borderRadius: 12,
-    marginBottom: 12,
+  tiersPreview: {
+    marginTop: 12,
+    gap: 6,
   },
-  slabHeader: {
+  tierRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 8,
   },
-  slabLabel: {
+  tierRange: {
+    fontSize: 14,
+  },
+  tierPoints: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  tierPointsText: {
+    color: "#fff",
+    fontSize: 13,
     fontWeight: "600",
   },
-  slabInputRow: {
+  statsRow: {
+    flexDirection: "row",
+    gap: 12,
+    marginTop: 16,
+  },
+  statBox: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    padding: 12,
+    borderRadius: 10,
+  },
+  statValue: {
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  statLabel: {
+    fontSize: 12,
+  },
+  upgradeHint: {
+    marginTop: 12,
+    textAlign: "center",
+  },
+
+  // Edit Mode
+  editMode: {
+    marginTop: 16,
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: "600",
+    marginBottom: 10,
+  },
+  sectionHint: {
+    fontSize: 12,
+    marginBottom: 12,
+    marginTop: -6,
+  },
+  typeSelector: {
     flexDirection: "row",
     gap: 8,
+    marginBottom: 16,
   },
-  slabInputHalf: {
+  typePill: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    borderRadius: 10,
+    borderWidth: 1,
+  },
+  typePillText: {
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  configCard: {
+    padding: 16,
+    borderRadius: 12,
+  },
+  configLabel: {
+    fontSize: 13,
+    marginBottom: 10,
+  },
+  inputRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  configInput: {
+    flex: 1,
+    maxWidth: 120,
+  },
+  inputSuffix: {
+    fontSize: 14,
+  },
+  configHint: {
+    fontSize: 12,
+    marginTop: 12,
+    fontStyle: "italic",
+  },
+  exampleBox: {
+    padding: 12,
+    borderRadius: 8,
+    marginTop: 12,
+  },
+  exampleText: {
+    fontSize: 13,
+  },
+  slabRow: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    gap: 8,
+    marginBottom: 12,
+  },
+  slabRangeCol: {
+    flex: 2,
+  },
+  slabPointsCol: {
     flex: 1,
   },
-  slabInputLabel: {
+  slabFieldLabel: {
     fontSize: 11,
     marginBottom: 4,
   },
   slabInput: {
     fontSize: 14,
   },
-  addButton: {
-    marginTop: 8,
+  removeBtn: {
+    paddingBottom: 8,
+  },
+  addTierBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    paddingVertical: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderStyle: "dashed",
+    marginTop: 4,
   },
 
-  // Offer edit
+  // Advanced Section
+  advancedToggle: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 14,
+    marginTop: 8,
+  },
+  advancedToggleText: {
+    fontSize: 13,
+    fontWeight: "500",
+  },
+  advancedSection: {
+    marginTop: 4,
+  },
+  sectionDivider: {
+    marginVertical: 20,
+  },
   offerCard: {
     padding: 12,
-    borderRadius: 12,
-    marginBottom: 12,
+    borderRadius: 10,
+    marginBottom: 10,
   },
-  offerCardHeader: {
+  offerHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 12,
-  },
-  offerCardLabel: {
-    fontWeight: "600",
+    marginBottom: 10,
   },
   offerInput: {
     marginBottom: 8,
   },
-
-  // UPI edit
+  addBtn: {
+    marginTop: 4,
+  },
   upiInputRow: {
     flexDirection: "row",
     gap: 8,
     alignItems: "center",
-    marginBottom: 12,
   },
   upiInput: {
     flex: 1,
   },
   upiAddBtn: {
-    marginTop: 6,
+    marginTop: 0,
   },
-
-  overlay: {
-    position: "absolute",
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 16,
-    zIndex: 100,
+  upiChips: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginTop: 12,
   },
 });
