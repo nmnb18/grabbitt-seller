@@ -11,6 +11,8 @@ import {
     View,
 } from 'react-native';
 
+import type { StyleProp, ViewStyle } from 'react-native';
+
 export type ButtonProps = {
     children: string;
     onPress: () => void;
@@ -23,6 +25,7 @@ export type ButtonProps = {
     iconPosition?: 'left' | 'right';
     iconSize?: number;
     iconColor?: string;
+    style?: StyleProp<ViewStyle>;
 };
 
 export function Button({
@@ -37,6 +40,7 @@ export function Button({
     iconPosition = 'left',
     iconSize = 20,
     iconColor,
+    style,
 }: ButtonProps) {
     const backgroundColor = useThemeColor({}, 'background');
     const textColor = useThemeColor({}, 'text');

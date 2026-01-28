@@ -42,7 +42,7 @@ export default function DrawerLayout() {
           name="(tabs)"
           options={{
             title: "Dashboard",
-            drawerIcon: ({ color, size }) => (
+            drawerIcon: ({ color, size }: { color: string; size: number }) => (
               <Ionicons name="home-outline" size={size} color={color} />
             ),
           }}

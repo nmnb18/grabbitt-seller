@@ -5,7 +5,16 @@
 
 export * from "./auth";
 export * from "./wallet";
-export * from "./seller";
+// Explicitly export non-conflicting types from seller
+export type { 
+  SellerProfile,
+  SellerSubscription,
+  Seller 
+} from "./seller";
 export * from "./perks";
-export * from "./redemptions";
+// Explicitly export non-conflicting types from redemptions
+export type {
+  RedemptionStatus,
+  RedemptionItem
+} from "./redemptions";
 export * from "./scan-qr";
