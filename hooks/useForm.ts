@@ -38,7 +38,7 @@ interface UseFormReturn<T> {
 export function useForm<T extends Record<string, any>>(
   options: UseFormOptions<T>
 ): UseFormReturn<T> {
-  const { initialValues, schema = {}, onSubmit } = options;
+  const { initialValues, schema, onSubmit } = options;
 
   const [values, setValues] = useState<T>(initialValues);
   const [errors, setErrors] = useState<Partial<Record<keyof T, string>>>({});
