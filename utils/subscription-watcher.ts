@@ -1,4 +1,4 @@
-let expiryTimer: number | null = null;
+let expiryTimer: ReturnType<typeof setTimeout> | null = null;
 
 export const clearSubscriptionWatcher = () => {
     if (expiryTimer) clearTimeout(expiryTimer);
