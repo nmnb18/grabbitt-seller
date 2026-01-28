@@ -24,8 +24,6 @@ import { PulsingChip } from "../ui/pluse-chip";
 import MyQRCard from "@/components/qr/my-qr-card";
 import { BUSINESS_TYPES, PLACEHOLDER_IMAGES } from "@/utils/constants";
 
-import { BUSINESS_TYPES, PLACEHOLDER_IMAGES } from "@/utils/constants";
-
 // Props interface
 interface UserHomeProps {
     // Data
@@ -170,7 +168,7 @@ export default function UserHome({
                                     <View style={styles.bannerTop}>
                                         {seller.category && (
                                             <Chip compact style={{ borderColor: theme.colors.tertiary, borderWidth: 1, backgroundColor: theme.colors.background, alignSelf: 'center' }}
-                                                textStyle={{ color: theme.colors.text }}>
+                                                textStyle={{ color: theme.colors.onSurface }}>
                                                 {seller.category.toUpperCase()}
                                             </Chip>
                                         )}
