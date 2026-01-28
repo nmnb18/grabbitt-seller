@@ -32,14 +32,13 @@ export const VerificationStep: React.FC<VerificationStepProps> = ({
 }) => {
     const accentColor = useThemeColor({}, 'accent');
     const errorColor = useThemeColor({}, 'error');
-    
+
     const gstError = Boolean(formData.gstNumber) && !isValidGST(formData.gstNumber);
     const panError = Boolean(formData.panNumber) && !isValidPAN(formData.panNumber);
 
     return (
         <View style={styles.container}>
             <Text variant="titleMedium" style={styles.stepTitle}>Business Verification</Text>
-            <Text variant="bodySmall" style={styles.optionalText}>(Optional - Can be completed later)</Text>
 
             <FormTextInput
                 label="GST Number"
@@ -57,7 +56,7 @@ export const VerificationStep: React.FC<VerificationStepProps> = ({
             )}
 
             <FormTextInput
-                label="PAN Number"
+                label="PAN Number *"
                 value={formData.panNumber}
                 onChangeText={(value) => onFormDataChange('panNumber', value.toUpperCase())}
                 leftIcon="card-bulleted"

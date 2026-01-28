@@ -70,10 +70,11 @@ export const PLANS = [
         price: '₹0 / month',
         color: Colors.light.accent,
         features: [
-            'Generate up to 10 QRs per month',
-
-            'Basic analytics (points & scans summary)',
-            'Email support only',
+            'Up to 300 scans per month',
+            'Basic analytics (total scans & points issued)',
+            'Fraud detection & scan abuse prevention',
+            'Basic reward configuration',
+            'Email support',
         ],
     },
     {
@@ -82,22 +83,24 @@ export const PLANS = [
         price: '₹299 / month',
         color: Colors.light.secondary,
         features: [
-            'Unlimited QR generation (single type)',
-            'Access to one QR type (chosen at registration)',
+            'Up to 3,000 scans per month',
             'Advanced analytics dashboard',
-            'Priority support via phone/chat/email',
+            'Fraud detection & scan abuse prevention',
+            'Access to daily offers & promotions',
+            'Priority support via chat, email & phone',
         ],
     },
     {
         id: 'premium',
         name: 'Premium',
-        price: '₹2999 / year',
+        price: '₹2,999 / year',
         color: Colors.light.primary,
         features: [
-            'Unlimited dynamic + static QR creation',
-            'Full flexibility to change QR type anytime',
-            'AI-based insights & fraud detection',
-            'Dedicated account manager & premium support',
+            'Unlimited scans',
+            'Advanced analytics with AI-based insights',
+            'Fraud detection & scan abuse prevention',
+            'Dedicated account manager',
+            'Premium priority support',
         ],
     },
 ];

@@ -1,9 +1,8 @@
 import { FormField, SellerFormData } from '@/hooks/use-seller-registration';
-import { QR_CODE_TYPES } from '@/utils/constant';
 import { AppStyles } from '@/utils/theme';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Checkbox, RadioButton, Text } from 'react-native-paper';
+import { Checkbox, Text } from 'react-native-paper';
 import { RewardTypeSection } from '../form/reward-type-section';
 
 interface PreferencesStepProps {
@@ -26,10 +25,10 @@ export const PreferencesStep: React.FC<PreferencesStepProps> = ({
 }) => {
     return (
         <View style={styles.container}>
-            <Text variant="titleMedium" style={styles.stepTitle}>QR Code Preferences</Text>
+            <Text variant="titleMedium" style={styles.stepTitle}>Reward Preferences</Text>
 
-            <Text variant="bodyMedium" style={styles.sectionLabel}>QR Code Type</Text>
-            <RadioButton.Group
+            {/* <Text variant="bodyMedium" style={styles.sectionLabel}>QR Code Type</Text> */}
+            {/* <RadioButton.Group
                 value={formData.qrCodeType}
                 onValueChange={(value) => onFormDataChange('qrCodeType', value)}
             >
@@ -44,7 +43,7 @@ export const PreferencesStep: React.FC<PreferencesStepProps> = ({
                         </View>
                     </View>
                 ))}
-            </RadioButton.Group>
+            </RadioButton.Group> */}
 
             <RewardTypeSection
                 rewardType={formData.rewardType}

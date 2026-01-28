@@ -162,6 +162,15 @@ export const useSellerRegistration = () => {
           return false;
         }
         return true;
+      case 4:
+        if (
+          !formData.panNumber
+        ) {
+          Alert.alert("Error", "Please fill all required fields");
+          return false;
+        }
+
+        return true;
 
       case 5:
         if (!formData.acceptTerms) {

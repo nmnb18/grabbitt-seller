@@ -131,13 +131,7 @@ export default function SellerLayout() {
           ),
         }}
       />
-      {/* Hide old generate-qr tab */}
-      <Tabs.Screen
-        name="generate-qr"
-        options={{
-          href: null,
-        }}
-      />
+
     </Tabs>
   );
 }

@@ -13,7 +13,7 @@ import {
     TouchableOpacity,
     View
 } from "react-native";
-import { Card, Chip, FAB, Surface, Text } from "react-native-paper";
+import { Card, Chip, Surface, Text } from "react-native-paper";
 import { StatCard } from "../shared/stats-card";
 
 // ------------------------------
@@ -27,6 +27,7 @@ interface ActionCardProps {
     subtitle: string;
     onPress: () => void;
     iconColor: string;
+    bgColor: string;
 }
 
 // ------------------------------
@@ -43,10 +44,11 @@ const ActionCard = ({
     icon,
     title,
     subtitle,
+    bgColor,
     onPress,
     iconColor,
 }: ActionCardProps) => (
-    <Card onPress={onPress} style={styles.actionCard} elevation={1}>
+    <Card onPress={onPress} style={[styles.actionCard, { backgroundColor: bgColor }]} elevation={1}>
         <Card.Content style={styles.actionCardContent}>
             <Surface style={[styles.actionIcon, { backgroundColor: `${iconColor}20` }]}>
                 <MaterialCommunityIcons name={icon as any} size={28} color={iconColor} />
@@ -199,43 +201,38 @@ export default function SellerDashboard({
                     <Text variant="titleMedium" style={[styles.sectionTitle, { color: theme.colors.onSurface }]}>
                         Quick Actions
                     </Text>
-                    
+
                     <ActionCard
                         title="Scan Customer QR"
                         subtitle="Award reward points"
                         icon="qrcode-scan"
+                        bgColor={theme.colors.surface}
                         iconColor={theme.colors.primary}
                         onPress={() => router.push("/(drawer)/(tabs)/scan-customer")}
                     />
-                    
+
                     <ActionCard
                         title="Redeem Points"
                         subtitle="Scan redemption QR"
-                        icon="gift-outline"
+                        bgColor={theme.colors.surface}
+                        icon="star-four-points-outline"
                         iconColor={theme.colors.secondary}
                         onPress={() => router.push("/(drawer)/(tabs)/redeem-qr")}
                     />
-                    
+
                     <ActionCard
                         title="What's New"
                         subtitle="Manage daily offers"
-                        icon="newspaper-variant-outline"
-                        iconColor={theme.colors.tertiary}
+                        bgColor={theme.colors.surface}
+                        icon="gift-outline"
+                        iconColor={theme.colors.error}
                         onPress={() => router.push("/(drawer)/whats-new/whats-new-home")}
                     />
                 </View>
 
                 <View style={styles.bottomSpacer} />
             </ScrollView>
-            
-            {/* Floating Scan Button */}
-            <FAB
-                icon="qrcode-scan"
-                label="Scan"
-                style={[styles.fab, { backgroundColor: theme.colors.primary }]}
-                onPress={() => router.push("/(drawer)/(tabs)/scan-customer")}
-                color="#fff"
-            />
+
         </View>
     );
 }
@@ -245,7 +242,6 @@ export default function SellerDashboard({
 // ------------------------------
 
 const styles = StyleSheet.create({
-    fab: { position: "absolute", bottom: 100, right: 16 },
     container: { flex: 1 },
     content: { flex: 1 },
     scrollContent: { paddingHorizontal: 16, paddingTop: 16 },

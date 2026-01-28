@@ -3,29 +3,26 @@
  * Focused on simplicity and clear visual hierarchy
  */
 
+import { useTheme } from "@/hooks/use-theme-color";
 import api from "@/services/axiosInstance";
 import { useAuthStore } from "@/store/authStore";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
   Alert,
   StyleSheet,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import {
   Button,
   Card,
   Chip,
   Divider,
-  HelperText,
   Surface,
   Text,
-  TextInput,
+  TextInput
 } from "react-native-paper";
-import { LockedOverlay } from "../shared/locked-overlay";
-import { useTheme } from "@/hooks/use-theme-color";
 
 interface SlabRuleUI {
   max: string;
@@ -71,9 +68,6 @@ export default function RewardsSettings() {
   const rewards = user?.user?.seller_profile?.rewards;
   const upiFromProfile: string[] = rewards?.upi_ids || [];
 
-  const subscriptionTier = user?.user?.seller_profile?.subscription?.tier || "free";
-  const canEdit = subscriptionTier !== "free";
-
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -90,9 +84,9 @@ export default function RewardsSettings() {
   const initialSlabRules: SlabRuleUI[] =
     Array.isArray(rewards?.slab_rules) && rewards!.slab_rules.length > 0
       ? rewards!.slab_rules.map((r: any) => ({
-          max: String(r.max),
-          points: String(r.points),
-        }))
+        max: String(r.max),
+        points: String(r.points),
+      }))
       : [{ max: "500", points: "5" }, { max: "1000", points: "15" }];
 
   const [slabRules, setSlabRules] = useState<SlabRuleUI[]>(initialSlabRules);
@@ -100,10 +94,10 @@ export default function RewardsSettings() {
   const initialOffers: Offer[] =
     Array.isArray(rewards?.offers) && rewards!.offers.length > 0
       ? rewards!.offers.map((r: any) => ({
-          reward_points: String(r.reward_points),
-          reward_name: r.reward_name,
-          reward_description: r.reward_description,
-        }))
+        reward_points: String(r.reward_points),
+        reward_name: r.reward_name,
+        reward_description: r.reward_description,
+      }))
       : [{ reward_points: "100", reward_name: "Free Coffee", reward_description: "Redeem 100 points for a free coffee" }];
 
   const [offers, setOffers] = useState<Offer[]>(initialOffers);
@@ -118,14 +112,14 @@ export default function RewardsSettings() {
       setRewardType(rewards.reward_type || "default");
       setPointsPerVisit(rewards.default_points_value ? String(rewards.default_points_value) : "10");
       setPercentageValue(rewards.percentage_value != null ? String(rewards.percentage_value) : "2");
-      
+
       if (Array.isArray(rewards.slab_rules) && rewards.slab_rules.length > 0) {
         setSlabRules(rewards.slab_rules.map((r: any) => ({
           max: String(r.max),
           points: String(r.points),
         })));
       }
-      
+
       if (Array.isArray(rewards.offers) && rewards.offers.length > 0) {
         setOffers(rewards.offers.map((r: any) => ({
           reward_points: String(r.reward_points),
@@ -133,7 +127,7 @@ export default function RewardsSettings() {
           reward_description: r.reward_description,
         })));
       }
-      
+
       setUpiIds(rewards.upi_ids || []);
     }
   }, [rewards, isEditing]);
@@ -275,51 +269,44 @@ export default function RewardsSettings() {
       <View style={{ position: "relative" }}>
         <Card.Content>
           {/* Header */}
-          <View style={styles.header}>
-            <View style={styles.headerLeft}>
-              <View style={[styles.iconBadge, { backgroundColor: theme.colors.primary + "20" }]}>
-                <MaterialCommunityIcons name="gift-outline" size={22} color={theme.colors.primary} />
-              </View>
-              <View>
-                <Text variant="titleMedium" style={[styles.title, { color: theme.colors.onSurface }]}>
-                  Reward Program
-                </Text>
-                <Text style={[styles.subtitle, { color: theme.colors.onSurfaceDisabled }]}>
-                  How customers earn points
-                </Text>
-              </View>
-            </View>
+          <View style={styles.sectionHeader}>
+            <Text
+              variant="titleMedium"
+              style={[styles.cardTitle, { color: theme.colors.onSurface }]}
+            >
+              🎁 Rewards
+            </Text>
 
             {!isEditing ? (
-              <TouchableOpacity 
-                onPress={() => canEdit && setIsEditing(true)}
-                style={[styles.editBtn, { backgroundColor: theme.colors.primary + "15" }]}
-                testID="edit-reward-btn"
+              <Button
+                mode="text"
+                icon="pencil"
+                compact
+                onPress={() => setIsEditing(true)}
               >
-                <MaterialCommunityIcons name="pencil" size={18} color={theme.colors.primary} />
-              </TouchableOpacity>
+                Edit
+              </Button>
             ) : (
               <View style={styles.headerButtons}>
-                <TouchableOpacity 
-                  onPress={handleCancel} 
+                <Button
+                  mode="text"
+                  onPress={handleCancel}
+                  icon="close"
                   disabled={saving}
-                  style={[styles.cancelBtn, { borderColor: theme.colors.outline }]}
-                  testID="cancel-edit-btn"
+                  compact
                 >
-                  <Text style={{ color: theme.colors.onSurface, fontSize: 14 }}>Cancel</Text>
-                </TouchableOpacity>
-                <TouchableOpacity 
+                  Cancel
+                </Button>
+                <Button
+                  mode="text"
                   onPress={handleSave}
+                  icon="content-save-outline"
                   disabled={saving}
-                  style={[styles.saveBtn, { backgroundColor: theme.colors.primary }]}
-                  testID="save-reward-btn"
+                  loading={saving}
+                  compact
                 >
-                  {saving ? (
-                    <ActivityIndicator size="small" color="#fff" />
-                  ) : (
-                    <Text style={{ color: "#fff", fontWeight: "600", fontSize: 14 }}>Save</Text>
-                  )}
-                </TouchableOpacity>
+                  Save
+                </Button>
               </View>
             )}
           </View>
@@ -328,10 +315,10 @@ export default function RewardsSettings() {
           {!isEditing ? (
             <View style={styles.viewMode}>
               {/* Active Reward Type Card */}
-              <Surface 
+              <Surface
                 style={[
-                  styles.activeTypeCard, 
-                  { 
+                  styles.activeTypeCard,
+                  {
                     backgroundColor: selectedType?.color + "15",
                     borderColor: selectedType?.color + "40",
                   }
@@ -352,8 +339,8 @@ export default function RewardsSettings() {
                     {getCurrentValueDisplay()}
                   </Text>
                 </View>
-                <Chip 
-                  compact 
+                <Chip
+                  compact
                   style={{ backgroundColor: theme.colors.success + "20" }}
                   textStyle={{ color: theme.colors.success, fontWeight: "600", fontSize: 11 }}
                 >
@@ -368,10 +355,10 @@ export default function RewardsSettings() {
                     const prevMax = Number(slabRules[index - 1]?.max || -1);
                     const min = index === 0 ? 0 : prevMax + 1;
                     return (
-                      <View 
-                        key={index} 
+                      <View
+                        key={index}
                         style={[
-                          styles.tierRow, 
+                          styles.tierRow,
                           { backgroundColor: theme.colors.surfaceVariant }
                         ]}
                       >
@@ -401,11 +388,7 @@ export default function RewardsSettings() {
                 </View>
               </View>
 
-              {subscriptionTier === "free" && (
-                <HelperText type="info" style={styles.upgradeHint}>
-                  Upgrade your plan to customize rewards
-                </HelperText>
-              )}
+
             </View>
           ) : (
             /* EDIT MODE - Simplified */
@@ -414,7 +397,7 @@ export default function RewardsSettings() {
               <Text style={[styles.sectionTitle, { color: theme.colors.onSurface }]}>
                 Reward Type
               </Text>
-              
+
               <View style={styles.typeSelector}>
                 {REWARD_TYPES.map((type) => {
                   const isSelected = rewardType === type.id;
@@ -464,7 +447,7 @@ export default function RewardsSettings() {
                         mode="outlined"
                         style={[styles.configInput, { backgroundColor: theme.colors.surface }]}
                         outlineColor={theme.colors.outline}
-                        activeOutlineColor={theme.colors.primary}
+                        activeOutlineColor={theme.colors.onSurface}
                         testID="points-input"
                       />
                       <Text style={[styles.inputSuffix, { color: theme.colors.onSurfaceDisabled }]}>points</Text>
@@ -488,8 +471,9 @@ export default function RewardsSettings() {
                         mode="outlined"
                         style={[styles.configInput, { backgroundColor: theme.colors.surface }]}
                         outlineColor={theme.colors.outline}
-                        activeOutlineColor={theme.colors.primary}
+                        activeOutlineColor={theme.colors.onSurface}
                         testID="percentage-input"
+
                       />
                       <Text style={[styles.inputSuffix, { color: theme.colors.onSurfaceDisabled }]}>%</Text>
                     </View>
@@ -506,7 +490,7 @@ export default function RewardsSettings() {
                     <Text style={[styles.configLabel, { color: theme.colors.onSurfaceDisabled }]}>
                       Set spending tiers
                     </Text>
-                    
+
                     {slabRules.map((rule, index) => {
                       const prevMax = Number(slabRules[index - 1]?.max || -1);
                       const min = index === 0 ? 0 : prevMax + 1;
@@ -543,7 +527,7 @@ export default function RewardsSettings() {
                             />
                           </View>
                           {slabRules.length > 1 && (
-                            <TouchableOpacity 
+                            <TouchableOpacity
                               onPress={() => removeSlab(index)}
                               style={styles.removeBtn}
                             >
@@ -554,7 +538,7 @@ export default function RewardsSettings() {
                       );
                     })}
 
-                    <TouchableOpacity 
+                    <TouchableOpacity
                       onPress={addSlab}
                       style={[styles.addTierBtn, { borderColor: theme.colors.primary }]}
                     >
@@ -566,17 +550,17 @@ export default function RewardsSettings() {
               </Surface>
 
               {/* Collapsible Advanced Section */}
-              <TouchableOpacity 
+              <TouchableOpacity
                 onPress={() => setShowAdvanced(!showAdvanced)}
                 style={styles.advancedToggle}
               >
                 <Text style={[styles.advancedToggleText, { color: theme.colors.primary }]}>
                   {showAdvanced ? "Hide" : "Show"} Advanced Options
                 </Text>
-                <MaterialCommunityIcons 
-                  name={showAdvanced ? "chevron-up" : "chevron-down"} 
-                  size={20} 
-                  color={theme.colors.primary} 
+                <MaterialCommunityIcons
+                  name={showAdvanced ? "chevron-up" : "chevron-down"}
+                  size={20}
+                  color={theme.colors.primary}
                 />
               </TouchableOpacity>
 
@@ -596,8 +580,8 @@ export default function RewardsSettings() {
                       style={[styles.offerCard, { backgroundColor: theme.colors.surfaceVariant }]}
                     >
                       <View style={styles.offerHeader}>
-                        <Chip compact style={{ backgroundColor: theme.colors.primary + "20" }}>
-                          <Text style={{ color: theme.colors.primary, fontSize: 12 }}>Offer {index + 1}</Text>
+                        <Chip compact style={{ backgroundColor: theme.colors.primary + "90" }}>
+                          <Text style={{ color: theme.colors.onPrimary, fontSize: 12 }}>Offer {index + 1}</Text>
                         </Chip>
                         {offers.length > 1 && (
                           <TouchableOpacity onPress={() => removeOffer(index)}>
@@ -611,8 +595,15 @@ export default function RewardsSettings() {
                         value={offer.reward_name}
                         onChangeText={(v) => updateOffer(index, "reward_name", v)}
                         mode="outlined"
-                        dense
                         style={[styles.offerInput, { backgroundColor: theme.colors.surface }]}
+                        outlineColor={theme.colors.outline}
+                        activeOutlineColor={theme.colors.onSurface}
+                        theme={{
+                          colors: {
+                            primary: theme.colors.primary,      // focused label color
+                            onSurfaceVariant: theme.colors.onSurface, // unfocused label color
+                          },
+                        }}
                         placeholder="e.g., Free Coffee"
                       />
                       <TextInput
@@ -621,16 +612,23 @@ export default function RewardsSettings() {
                         onChangeText={(v) => updateOffer(index, "reward_points", v)}
                         mode="outlined"
                         keyboardType="numeric"
-                        dense
                         style={[styles.offerInput, { backgroundColor: theme.colors.surface }]}
+                        outlineColor={theme.colors.outline}
+                        activeOutlineColor={theme.colors.onSurface}
+                        theme={{
+                          colors: {
+                            primary: theme.colors.primary,      // focused label color
+                            onSurfaceVariant: theme.colors.onSurface, // unfocused label color
+                          },
+                        }}
                       />
                     </Surface>
                   ))}
 
-                  <Button 
-                    mode="outlined" 
-                    icon="plus" 
-                    onPress={addOffer} 
+                  <Button
+                    mode="outlined"
+                    icon="plus"
+                    onPress={addOffer}
                     style={styles.addBtn}
                     compact
                   >
@@ -664,8 +662,8 @@ export default function RewardsSettings() {
                   {upiIds.length > 0 && (
                     <View style={styles.upiChips}>
                       {upiIds.map((id) => (
-                        <Chip 
-                          key={id} 
+                        <Chip
+                          key={id}
                           onClose={() => setUpiIds(upiIds.filter((u) => u !== id))}
                           style={{ marginRight: 8, marginBottom: 8 }}
                         >
@@ -679,9 +677,6 @@ export default function RewardsSettings() {
             </View>
           )}
         </Card.Content>
-
-        {/* Locked Overlay for Free Plan */}
-        {!canEdit && <LockedOverlay message="Upgrade to customize rewards" />}
       </View>
     </Card>
   );
@@ -693,31 +688,14 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     overflow: "hidden",
   },
-  header: {
+  sectionHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: 4,
+    alignItems: "baseline",
   },
-  headerLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  iconBadge: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  title: {
-    fontWeight: "700",
-    fontSize: 16,
-  },
-  subtitle: {
-    fontSize: 12,
-    marginTop: 2,
+  cardTitle: {
+    fontWeight: "600",
+    marginBottom: 12,
   },
   editBtn: {
     width: 40,
@@ -728,20 +706,7 @@ const styles = StyleSheet.create({
   },
   headerButtons: {
     flexDirection: "row",
-    gap: 8,
-  },
-  cancelBtn: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 8,
-    borderWidth: 1,
-  },
-  saveBtn: {
-    paddingHorizontal: 18,
-    paddingVertical: 8,
-    borderRadius: 8,
-    minWidth: 70,
-    alignItems: "center",
+    alignItems: "baseline",
   },
 
   // View Mode
@@ -956,7 +921,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   offerInput: {
-    marginBottom: 8,
+    marginBottom: 20,
   },
   addBtn: {
     marginTop: 4,

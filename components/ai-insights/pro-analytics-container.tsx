@@ -30,6 +30,10 @@ export default function SellerProAnalyticsInsightsContainer() {
   // ------------------------------
   const loadData = useCallback(async () => {
     if (tier === "free") {
+      setRefreshing(false);
+      setLoading(false);
+      setData({})
+      setHasData(true);
       return;
     }
     try {

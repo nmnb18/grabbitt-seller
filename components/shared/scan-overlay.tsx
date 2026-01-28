@@ -9,8 +9,8 @@ interface ScannerOverlayProps {
     bottomText?: string;
 }
 
-export const ScannerOverlay = ({ 
-    title = "Scan QR Code", 
+export const ScannerOverlay = ({
+    title = "Scan QR Code",
     subtitle = "Align QR inside the frame",
     bottomText = "Scan to award rewards"
 }: ScannerOverlayProps) => (
@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     cornerBL: { bottom: 0, left: 0, borderBottomWidth: 4, borderLeftWidth: 4 },
     cornerBR: { bottom: 0, right: 0, borderBottomWidth: 4, borderRightWidth: 4 },
     overlay: { ...StyleSheet.absoluteFillObject, paddingTop: 50, justifyContent: "space-between" },
-    topOverlay: { paddingTop: 60, paddingHorizontal: 24, paddingBottom: 40, alignSelf: 'center' },
+    topOverlay: { paddingTop: 60, paddingHorizontal: 24, paddingBottom: 40, alignSelf: 'center', alignItems: 'center' },
     topTitle: { color: "#FFF", fontWeight: "700", marginBottom: 8, fontSize: 22 },
     topSubtitle: { color: "#EEE" },
     bottomOverlay: { paddingTop: 30, paddingBottom: 100, alignItems: "center" },
