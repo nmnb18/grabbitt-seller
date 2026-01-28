@@ -112,6 +112,32 @@ export default function RewardsSettings() {
 
   const selectedType = REWARD_TYPES.find((t) => t.id === rewardType);
 
+  // Sync state when rewards data changes from parent/store
+  useEffect(() => {
+    if (!isEditing && rewards) {
+      setRewardType(rewards.reward_type || "default");
+      setPointsPerVisit(rewards.default_points_value ? String(rewards.default_points_value) : "10");
+      setPercentageValue(rewards.percentage_value != null ? String(rewards.percentage_value) : "2");
+      
+      if (Array.isArray(rewards.slab_rules) && rewards.slab_rules.length > 0) {
+        setSlabRules(rewards.slab_rules.map((r: any) => ({
+          max: String(r.max),
+          points: String(r.points),
+        })));
+      }
+      
+      if (Array.isArray(rewards.offers) && rewards.offers.length > 0) {
+        setOffers(rewards.offers.map((r: any) => ({
+          reward_points: String(r.reward_points),
+          reward_name: r.reward_name,
+          reward_description: r.reward_description,
+        })));
+      }
+      
+      setUpiIds(rewards.upi_ids || []);
+    }
+  }, [rewards, isEditing]);
+
   const handleCancel = () => {
     setRewardType(rewards?.reward_type || "default");
     setPointsPerVisit(rewards?.default_points_value ? String(rewards.default_points_value) : "10");
