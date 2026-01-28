@@ -1,68 +1,28 @@
 import React, { useState } from "react";
 import { View, Alert, StyleSheet } from "react-native";
 import { Surface, TextInput } from "react-native-paper";
-import * as Location from "expo-location";
-import axios from "axios";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import { useRouter } from "expo-router";
 import { useTheme } from "@/hooks/use-theme-color";
 import { Button } from "@/components/ui/paper-button";
 import { GradientText } from "@/components/ui/gradient-text";
 import AuthScreenWrapper from "@/components/wrappers/authScreenWrapper";
 import { AppStyles } from "@/utils/theme";
-import { useAuthStore } from "@/store/authStore";
+
+// NOTE: Phone OTP authentication is not yet implemented
+// This screen is a placeholder for future phone auth functionality
 
 export default function UserVerifyOtp() {
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
-  const { phoneConfirmation, clearPhoneConfirmation, loginWithPhone } =
-    useAuthStore();
   const theme = useTheme();
-
   const router = useRouter();
 
   const submitOTP = async () => {
-    try {
-      setLoading(true);
-
-      if (!otp) {
-        Alert.alert("Error", "Enter OTP");
-        return;
-      }
-
-      if (!phoneConfirmation) {
-        Alert.alert("Error", "OTP session expired. Please retry.");
-        router.replace("/auth/login");
-        return;
-      }
-
-      // 1️⃣ Convert OTP to Firebase Credential
-      const result = await phoneConfirmation.confirm(otp);
-
-      clearPhoneConfirmation();
-
-      // 2️⃣ Get Firebase ID token
-      const firebaseIdToken = await result.user.getIdToken();
-
-      // 2️⃣ Get Location (Mandatory)
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        Alert.alert("Error", "Location required");
-        return;
-      }
-
-      const loc = await Location.getCurrentPositionAsync({});
-
-      // 3️⃣ Send to backend to ensure user exists
-      await loginWithPhone(result.user.uid, firebaseIdToken, {
-        latitude: loc.coords.latitude,
-        longitude: loc.coords.longitude,
-      });
-      router.replace("/(drawer)");
-    } catch (err: any) {
-      Alert.alert("OTP Error", "Please check the OTP and try again.");
-    } finally {
-      setLoading(false);
-    }
+    Alert.alert(
+      "Not Implemented",
+      "Phone OTP authentication is not yet available. Please use email login."
+    );
+    router.replace("/auth/login");
   };
 
   return (
