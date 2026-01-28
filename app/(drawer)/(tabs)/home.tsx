@@ -8,6 +8,8 @@ import withSkeletonTransition from "@/components/wrappers/withSkeletonTransition
 import UserHome from "@/components/home/user-home";
 import HomeSkeleton from "@/components/skeletons/home";
 import { SimplifiedSeller } from "@/types/seller";
+import { api } from "@/services";
+import { useAuthStore } from "@/store/authStore";
 
 const UserHomeWithSkeleton = withSkeletonTransition(HomeSkeleton)(UserHome);
 
@@ -16,6 +18,7 @@ export default function UserHomeContainer() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [hasData, setHasData] = useState(false);
+  const { setUserQRData } = useAuthStore();
 
   const loadNearbySellers = useCallback(
     async (isRefreshing = false, silent = false) => {
@@ -32,13 +35,16 @@ export default function UserHomeContainer() {
           const loc = await Location.getCurrentPositionAsync({
             accuracy: Location.Accuracy.Balanced,
           });
-          //lat = loc.coords.latitude;
-          //lng = loc.coords.longitude;
-          lat = 37.785834;
-          lng = -122.406417;
+          lat = loc.coords.latitude;
+          lng = loc.coords.longitude;
         }
 
         const data = await fetchNearbySellers(lat, lng);
+        const userQRData = await api.get("/generateUserQR");
+
+        if (userQRData.data.success) {
+          setUserQRData(userQRData.data.data.qr_base64)
+        }
         if (!data.success) {
           if (!silent) {
             Alert.alert("Error", data.error || "Could not load sellers");

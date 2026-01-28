@@ -52,7 +52,9 @@ export default function UserTabsLayout() {
                   style={{
                     fontFamily: "JostMedium",
                     fontSize: 36,
+                    textAlign: 'left'
                   }}
+
                 >
                   grabbitt
                 </GradientText>

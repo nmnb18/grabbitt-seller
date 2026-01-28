@@ -45,6 +45,15 @@ export const userApi = {
     const response = await api.post("/changePassword", { newPassword });
     return response.data;
   },
+
+  /**
+   * Get User QR
+   */
+
+  getUserQR: async () => {
+    const response = await api.post("/generateUserQR");
+    return response.data;
+  },
 };
 
 // ============================================

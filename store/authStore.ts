@@ -13,9 +13,11 @@ interface AuthStore {
   loading: boolean;
   idToken: string | null;
   phoneConfirmation: any | null;
+  userQRData: string | null;
   setPhoneConfirmation: (c: any) => void;
   clearPhoneConfirmation: () => void;
   setUser: (user: User | null) => void;
+  setUserQRData: (qr: string) => void;
   register: (payload: UserPayload) => Promise<void>;
   login: (
     email: string,
@@ -37,10 +39,11 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   loading: false,
   idToken: null,
   phoneConfirmation: null,
+  userQRData: null,
   setPhoneConfirmation: (c) => set({ phoneConfirmation: c }),
   clearPhoneConfirmation: () => set({ phoneConfirmation: null }),
   setUser: (user) => set({ user }),
-
+  setUserQRData: (userQRData) => set({ userQRData }),
   register: async (payload: UserPayload) => {
     try {
       set({ loading: true });

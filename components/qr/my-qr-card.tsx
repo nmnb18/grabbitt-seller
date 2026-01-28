@@ -12,6 +12,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useAuthStore } from "@/store/authStore";
 import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
 
 interface MyQRCardProps {
   size?: "small" | "large";
@@ -25,21 +26,19 @@ export default function MyQRCard({
   style,
 }: MyQRCardProps) {
   const theme = useTheme();
-  const { user, loading } = useAuthStore();
+  const { user, userQRData, loading } = useAuthStore();
+  const router = useRouter();
 
-  const qrData = user?.user?.customer_profile?.qr_code;
-  const qrBase64 = qrData?.qr_code_base64;
-  const qrId = qrData?.qr_id;
+  const qrBase64 = userQRData;
   const userName = user?.user?.customer_profile?.account?.name || user?.user?.name || "User";
 
   const isSmall = size === "small";
   const qrSize = isSmall ? 100 : Math.min(Dimensions.get("window").width - 120, 280);
 
   const handleShare = async () => {
-    if (!qrId) return;
     try {
       await Share.share({
-        message: `Scan my Grabbitt QR to earn rewards! My ID: ${qrId}`,
+        message: `Scan my Grabbitt QR to earn rewards!`,
         title: "My Grabbitt QR",
       });
     } catch (error) {
@@ -115,7 +114,7 @@ export default function MyQRCard({
   // Small card variant
   if (isSmall) {
     return (
-      <TouchableOpacity activeOpacity={0.9} style={style}>
+      <TouchableOpacity activeOpacity={0.9} style={style} onPress={() => { router.navigate('/(drawer)/(tabs)/my-qr') }}>
         <Card
           style={[styles.cardSmall, { backgroundColor: theme.colors.surface }]}
         >
@@ -123,7 +122,7 @@ export default function MyQRCard({
             <View style={styles.smallQRWrapper}>
               <Surface style={[styles.qrSurface, styles.qrSurfaceSmall]}>
                 <Image
-                  source={{ uri: `data:image/png;base64,${qrBase64}` }}
+                  source={{ uri: `${qrBase64}` }}
                   style={{ width: qrSize, height: qrSize }}
                   resizeMode="contain"
                 />
@@ -142,7 +141,7 @@ export default function MyQRCard({
                 ]}
                 numberOfLines={1}
               >
-                Show this at checkout
+                Show this at store
               </Text>
             </View>
             <MaterialCommunityIcons
@@ -183,26 +182,14 @@ export default function MyQRCard({
         {/* QR Code */}
         <Surface style={[styles.qrSurface, { backgroundColor: "#FFFFFF" }]}>
           <Image
-            source={{ uri: `data:image/png;base64,${qrBase64}` }}
+            source={{ uri: `${qrBase64}` }}
             style={{ width: qrSize, height: qrSize }}
             resizeMode="contain"
           />
         </Surface>
 
         {/* QR ID */}
-        <View style={styles.qrIdContainer}>
-          <Text
-            style={[styles.qrIdLabel, { color: theme.colors.onSurfaceDisabled }]}
-          >
-            QR ID
-          </Text>
-          <Text
-            style={[styles.qrId, { color: theme.colors.onSurface }]}
-            selectable
-          >
-            {qrId}
-          </Text>
-        </View>
+
 
         {/* Instructions */}
         <View
@@ -219,7 +206,7 @@ export default function MyQRCard({
           <Text
             style={[styles.instructionText, { color: theme.colors.onSurface }]}
           >
-            Show this QR code at checkout to earn reward points
+            Show this QR code at store to earn reward points
           </Text>
         </View>
 

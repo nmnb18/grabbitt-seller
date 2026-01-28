@@ -69,8 +69,8 @@ export function WalletScreen({
                     <EmptyState
                         icon="wallet-outline"
                         title="No Points Yet"
-                        message="Scan QR codes at stores to earn points"
-                        onAction={() => { }} // Will navigate to scan QR
+                        message="Your first scan awaits 🎉
+Scan your QR at a store to earn points."
                     />
                 ) : (
                     <StorePointsList
@@ -80,8 +80,7 @@ export function WalletScreen({
                     <EmptyState
                         icon="menu"
                         title="No acitivity yet"
-                        message="Scan QR codes to get start"
-                        onAction={() => { }} // Will navigate to scan QR
+                        message="Scan QR codes to get start."
                     />
                 ) : (
                     <RecentActivity

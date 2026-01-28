@@ -24,8 +24,6 @@ import { PulsingChip } from "../ui/pluse-chip";
 import MyQRCard from "@/components/qr/my-qr-card";
 import { BUSINESS_TYPES, PLACEHOLDER_IMAGES } from "@/utils/constants";
 
-import { BUSINESS_TYPES, PLACEHOLDER_IMAGES } from "@/utils/constants";
-
 // Props interface
 interface UserHomeProps {
     // Data

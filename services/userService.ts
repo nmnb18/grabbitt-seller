@@ -3,7 +3,7 @@
  * User-related API calls and utilities
  */
 
-import { storeApi } from "./api";
+import { storeApi, userApi } from "./api";
 import { logError } from "@/utils/errorHandler";
 import { SimplifiedSeller } from "@/types/seller";
 
@@ -25,6 +25,8 @@ export async function fetchNearbySellers(
     };
   }
 }
+
+
 
 // Re-export from api service for convenience
 export { storeApi, userApi, walletApi, redemptionApi, perksApi } from "./api";
