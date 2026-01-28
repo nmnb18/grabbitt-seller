@@ -124,7 +124,7 @@ export function GradientHeader({
             onPress={handleBackPress}
             style={styles.backButton}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            data-testid={testID ? `${testID}-back` : "header-back-button"}
+            testID={testID ? `${testID}-back` : "header-back-button"}
             activeOpacity={0.7}
           >
             <MaterialCommunityIcons
@@ -140,7 +140,7 @@ export function GradientHeader({
         <Text
           style={[styles.gradientTitle, { color: theme.colors.onPrimary }]}
           numberOfLines={1}
-          data-testid={testID ? `${testID}-title` : "header-title"}
+          testID={testID ? `${testID}-title` : "header-title"}
         >
           {title}
         </Text>
