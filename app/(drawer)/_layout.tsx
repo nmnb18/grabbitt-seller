@@ -122,7 +122,7 @@ function CustomDrawerContent() {
             label="Redemption" 
             icon="star-four-points-outline" 
             testID="drawer-redemption"
-            onPress={() => router.push("/(drawer)/redeem")} 
+            onPress={() => router.push("/(drawer)/redemptions")} 
           />
           
           <MenuItem 
