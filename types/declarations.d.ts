@@ -81,6 +81,11 @@ declare module 'firebase/auth' {
     verificationId: string;
   }
 
+  export interface AuthCredential {
+    providerId: string;
+    signInMethod: string;
+  }
+
   export interface PhoneAuthProvider {
     providerId: string;
   }
@@ -89,6 +94,7 @@ declare module 'firebase/auth' {
   export function getReactNativePersistence(storage: any): any;
   export function initializeAuth(app: FirebaseApp, config?: object): Auth;
   export function signInWithEmailAndPassword(auth: Auth, email: string, password: string): Promise<UserCredential>;
+  export function signInWithCredential(auth: Auth, credential: AuthCredential): Promise<UserCredential>;
   export function createUserWithEmailAndPassword(auth: Auth, email: string, password: string): Promise<UserCredential>;
   export function signOut(auth: Auth): Promise<void>;
   export function sendPasswordResetEmail(auth: Auth, email: string): Promise<void>;
@@ -96,5 +102,6 @@ declare module 'firebase/auth' {
 
   export const PhoneAuthProvider: {
     PROVIDER_ID: string;
+    credential(verificationId: string, code: string): AuthCredential;
   };
 }
