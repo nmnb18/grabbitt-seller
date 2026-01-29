@@ -84,6 +84,11 @@ export const PERK_STATUS_META: Record<
     colorKey: "success" | "warning" | "error";
   }
 > = {
+  PENDING: {
+    label: "Pending",
+    icon: "clock-outline",
+    colorKey: "warning",
+  },
   CLAIMED: {
     label: "Claimed",
     icon: "qrcode",
@@ -97,6 +102,11 @@ export const PERK_STATUS_META: Record<
   EXPIRED: {
     label: "Expired",
     icon: "clock-alert",
+    colorKey: "error",
+  },
+  CANCELLED: {
+    label: "Cancelled",
+    icon: "close-circle",
     colorKey: "error",
   },
 };
