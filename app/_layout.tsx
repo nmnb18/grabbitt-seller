@@ -1,5 +1,6 @@
 import { useTheme } from "@/hooks/use-theme-color";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
+import { NotificationProvider } from "@/contexts/NotificationContext";
 import { endIAP, initIAP } from "@/services/iap";
 import { useFonts } from "expo-font";
 
@@ -143,8 +144,10 @@ export default function RootLayout() {
     <ErrorBoundary>
       <SafeAreaProvider>
         <PaperProvider theme={theme}>
-          <StatusBar translucent backgroundColor={"transparent"} />
-          <Stack screenOptions={{ headerShown: false }} />
+          <NotificationProvider>
+            <StatusBar translucent backgroundColor={"transparent"} />
+            <Stack screenOptions={{ headerShown: false }} />
+          </NotificationProvider>
         </PaperProvider>
       </SafeAreaProvider>
     </ErrorBoundary>
