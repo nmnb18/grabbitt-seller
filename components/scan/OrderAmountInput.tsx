@@ -3,21 +3,21 @@
  * Shown when seller needs to enter order amount for percentage/slab rewards
  */
 
-import React, { useState, useEffect } from "react";
+import { GradientHeader } from "@/components/shared/app-header";
+import { Button } from "@/components/ui/paper-button";
+import { useTheme } from "@/hooks/use-theme-color";
+import { SlabRule } from "@/hooks/useCustomerScan";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import React, { useEffect, useState } from "react";
 import {
-  View,
-  StyleSheet,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  StyleSheet,
+  View,
 } from "react-native";
-import { Text, TextInput, Card, Divider, Chip } from "react-native-paper";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { Card, Chip, Divider, Text, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useTheme } from "@/hooks/use-theme-color";
-import { Button } from "@/components/ui/paper-button";
-import { GradientHeader } from "@/components/shared/app-header";
-import { SlabRule } from "@/hooks/useCustomerScan";
 
 interface OrderAmountInputProps {
   customerName?: string;
@@ -128,13 +128,13 @@ export function OrderAmountInput({
                   <MaterialCommunityIcons
                     name="star"
                     size={24}
-                    color={theme.colors.primary}
+                    color={theme.colors.onPrimaryContainer}
                   />
                   <View style={styles.previewText}>
                     <Text style={[styles.previewLabel, { color: theme.colors.onPrimaryContainer }]}>
                       Points to be awarded
                     </Text>
-                    <Text style={[styles.previewValue, { color: theme.colors.primary }]}>
+                    <Text style={[styles.previewValue, { color: theme.colors.onPrimaryContainer }]}>
                       {calculatedPoints} points
                     </Text>
                   </View>

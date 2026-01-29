@@ -219,7 +219,11 @@ export default function SellerAddOfferScreen() {
                         : theme.colors.surfaceVariant,
                     },
                   ]}
-                  textStyle={{ color: theme.colors.onPrimary }}
+                  textStyle={{
+                      color: dateMode === "single"
+                        ? theme.colors.onPrimary
+                        : theme.colors.onSurface,
+                    }}
                   selectedColor={theme.colors.onPrimary}
                 >
                   Single Day
@@ -235,7 +239,11 @@ export default function SellerAddOfferScreen() {
                         : theme.colors.surfaceVariant,
                     },
                   ]}
-                  textStyle={{ color: theme.colors.onPrimary }}
+                  textStyle={{
+                      color: dateMode === "range"
+                        ? theme.colors.primary
+                        : theme.colors.onSurface,
+                    }}
                   selectedColor={theme.colors.onPrimary}
                 >
                   Date Range

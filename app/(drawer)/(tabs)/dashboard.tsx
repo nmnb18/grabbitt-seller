@@ -66,7 +66,7 @@ export default function SellerDashboardContainer() {
 
   const handleRefresh = () => {
     setRefreshing(true);
-    //loadData();
+    loadData();
   };
 
   return (

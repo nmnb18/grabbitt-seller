@@ -73,7 +73,7 @@ export function useCustomerScan(options?: UseCustomerScanOptions) {
       // Try parsing as JSON (for QR codes with more data)
       const parsed = JSON.parse(data);
 
-      if (parsed.customer_id || parsed.qr_id) {
+      if (parsed.user_id) {
         return { valid: true, parsed: { ...parsed, type: "json" } };
       }
 
@@ -114,7 +114,6 @@ export function useCustomerScan(options?: UseCustomerScanOptions) {
         //   options?.onError?.(error);
         //   return { success: false, error };
         // }
-
         const result: ScanResult = {
           success: true,
           customer_id: validation.parsed?.user_id,
@@ -156,10 +155,12 @@ export function useCustomerScan(options?: UseCustomerScanOptions) {
           return { success: false, error };
         }
 
+        console.log(response.data)
+
         const result: AwardResult = {
           success: true,
-          points_awarded: response.data.points_earned,
-          customer_name: response.data.customer_name,
+          points_awarded: response.data.data.points_earned,
+          customer_name: response.data.data.customer_name,
         };
 
         options?.onAwardSuccess?.(result);

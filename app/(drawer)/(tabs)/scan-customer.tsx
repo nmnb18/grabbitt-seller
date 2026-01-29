@@ -24,7 +24,7 @@ type ScreenState = "scanning" | "amount_input" | "processing" | "success";
 export default function ScanCustomerQR() {
   const theme = useTheme();
   const router = useRouter();
-  const { user } = useAuthStore();
+  const { user, fetchUserDetails } = useAuthStore();
   const sellerProfile = user?.user?.seller_profile;
 
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
@@ -77,11 +77,12 @@ export default function ScanCustomerQR() {
     setCameraActive(false);
 
     try {
+      console.log('here',data)
       const result = await processScan(data);
 
       if (!result.success) {
         setScanned(false);
-        setCameraActive(true);
+        setCameraActive(false);
         return;
       }
 
@@ -105,12 +106,14 @@ export default function ScanCustomerQR() {
     setScreenState("processing");
 
     const result = await awardPoints(customerId, orderAmount);
-
+    console.log('here', result)
     if (result.success) {
       setAwardResult({
         customerName: result.customer_name,
         pointsAwarded: result.points_awarded || 0,
       });
+      
+      fetchUserDetails(user?.user.uid ?? "", "seller");
       setScreenState("success");
     } else {
       Alert.alert("Error", result.error || "Failed to award points", [

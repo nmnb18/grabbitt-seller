@@ -92,9 +92,9 @@ export function ScanSuccess({
             <MaterialCommunityIcons
               name="star"
               size={32}
-              color={theme.colors.primary}
+              color={theme.colors.onPrimaryContainer}
             />
-            <Text style={[styles.pointsValue, { color: theme.colors.primary }]}>
+            <Text style={[styles.pointsValue, { color: theme.colors.onPrimaryContainer }]}>
               +{pointsAwarded}
             </Text>
             <Text style={[styles.pointsLabel, { color: theme.colors.onPrimaryContainer }]}>
