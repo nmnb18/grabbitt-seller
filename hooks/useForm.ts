@@ -81,6 +81,7 @@ export function useForm<T extends Record<string, any>>(
 
   const validateSingleField = useCallback(
     <K extends keyof T>(field: K): string => {
+      if (!schema) return "";
       const rules = schema[field];
       if (!rules) return "";
 
