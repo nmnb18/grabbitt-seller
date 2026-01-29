@@ -136,6 +136,7 @@ export default function SellerProfileSetup() {
         <MediaInformation />
         <VerificationDetails />
         <RewardsSettings />
+        <NotificationSettings />
 
         {/* SUBSCRIPTION CARD */}
         <Card style={[styles.card, { backgroundColor: surface }]} elevation={3}>
