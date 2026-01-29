@@ -7,5 +7,9 @@ export * from "./auth";
 export * from "./wallet";
 export * from "./seller";
 export * from "./perks";
-export * from "./redemptions";
+// Rename Redemption from redemptions to avoid conflict with wallet
+export type { 
+  RedemptionStatus as RedemptionRecordStatus,
+  Redemption as RedemptionRecord 
+} from "./redemptions";
 export * from "./scan-qr";
