@@ -62,7 +62,7 @@ export class ErrorBoundary extends Component<Props, State> {
   handleRestart = async () => {
     try {
       // Try to reload the app using Expo Updates
-      if (!__DEV__) {
+      if (!__DEV__ && Updates.reloadAsync) {
         await Updates.reloadAsync();
       } else {
         // In development, just reset the error state
