@@ -633,7 +633,7 @@ export default function WhatsNewScreen() {
                   endDate={copyDateMode === "range" ? copyEndDate : undefined}
                   onChange={handleCopyDateChange}
                   minDate={dayjs().add(1, "day")}
-                  style={[styles.datePicker, { backgroundColor: theme.colors.surfaceVariant }]}
+                  style={{ ...styles.datePicker, backgroundColor: theme.colors.surfaceVariant }}
                   styles={{
                     day_label: { color: theme.colors.onSurface },
                     weekday_label: { color: theme.colors.onSurface, fontWeight: "600" },
