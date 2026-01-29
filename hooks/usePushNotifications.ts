@@ -3,17 +3,17 @@
  * Production-ready hook for managing push notifications
  */
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import { Platform, AppState, AppStateStatus } from "react-native";
-import * as Notifications from "expo-notifications";
-import { useRouter } from "expo-router";
 import {
   getExpoPushToken,
+  NotificationData,
   registerPushToken,
   setupNotificationChannel,
-  NotificationData,
 } from "@/services/pushNotification";
 import { useAuthStore } from "@/store/authStore";
+import * as Notifications from "expo-notifications";
+import { useRouter } from "expo-router";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { AppState, AppStateStatus, Platform } from "react-native";
 
 interface UsePushNotificationsReturn {
   expoPushToken: string | null;
@@ -70,7 +70,7 @@ export function usePushNotifications(): UsePushNotificationsReturn {
           break;
 
         case "profile":
-          router.push("/(drawer)/profile");
+          router.push("/(drawer)/profile-setup");
           break;
 
         default:
