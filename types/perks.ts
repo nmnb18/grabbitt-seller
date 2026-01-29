@@ -2,7 +2,7 @@
  * Perk Types
  */
 
-export type PerkStatus = "PENDING" | "REDEEMED" | "EXPIRED" | "CANCELLED";
+export type PerkStatus = "PENDING" | "CLAIMED" | "REDEEMED" | "EXPIRED" | "CANCELLED";
 
 export interface Perk {
   id: string;
