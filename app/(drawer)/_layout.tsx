@@ -32,9 +32,6 @@ export default function DrawerLayout() {
           drawerLabelStyle: { fontSize: 16, color: theme.colors.onBackground },
           swipeEnabled: true,
           swipeEdgeWidth: 50,
-          gestureHandlerProps: {
-            activeOffsetX: [-20, 20],
-          },
         }}
         drawerContent={() => <CustomDrawerContent />}
       >
