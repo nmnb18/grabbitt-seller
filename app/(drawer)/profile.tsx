@@ -120,6 +120,7 @@ export default function UserProfile() {
                 {/* Profile Sections */}
                 <AccountInformation onOpenChangePassword={() => setShowPasswordSheet(true)} />
                 <LocationInformation />
+                <NotificationSettings />
 
                 {/* DELETE ACCOUNT */}
                 <View
