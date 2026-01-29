@@ -9,7 +9,11 @@ export * from "./seller";
 export * from "./perks";
 // Rename Redemption from redemptions to avoid conflict with wallet
 export type { 
-  RedemptionStatus as RedemptionRecordStatus,
-  Redemption as RedemptionRecord 
+  Redemption as RedemptionRecord,
+  RedemptionRequest,
+  RedemptionResponse,
+  UserRedemptionsResponse,
+  RedemptionHistoryItem,
+  RedemptionHistoryResponse
 } from "./redemptions";
 export * from "./scan-qr";
