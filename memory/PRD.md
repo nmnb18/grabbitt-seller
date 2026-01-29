@@ -279,6 +279,60 @@ All TypeScript errors have been resolved in Session 3:
 
 ---
 
+### Session 4 - What's New Feature Redesign ✅ (January 2025)
+
+#### 🎯 Complete Redesign of "What's New" (Offers Management)
+
+**New Features:**
+1. **Single Date or Date Range Selection**
+   - Toggle between "Single Day" and "Date Range" modes
+   - Visual date picker with theme support
+   - Shows count of days selected for ranges
+
+2. **Tiered Offers (Min 2, Max 10)**
+   - Configure multiple offers per date
+   - Each offer: Title + Minimum Spend + Terms (optional)
+   - Auto-sorted by minimum spend amount
+   - Real-time preview section
+
+3. **Future-Only Date Validation**
+   - Can only create offers for tomorrow onwards (today+1)
+   - Clear info message explaining the rule
+   - End date must also be in the future for ranges
+
+4. **Edit Restrictions**
+   - Can only edit offers for future dates
+   - If today's date equals offer date → READ-ONLY
+   - Edit/Delete buttons hidden for non-editable offers
+
+5. **Expired Tab with Copy Feature**
+   - Expired offers shown with "Copy" button
+   - Copy opens modal with:
+     - Original date reference
+     - Date picker (single/range) for new date
+     - Editable offers list
+     - All validation rules apply
+
+6. **Interactive UX**
+   - Tab badges showing count per category
+   - Real-time offer preview
+   - Validation errors with inline helper text
+   - Loading states and overlays
+
+**Files Modified:**
+- `/app/app/(drawer)/whats-new/whats-new-home.tsx` - Complete redesign with copy modal
+- `/app/app/(drawer)/whats-new/offer-add.tsx` - Redesigned with edit support
+- `/app/components/whats-new/offer-card.tsx` - Updated with copy button for expired
+
+**Files Created:**
+- `/app/types/perks.ts` - Perk status types
+
+**Test IDs Added:**
+- `tab-active`, `tab-upcoming`, `tab-expired`
+- `add-offer-fab`
+
+---
+
 ## Next Tasks
 1. Backend team: Implement new API endpoints
 2. Test scan flow with real customer QR codes
