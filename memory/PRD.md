@@ -4,7 +4,7 @@
 Grabbitt Seller is the merchant-side app for the Grabbitt loyalty platform. Sellers use this app to:
 - **Scan customer QR codes** to award reward points (NEW FLOW)
 - Scan customer redemption QR codes to process redemptions
-- Manage offers and promotions ("What's New")
+- **Manage special offers and promotions ("What's New")** - REDESIGNED
 - View analytics and insights
 - Manage subscription plans
 - **Configure reward programs** via Profile Settings (redesigned UI)
