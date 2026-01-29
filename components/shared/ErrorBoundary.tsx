@@ -14,7 +14,14 @@ import {
   Platform,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import * as Updates from "expo-updates";
+
+// expo-updates types - may not be available in dev builds
+let Updates: { reloadAsync?: () => Promise<void> } = {};
+try {
+  Updates = require("expo-updates");
+} catch {
+  // expo-updates not available in development builds
+}
 
 interface Props {
   children: ReactNode;
