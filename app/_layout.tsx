@@ -144,8 +144,10 @@ export default function RootLayout() {
     <ErrorBoundary>
       <SafeAreaProvider>
         <PaperProvider theme={theme}>
-          <StatusBar translucent backgroundColor={"transparent"} />
-          <Stack screenOptions={{ headerShown: false }} />
+          <NotificationProvider>
+            <StatusBar translucent backgroundColor={"transparent"} />
+            <Stack screenOptions={{ headerShown: false }} />
+          </NotificationProvider>
         </PaperProvider>
       </SafeAreaProvider>
     </ErrorBoundary>
