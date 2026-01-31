@@ -4,36 +4,35 @@
  */
 
 import { AppHeader } from "@/components/shared/app-header";
+import { Button } from "@/components/ui/paper-button";
 import { useTheme } from "@/hooks/use-theme-color";
 import api from "@/services/axiosInstance";
-import { Button } from "@/components/ui/paper-button";
 import { useAuthStore } from "@/store/authStore";
-import { AppStyles } from "@/utils/theme";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import dayjs from "dayjs";
 import { useFocusEffect, useRouter } from "expo-router";
 import React, { useCallback, useState } from "react";
 import {
   Alert,
+  Dimensions,
+  Modal,
   RefreshControl,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
   View,
-  Modal,
-  Dimensions,
 } from "react-native";
 import {
   ActivityIndicator,
   Card,
   Chip,
+  Divider,
   FAB,
   IconButton,
+  Portal,
   Surface,
   Text,
   TextInput,
-  Portal,
-  Divider,
 } from "react-native-paper";
 import DatePicker from "react-native-ui-datepicker";
 
@@ -88,7 +87,6 @@ export default function WhatsNewScreen() {
     try {
       setLoading(true);
       const resp = await api.get("/getSellerOffers");
-
       if (resp.data.success) {
         setActive(resp.data.active || []);
         setUpcoming(resp.data.upcoming || []);
@@ -105,7 +103,7 @@ export default function WhatsNewScreen() {
   useFocusEffect(
     useCallback(() => {
       fetchOffers();
-    }, [fetchOffers])
+    }, [])
   );
 
   const onRefresh = () => {
@@ -293,9 +291,9 @@ export default function WhatsNewScreen() {
               </Text>
               {isActive && (
                 <Chip
-                  compact
+
                   style={[styles.activeChip, { backgroundColor: theme.colors.success + "20" }]}
-                  textStyle={{ color: theme.colors.success, fontSize: 11 }}
+                  textStyle={{ color: theme.colors.success, }}
                 >
                   LIVE
                 </Chip>
@@ -350,6 +348,8 @@ export default function WhatsNewScreen() {
                     index < offerDoc.offers.length - 1 && {
                       borderBottomColor: theme.colors.outline + "50",
                       borderBottomWidth: 1,
+                      paddingBottom: 16,
+                      marginVertical: 4
                     },
                   ]}
                 >
@@ -358,8 +358,8 @@ export default function WhatsNewScreen() {
                       {offer.title}
                     </Text>
                     <View style={[styles.minSpendBadge, { backgroundColor: theme.colors.primaryContainer }]}>
-                      <Text style={[styles.minSpendText, { color: theme.colors.primary }]}>
-                        ₹{offer.min_spend}+
+                      <Text style={[styles.minSpendText, { color: theme.colors.onPrimary }]}>
+                        ₹ {offer.min_spend}+
                       </Text>
                     </View>
                   </View>
@@ -685,24 +685,48 @@ export default function WhatsNewScreen() {
                       value={offer.title}
                       onChangeText={(v) => updateCopyOffer(index, "title", v)}
                       mode="outlined"
-                      dense
                       style={styles.offerEditInput}
+                      outlineColor={theme.colors.outline}
+                      activeOutlineColor={theme.colors.onSurface}
+                      left={<TextInput.Icon icon="gift" color={theme.colors.onSurface} />}
+                      theme={{
+                        colors: {
+                          primary: theme.colors.primary,      // focused label color
+                          onSurfaceVariant: theme.colors.onSurface, // unfocused label color
+                        },
+                      }}
                     />
                     <TextInput
                       label="Min Spend (₹) *"
                       value={offer.min_spend ? String(offer.min_spend) : ""}
                       onChangeText={(v) => updateCopyOffer(index, "min_spend", Number(v) || 0)}
                       mode="outlined"
-                      dense
                       keyboardType="numeric"
                       style={styles.offerEditInput}
+                      outlineColor={theme.colors.outline}
+                      activeOutlineColor={theme.colors.onSurface}
+                      left={<TextInput.Icon icon="gift" color={theme.colors.onSurface} />}
+                      theme={{
+                        colors: {
+                          primary: theme.colors.primary,      // focused label color
+                          onSurfaceVariant: theme.colors.onSurface, // unfocused label color
+                        },
+                      }}
                     />
                     <TextInput
                       label="Terms (Optional)"
                       value={offer.terms || ""}
                       onChangeText={(v) => updateCopyOffer(index, "terms", v)}
                       mode="outlined"
-                      dense
+                      outlineColor={theme.colors.outline}
+                      activeOutlineColor={theme.colors.onSurface}
+                      left={<TextInput.Icon icon="gift" color={theme.colors.onSurface} />}
+                      theme={{
+                        colors: {
+                          primary: theme.colors.primary,      // focused label color
+                          onSurfaceVariant: theme.colors.onSurface, // unfocused label color
+                        },
+                      }}
                       multiline
                       style={styles.offerEditInput}
                     />
@@ -849,7 +873,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   activeChip: {
-    height: 24,
+    //height: 24,
   },
   cardActions: {
     flexDirection: "row",

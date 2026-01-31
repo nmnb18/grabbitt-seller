@@ -2,11 +2,12 @@ import { FormTextInput } from "@/components/form/form-text-input";
 import { GradientText } from "@/components/ui/gradient-text";
 import { Button } from "@/components/ui/paper-button";
 import AuthScreenWrapper from "@/components/wrappers/authScreenWrapper";
+import { useNotifications } from "@/contexts/NotificationContext";
 import { useTheme } from "@/hooks/use-theme-color";
 import { AppStyles } from "@/utils/theme";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
-import { Alert, StyleSheet, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Alert, Linking, Platform, StyleSheet, View } from "react-native";
 import { Surface, TextInput } from "react-native-paper";
 import { useAuthStore } from "../../store/authStore";
 
@@ -19,6 +20,11 @@ export default function SellerLogin() {
     loading: false,
     showPassword: false
   });
+
+  const {
+    requestPermission,
+    registerToken,
+  } = useNotifications();
 
   const router = useRouter();
   const { login } = useAuthStore();
@@ -55,22 +61,36 @@ export default function SellerLogin() {
   const navigateToRegister = () => router.push("/auth/register");
   const navigateToForgotPassword = () => router.push("/auth/forgot-password");
 
-  const textInputTheme = {
-    ...theme,
-    colors: {
-      ...theme.colors,
-      onSurfaceVariant: theme.colors.onSurfaceDisabled,
-    },
+
+  const handlePermissionRequest = async () => {
+    const granted = await requestPermission();
+
+    if (!granted) {
+      Alert.alert(
+        "Permission Required",
+        "To receive notifications, please enable them in your device settings.",
+        [
+          { text: "Cancel", style: "cancel" },
+          {
+            text: "Open Settings",
+            onPress: () => {
+              if (Platform.OS === "ios") {
+                Linking.openURL("app-settings:");
+              } else {
+                Linking.openSettings();
+              }
+            },
+          },
+        ]
+      );
+    } else {
+      await registerToken();
+    }
   };
 
-  const textInputProps = {
-    mode: "outlined" as const,
-    autoCapitalize: "none" as const,
-    outlineColor: theme.colors.outline,
-    activeOutlineColor: theme.colors.onSurface,
-    theme: textInputTheme,
-    style: [styles.input, { backgroundColor: theme.colors.surface }],
-  };
+  useEffect(() => {
+    handlePermissionRequest();
+  }, [])
 
   return (
     <AuthScreenWrapper>

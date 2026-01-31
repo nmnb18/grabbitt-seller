@@ -29,8 +29,9 @@ export default function AnalyticsScreen() {
           onPress={() => setTab('free')}
           style={[
             styles.tab,
+            { backgroundColor: theme.colors.surfaceVariant },
             tab === 'free' && {
-              backgroundColor: theme.colors.surface,
+              backgroundColor: theme.colors.primaryContainer,
               elevation: 2
             }
           ]}
@@ -40,7 +41,7 @@ export default function AnalyticsScreen() {
               styles.tabText,
               { color: inactiveTextColor },
               tab === 'free' && {
-                color: activeTextColor,
+                color: theme.colors.onPrimary,
                 fontWeight: '700'
               }
             ]}
@@ -54,8 +55,9 @@ export default function AnalyticsScreen() {
           onPress={() => setTab('pro')}
           style={[
             styles.tab,
+            { backgroundColor: theme.colors.surfaceVariant },
             tab === 'pro' && {
-              backgroundColor: theme.colors.surface,
+              backgroundColor: theme.colors.primaryContainer,
               elevation: 2
             }
           ]}
@@ -65,7 +67,7 @@ export default function AnalyticsScreen() {
               styles.tabText,
               { color: inactiveTextColor },
               tab === 'pro' && {
-                color: activeTextColor,
+                color: theme.colors.onPrimary,
                 fontWeight: '700'
               }
             ]}

@@ -3,6 +3,7 @@ import BusinessInformation from '@/components/profile/business-information';
 import LocationDetails from '@/components/profile/location-details';
 import MediaInformation from '@/components/profile/media-information';
 import RewardsSettings from '@/components/profile/reward-settings';
+import NotificationSettings from '@/components/profile/notification-settings';
 import VerificationDetails from '@/components/profile/verification-details';
 import { AppHeader } from '@/components/shared/app-header';
 import { Button as CustomButton } from '@/components/ui/paper-button';
@@ -135,6 +136,7 @@ export default function SellerProfileSetup() {
         <MediaInformation />
         <VerificationDetails />
         <RewardsSettings />
+        <NotificationSettings />
 
         {/* SUBSCRIPTION CARD */}
         <Card style={[styles.card, { backgroundColor: surface }]} elevation={3}>

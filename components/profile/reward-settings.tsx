@@ -324,18 +324,18 @@ export default function RewardsSettings() {
                   }
                 ]}
               >
-                <View style={[styles.activeTypeIcon, { backgroundColor: selectedType?.color + "25" }]}>
+                <View style={[styles.activeTypeIcon, { backgroundColor: selectedType?.color + "60" }]}>
                   <MaterialCommunityIcons
                     name={selectedType?.icon as any}
                     size={28}
-                    color={selectedType?.color}
+                    color={theme.colors.onPrimary}
                   />
                 </View>
                 <View style={styles.activeTypeInfo}>
                   <Text style={[styles.activeTypeTitle, { color: theme.colors.onSurface }]}>
                     {selectedType?.title}
                   </Text>
-                  <Text style={[styles.activeTypeValue, { color: selectedType?.color }]}>
+                  <Text style={[styles.activeTypeValue, { color: theme.colors.warning }]}>
                     {getCurrentValueDisplay()}
                   </Text>
                 </View>
@@ -688,6 +688,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderRadius: 16,
     overflow: "hidden",
+    paddingBottom: 10
   },
   sectionHeader: {
     flexDirection: "row",

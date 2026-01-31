@@ -7,13 +7,13 @@
  */
 
 import { AppHeader } from "@/components/shared/app-header";
+import { Button } from "@/components/ui/paper-button";
 import { useTheme } from "@/hooks/use-theme-color";
 import api from "@/services/axiosInstance";
-import { AppStyles } from "@/utils/theme";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import dayjs from "dayjs";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -29,14 +29,13 @@ import {
   Card,
   Chip,
   Divider,
+  HelperText,
   IconButton,
   Surface,
   Text,
   TextInput,
-  HelperText,
 } from "react-native-paper";
 import DatePicker from "react-native-ui-datepicker";
-import { Button } from "@/components/ui/paper-button";
 
 type Offer = {
   id: string;
@@ -567,10 +566,17 @@ export default function AddOfferScreen() {
                     value={offer.title}
                     onChangeText={(v) => updateOffer(index, "title", v)}
                     mode="outlined"
-                    dense
                     error={!!errors[`offer_${index}_title`]}
-                    left={<TextInput.Icon icon="gift" />}
                     style={styles.input}
+                    outlineColor={theme.colors.outline}
+                    activeOutlineColor={theme.colors.onSurface}
+                    left={<TextInput.Icon icon="gift" color={theme.colors.onSurface} />}
+                    theme={{
+                      colors: {
+                        primary: theme.colors.primary,      // focused label color
+                        onSurfaceVariant: theme.colors.onSurface, // unfocused label color
+                      },
+                    }}
                   />
                   {errors[`offer_${index}_title`] && (
                     <HelperText type="error" visible>
@@ -584,11 +590,18 @@ export default function AddOfferScreen() {
                     value={offer.min_spend}
                     onChangeText={(v) => updateOffer(index, "min_spend", v.replace(/[^0-9]/g, ""))}
                     mode="outlined"
-                    dense
+                    style={styles.input}
+                    outlineColor={theme.colors.outline}
+                    activeOutlineColor={theme.colors.onSurface}
+                    left={<TextInput.Icon icon="currency-inr" color={theme.colors.onSurface} />}
+                    theme={{
+                      colors: {
+                        primary: theme.colors.primary,      // focused label color
+                        onSurfaceVariant: theme.colors.onSurface, // unfocused label color
+                      },
+                    }}
                     keyboardType="numeric"
                     error={!!errors[`offer_${index}_min_spend`]}
-                    left={<TextInput.Icon icon="currency-inr" />}
-                    style={styles.input}
                   />
                   {errors[`offer_${index}_min_spend`] && (
                     <HelperText type="error" visible>
@@ -602,11 +615,18 @@ export default function AddOfferScreen() {
                     value={offer.terms}
                     onChangeText={(v) => updateOffer(index, "terms", v)}
                     mode="outlined"
-                    dense
                     multiline
                     numberOfLines={2}
-                    left={<TextInput.Icon icon="text" />}
                     style={styles.input}
+                    outlineColor={theme.colors.outline}
+                    activeOutlineColor={theme.colors.onSurface}
+                    left={<TextInput.Icon icon="text" color={theme.colors.onSurface} />}
+                    theme={{
+                      colors: {
+                        primary: theme.colors.primary,      // focused label color
+                        onSurfaceVariant: theme.colors.onSurface, // unfocused label color
+                      },
+                    }}
                   />
                 </Surface>
               ))}
@@ -658,8 +678,8 @@ export default function AddOfferScreen() {
                           {offer.title || "Untitled Offer"}
                         </Text>
                         <View style={[styles.previewBadge, { backgroundColor: theme.colors.primaryContainer }]}>
-                          <Text style={[styles.previewBadgeText, { color: theme.colors.primary }]}>
-                            ₹{offer.min_spend || "0"}+
+                          <Text style={[styles.previewBadgeText, { color: theme.colors.onPrimary }]}>
+                            ₹ {offer.min_spend || "0"}+
                           </Text>
                         </View>
                       </View>
@@ -854,8 +874,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   input: {
-    marginBottom: 4,
-    backgroundColor: "transparent",
+    marginBottom: 8,
   },
 
   // Add Offer Button

@@ -1,13 +1,14 @@
-import { useTheme } from "@/hooks/use-theme-color";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
+import { NotificationProvider } from "@/contexts/NotificationContext";
+import { useTheme } from "@/hooks/use-theme-color";
 import { endIAP, initIAP } from "@/services/iap";
 import { useFonts } from "expo-font";
 
 import * as Linking from "expo-linking";
-import { Stack, useRouter, useSegments, usePathname } from "expo-router";
+import { Stack, usePathname, useRouter, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import * as SystemUI from "expo-system-ui";
-import React, { useEffect, useRef, useCallback } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { BackHandler, Platform, ToastAndroid } from "react-native";
 import { PaperProvider } from "react-native-paper";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -31,8 +32,8 @@ export default function RootLayout() {
   const theme = useTheme();
   const router = useRouter();
   const pathname = usePathname();
-  const segments = useSegments();
-  
+  const segments = useSegments() as string[];
+
   const exitPressedRef = useRef(false);
   const exitTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -49,7 +50,7 @@ export default function RootLayout() {
       }
       return true;
     }
-    
+
     // Also check for auth screens as root
     if (pathname === "/auth/login" || pathname === "/auth") {
       return true;
@@ -143,8 +144,10 @@ export default function RootLayout() {
     <ErrorBoundary>
       <SafeAreaProvider>
         <PaperProvider theme={theme}>
-          <StatusBar translucent backgroundColor={"transparent"} />
-          <Stack screenOptions={{ headerShown: false }} />
+          <NotificationProvider>
+            <StatusBar translucent backgroundColor={"transparent"} />
+            <Stack screenOptions={{ headerShown: false }} />
+          </NotificationProvider>
         </PaperProvider>
       </SafeAreaProvider>
     </ErrorBoundary>
