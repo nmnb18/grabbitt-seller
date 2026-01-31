@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "698651226206",
+    "project_id": "grabbitt-app",
+    "storage_bucket": "grabbitt-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:698651226206:android:d4dd64af656f2a5f2444cf",
+        "android_client_info": {
+          "package_name": "com.grabbitt.seller"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmZngGTgqoarki_6GyYkLb30ehHKKI80o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:698651226206:android:1ca3ad92647143c62444cf",
+        "android_client_info": {
+          "package_name": "com.grabbitt.user"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmZngGTgqoarki_6GyYkLb30ehHKKI80o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

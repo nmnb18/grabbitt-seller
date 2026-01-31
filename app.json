@@ -33,6 +33,7 @@
       "edgeToEdgeEnabled": true,
       "package": "com.grabbitt.seller",
       "predictiveBackGestureEnabled": false,
+      "googleServicesFile": "./google-services.json",
       "intentFilters": [
         {
           "action": "VIEW",
