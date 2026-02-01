@@ -3,6 +3,7 @@
  * Production-ready hook for managing push notifications
  */
 
+import { getUnreadNotificationCount } from "@/services";
 import {
   getExpoPushToken,
   NotificationData,
@@ -10,6 +11,7 @@ import {
   setupNotificationChannel,
 } from "@/services/pushNotification";
 import { useAuthStore } from "@/store/authStore";
+import { useNotificationStore } from "@/store/notificationStore";
 import * as Notifications from "expo-notifications";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -28,6 +30,7 @@ interface UsePushNotificationsReturn {
 export function usePushNotifications(): UsePushNotificationsReturn {
   const router = useRouter();
   const { user } = useAuthStore();
+  const { setUnreadCount } = useNotificationStore();
 
   const [expoPushToken, setExpoPushToken] = useState<string | null>(null);
   const [notification, setNotification] = useState<Notifications.Notification | null>(null);
@@ -38,6 +41,17 @@ export function usePushNotifications(): UsePushNotificationsReturn {
   const notificationListener = useRef<Notifications.Subscription | null>(null);
   const responseListener = useRef<Notifications.Subscription | null>(null);
   const appStateRef = useRef<AppStateStatus>(AppState.currentState);
+
+  const refreshUnreadCount = useCallback(async () => {
+    if (!user?.uid) return;
+
+    try {
+      const count = await getUnreadNotificationCount();
+      setUnreadCount(count);
+    } catch (err) {
+      console.warn("[usePushNotifications] Failed to fetch unread count", err);
+    }
+  }, [user?.uid, setUnreadCount]);
 
   /**
    * Handle notification navigation
@@ -157,6 +171,7 @@ export function usePushNotifications(): UsePushNotificationsReturn {
       (notification) => {
         console.log("[usePushNotifications] Notification received:", notification);
         setNotification(notification);
+        refreshUnreadCount();
       }
     );
 
@@ -190,14 +205,10 @@ export function usePushNotifications(): UsePushNotificationsReturn {
     };
   }, [registerToken, handleNotificationNavigation]);
 
-  /**
-   * Re-register token when user logs in
-   */
   useEffect(() => {
-    if (user?.uid && expoPushToken) {
-      registerPushToken(expoPushToken).catch(console.error);
-    }
-  }, [user?.uid, expoPushToken]);
+    refreshUnreadCount();
+  }, []);
+
 
   /**
    * Handle app state changes (for badge updates, etc.)
@@ -210,12 +221,14 @@ export function usePushNotifications(): UsePushNotificationsReturn {
       ) {
         // App has come to the foreground
         // You can refresh badge count or check for new notifications here
+        refreshUnreadCount();
         Notifications.getBadgeCountAsync().then((count) => {
           console.log("[usePushNotifications] Current badge count:", count);
         });
       }
       appStateRef.current = nextAppState;
     });
+
 
     return () => {
       subscription.remove();

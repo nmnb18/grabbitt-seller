@@ -77,7 +77,6 @@ export default function ScanCustomerQR() {
     setCameraActive(false);
 
     try {
-      console.log('here',data)
       const result = await processScan(data);
 
       if (!result.success) {
@@ -91,7 +90,7 @@ export default function ScanCustomerQR() {
         setScreenState("amount_input");
       } else {
         // Default reward - award immediately
-        await handleAwardPoints(result.customer_id!, undefined);
+        await handleAwardPoints(result.qr_id!, undefined);
       }
     } catch (error: any) {
       console.error("Scan error:", error);
@@ -102,17 +101,16 @@ export default function ScanCustomerQR() {
   };
 
   // Award points (called directly for default, or after amount input)
-  const handleAwardPoints = async (customerId: string, orderAmount?: number) => {
+  const handleAwardPoints = async (qrId: string, orderAmount?: number) => {
     setScreenState("processing");
 
-    const result = await awardPoints(customerId, orderAmount);
-    console.log('here', result)
+    const result = await awardPoints(qrId, orderAmount);
     if (result.success) {
       setAwardResult({
         customerName: result.customer_name,
         pointsAwarded: result.points_awarded || 0,
       });
-      
+
       fetchUserDetails(user?.user.uid ?? "", "seller");
       setScreenState("success");
     } else {

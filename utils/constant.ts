@@ -50,7 +50,7 @@ export const SUBSCRIPTION_PLANS = {
         monthlyLimit: Infinity,
         qrFlexibility: 'single-type',
         changeType: true,
-        price: 299,
+        price: 499,
         billing: 'month',
     },
     premium: {
@@ -58,7 +58,7 @@ export const SUBSCRIPTION_PLANS = {
         monthlyLimit: Infinity,
         qrFlexibility: 'all-types',
         changeType: true,
-        price: 2999,
+        price: 4999,
         billing: 'year',
     },
 };
@@ -80,7 +80,7 @@ export const PLANS = [
     {
         id: 'pro',
         name: 'Pro',
-        price: '₹299 / month',
+        price: '499 / month',
         color: Colors.light.secondary,
         features: [
             'Up to 3,000 scans per month',
@@ -93,7 +93,7 @@ export const PLANS = [
     {
         id: 'premium',
         name: 'Premium',
-        price: '₹2,999 / year',
+        price: '₹4,999 / year',
         color: Colors.light.primary,
         features: [
             'Unlimited scans',

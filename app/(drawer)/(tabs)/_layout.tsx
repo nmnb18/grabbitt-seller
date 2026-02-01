@@ -1,15 +1,19 @@
 import { GradientText } from "@/components/ui/gradient-text";
 import { useTheme, useThemeColor } from "@/hooks/use-theme-color";
+import { useNotificationStore } from "@/store/notificationStore";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { DrawerActions, useNavigation } from "@react-navigation/native";
-import { Tabs } from "expo-router";
+import { Tabs, useRouter } from "expo-router";
 import React from "react";
-import { Dimensions, Platform, TouchableOpacity } from "react-native";
+import { Dimensions, Platform, TouchableOpacity, View } from "react-native";
+import { Text } from "react-native-paper";
 const { width } = Dimensions.get("window");
 const LOGO_WIDTH = width * 0.4;
 
 export default function SellerLayout() {
   const sellerTheme = useTheme();
+  const { unreadCount } = useNotificationStore();
+  const router = useRouter();
 
   const backgroundColor = useThemeColor({}, "background");
   const navigation = useNavigation<any>();
@@ -69,7 +73,7 @@ export default function SellerLayout() {
 
         headerRight: () => (
           <TouchableOpacity
-            onPress={() => console.log("Notifications pressed")}
+            onPress={() => router.push("/(drawer)/notifications")}
             style={{ marginRight: 16 }}
           >
             <Ionicons
@@ -77,6 +81,25 @@ export default function SellerLayout() {
               size={24}
               color={sellerTheme.colors.onSurface}
             />
+            {unreadCount > 0 && (
+              <View
+                style={{
+                  position: "absolute",
+                  top: -4,
+                  right: -6,
+                  backgroundColor: sellerTheme.colors.primary,
+                  borderRadius: 10,
+                  minWidth: 18,
+                  height: 18,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Text style={{ color: "white", fontSize: 11, fontWeight: "bold" }}>
+                  {unreadCount}
+                </Text>
+              </View>
+            )}
           </TouchableOpacity>
         ),
       }}

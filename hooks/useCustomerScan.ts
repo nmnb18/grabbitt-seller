@@ -62,30 +62,20 @@ export function useCustomerScan(options?: UseCustomerScanOptions) {
   /**
    * Validate scanned QR data
    */
-  const validateQRData = useCallback((data: string): { valid: boolean; parsed?: any; error?: string } => {
+  const validateQRData = useCallback((data: string) => {
     try {
-      // Check if it's a Grabbitt customer QR
-      if (data.startsWith("grabbitt://")) {
-        const customerId = data.replace("grabbitt://", "");
-        return { valid: true, parsed: { customer_id: customerId, type: "grabbitt" } };
-      }
-
-      // Try parsing as JSON (for QR codes with more data)
+      // If your QR is now JSON with token
       const parsed = JSON.parse(data);
-
-      if (parsed.user_id) {
-        return { valid: true, parsed: { ...parsed, type: "json" } };
+      if (parsed.token) {
+        return { valid: true, parsed: { token: parsed.token } };
       }
 
       return { valid: false, error: "Invalid QR code format" };
     } catch {
-      // Not JSON, check if it's a simple customer ID
-      if (data.length > 10 && data.length < 50) {
-        return { valid: true, parsed: { customer_id: data, type: "simple" } };
-      }
       return { valid: false, error: "Could not parse QR code" };
     }
   }, []);
+
 
   /**
    * Process scanned customer QR
@@ -102,22 +92,9 @@ export function useCustomerScan(options?: UseCustomerScanOptions) {
           options?.onError?.(error);
           return { success: false, error };
         }
-
-        // Call API to validate customer QR
-        // const response = await api.post("/validateCustomerQR", {
-        //   qr_data: qrData,
-        //   customer_id: validation.parsed?.customer_id,
-        // });
-
-        // if (!response.data.success) {
-        //   const error = response.data.error || "Invalid customer QR";
-        //   options?.onError?.(error);
-        //   return { success: false, error };
-        // }
         const result: ScanResult = {
           success: true,
-          customer_id: validation.parsed?.user_id,
-          customer_name: validation.parsed?.name,
+          qr_id: validation.parsed?.token,
         };
 
         setScanResult(result);
@@ -139,13 +116,13 @@ export function useCustomerScan(options?: UseCustomerScanOptions) {
    * Award points to customer
    */
   const awardPoints = useCallback(
-    async (customerId: string, orderAmount?: number): Promise<AwardResult> => {
+    async (token: string, orderAmount?: number): Promise<AwardResult> => {
       setProcessing(true);
 
       try {
 
         const response = await api.post("/scanUserQRCode", {
-          user_id: customerId,
+          token,
           amount: orderAmount,
         });
 
@@ -154,8 +131,6 @@ export function useCustomerScan(options?: UseCustomerScanOptions) {
           options?.onError?.(error);
           return { success: false, error };
         }
-
-        console.log(response.data)
 
         const result: AwardResult = {
           success: true,
