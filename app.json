@@ -2,7 +2,7 @@
   "expo": {
     "name": "Grabbitt Seller",
     "slug": "grabbitt-seller",
-    "version": "2.2.4",
+    "version": "2.3.0",
     "orientation": "portrait",
     "icon": "./assets/images/favicon.png",
     "scheme": "grabbittseller",
@@ -21,7 +21,9 @@
         "NSLocationAlwaysAndWhenInUseUsageDescription": "We use your location to automatically fill your store address and save accurate latitude and longitude. This helps us show your store to nearby users.",
         "NSLocationAlwaysUsageDescription": "We use your location to automatically fill your store address and save accurate latitude and longitude. This helps us show your store to nearby users.",
         "NSLocationWhenInUseUsageDescription": "We use your location to automatically fill your store address and save accurate latitude and longitude. This helps us show your store to nearby users.",
-        "UIBackgroundModes": ["remote-notification"]
+        "UIBackgroundModes": [
+          "remote-notification"
+        ]
       }
     },
     "android": {
