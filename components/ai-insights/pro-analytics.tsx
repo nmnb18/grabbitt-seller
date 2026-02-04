@@ -45,6 +45,7 @@ type Segments = {
     regular: number;
     loyal: number;
     dormant: number;
+    redeemer: number;
 };
 
 type AdvancedAnalytics = {
@@ -292,15 +293,15 @@ export default function SellerProAnalyticsInsights({
                                     color={theme.colors.primary} // Option A mapping
                                 />
                                 <SegmentPill
-                                    label="Regular"
-                                    value={data?.segments.regular ?? 0}
+                                    label="Loyal"
+                                    value={data?.segments.loyal ?? 0}
                                     color={theme.colors.secondary}
                                 />
                             </View>
                             <View style={styles.segRow}>
                                 <SegmentPill
-                                    label="Loyal"
-                                    value={data?.segments.loyal ?? 0}
+                                    label="Redeemer"
+                                    value={data?.segments.redeemer ?? 0}
                                     color={theme.colors.warning}
                                 />
                                 <SegmentPill

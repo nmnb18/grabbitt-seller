@@ -499,6 +499,9 @@ export default function AddOfferScreen() {
                     disabled_label: { color: theme.colors.onSurfaceDisabled },
                     selected: { backgroundColor: theme.colors.primary, borderRadius: 8 },
                     selected_label: { color: "#fff" },
+                    range_fill: {
+                      backgroundColor: theme.colors.primary + "25",
+                    },
                   }}
                 />
               )}

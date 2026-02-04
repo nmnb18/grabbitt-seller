@@ -22,7 +22,9 @@ type SellerFreeAIInsightsProps = {
 
 type TodayStats = {
     scans: number;
-    points: number;
+    points_issued: number;
+    redemptions: number;
+    points_redeemed: number
 };
 
 type LastScan = {
@@ -119,40 +121,65 @@ export default function SellerFreeAIInsights({
                 ]}
                 elevation={2}
             >
-                <Card.Content style={styles.todayContent}>
-                    <View>
-                        <Text
-                            style={[
-                                styles.todayLabel,
-                                {
-                                    color: theme.colors.primary,
-                                },
-                            ]}
-                        >
-                            Today
-                        </Text>
-                        <Text
-                            style={[
-                                styles.todayScans,
-                                { color: theme.colors.onSurface },
-                            ]}
-                        >
-                            {stats?.today?.scans ?? 0} scans
-                        </Text>
+                <Card.Content>
+                    <View style={styles.todayContent}>
+                        <View>
+                            <Text
+                                style={[
+                                    styles.todayLabel,
+                                    {
+                                        color: theme.colors.primary,
+                                    },
+                                ]}
+                            >
+                                Today
+                            </Text>
+                            <Text
+                                style={[
+                                    styles.todayScans,
+                                    { color: theme.colors.onSurface },
+                                ]}
+                            >
+                                {stats?.today?.scans ?? 0} scans
+                            </Text>
+
+                        </View>
+                        <MaterialCommunityIcons
+                            name="calendar-today"
+                            size={32}
+                            color={theme.colors.accent}
+                        />
+                    </View>
+
+                    <View style={styles.todayContent}>
                         <Text
                             style={[
                                 styles.todayPoints,
                                 { color: theme.colors.onSurfaceDisabled },
                             ]}
                         >
-                            {stats?.today?.points ?? 0} points issued
+                            {stats?.today?.points_issued ?? 0} Points Issued
+                        </Text>
+
+                        <Text
+                            style={[
+                                styles.todayPoints,
+                                { color: theme.colors.onSurfaceDisabled },
+                            ]}
+                        >
+                            {stats?.today?.points_redeemed ?? 0} Points Redeemed
                         </Text>
                     </View>
-                    <MaterialCommunityIcons
-                        name="calendar-today"
-                        size={32}
-                        color={theme.colors.accent}
-                    />
+                    <View>
+                        <Text
+                            style={[
+                                styles.todayPoints,
+                                { color: theme.colors.onSurfaceDisabled },
+                            ]}
+                        >
+                            {stats?.today?.redemptions ?? 0} Redemptions
+                        </Text>
+                    </View>
                 </Card.Content>
             </Card>
 
@@ -429,7 +456,6 @@ const styles = StyleSheet.create({
     todayContent: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'center',
     },
     todayLabel: {
         fontSize: 14,

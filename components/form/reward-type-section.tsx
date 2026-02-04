@@ -1,7 +1,7 @@
 import { useThemeColor } from '@/hooks/use-theme-color';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Chip, IconButton, RadioButton, Text } from 'react-native-paper';
+import { RadioButton, Text } from 'react-native-paper';
 import { Button } from '../ui/paper-button';
 import { FormTextInput } from './form-text-input';
 
@@ -152,7 +152,7 @@ export const RewardTypeSection: React.FC<RewardTypeSectionProps> = ({
                 </View>
             )}
 
-            <View style={styles.upiSection}>
+            {/* <View style={styles.upiSection}>
                 <Text variant="bodyMedium" style={styles.sectionLabel}>UPI IDs</Text>
                 <View style={styles.upiInputRow}>
                     <FormTextInput
@@ -184,7 +184,7 @@ export const RewardTypeSection: React.FC<RewardTypeSectionProps> = ({
                         />
                     </View>
                 ))}
-            </View>
+            </View> */}
         </View>
     );
 };

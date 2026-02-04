@@ -381,11 +381,11 @@ export default function RewardsSettings() {
                   <Text style={[styles.statValue, { color: theme.colors.onSurface }]}>{offers.length}</Text>
                   <Text style={[styles.statLabel, { color: theme.colors.onSurfaceDisabled }]}>Offers</Text>
                 </View>
-                <View style={[styles.statBox, { backgroundColor: theme.colors.surfaceVariant }]}>
+                {/* <View style={[styles.statBox, { backgroundColor: theme.colors.surfaceVariant }]}>
                   <MaterialCommunityIcons name="bank" size={18} color={theme.colors.primary} />
                   <Text style={[styles.statValue, { color: theme.colors.onSurface }]}>{upiIds.length}</Text>
                   <Text style={[styles.statLabel, { color: theme.colors.onSurfaceDisabled }]}>UPI IDs</Text>
-                </View>
+                </View> */}
               </View>
 
 
@@ -639,7 +639,7 @@ export default function RewardsSettings() {
                   <Divider style={[styles.sectionDivider, { backgroundColor: theme.colors.outline }]} />
 
                   {/* UPI IDs */}
-                  <Text style={[styles.sectionTitle, { color: theme.colors.onSurface }]}>
+                  {/* <Text style={[styles.sectionTitle, { color: theme.colors.onSurface }]}>
                     Linked UPI IDs
                   </Text>
                   <Text style={[styles.sectionHint, { color: theme.colors.onSurfaceDisabled }]}>
@@ -672,7 +672,7 @@ export default function RewardsSettings() {
                         </Chip>
                       ))}
                     </View>
-                  )}
+                  )} */}
                 </View>
               )}
             </View>
@@ -776,6 +776,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
     gap: 8,
     padding: 12,
     borderRadius: 10,

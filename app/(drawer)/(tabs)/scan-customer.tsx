@@ -122,13 +122,13 @@ export default function ScanCustomerQR() {
 
   // Handle amount submission
   const handleAmountSubmit = async (amount: number) => {
-    if (!scanResult?.customer_id) {
+    if (!scanResult?.qr_id) {
       Alert.alert("Error", "Customer data lost. Please scan again.");
       handleReset();
       return;
     }
 
-    await handleAwardPoints(scanResult.customer_id, amount);
+    await handleAwardPoints(scanResult.qr_id, amount);
   };
 
   // Reset to scanning state

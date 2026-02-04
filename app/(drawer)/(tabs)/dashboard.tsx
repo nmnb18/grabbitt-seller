@@ -3,6 +3,7 @@ import DashboardSkeleton from "@/components/skeletons/dashboard";
 import withSkeletonTransition from "@/components/wrappers/withSkeletonTransition";
 import { useTheme } from "@/hooks/use-theme-color";
 import api from "@/services/axiosInstance";
+import { useFocusEffect } from "expo-router";
 import React, { useCallback, useState } from "react";
 import { Alert, StyleSheet } from "react-native";
 
@@ -58,11 +59,11 @@ export default function SellerDashboardContainer() {
     }
   }, []);
 
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     loadData();
-  //   }, [loadData])
-  // );
+  useFocusEffect(
+    useCallback(() => {
+      loadData();
+    }, [loadData])
+  );
 
   const handleRefresh = () => {
     setRefreshing(true);

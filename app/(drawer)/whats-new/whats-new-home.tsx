@@ -54,6 +54,17 @@ type OfferDoc = {
 
 type TabType = "active" | "upcoming" | "expired";
 
+
+const TAB_NOTES: Record<TabType, string> = {
+  active:
+    "Approved offers that are currently live. Once Grabbitt approves and the start date arrives, they appear here.",
+  upcoming:
+    "Future offers waiting for approval or their start date. These will go live automatically.",
+  expired:
+    "Offers that have ended. Customers can no longer redeem them, but you can copy them again.",
+};
+
+
 export default function WhatsNewScreen() {
   const theme = useTheme();
   const router = useRouter();
@@ -433,6 +444,27 @@ export default function WhatsNewScreen() {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         showsVerticalScrollIndicator={false}
       >
+        <Surface
+          style={[
+            styles.infoBanner,
+            { backgroundColor: theme.colors.surfaceVariant },
+          ]}
+          elevation={0}
+        >
+          <MaterialCommunityIcons
+            name="information-outline"
+            size={18}
+            color={theme.colors.onSurfaceDisabled}
+          />
+          <Text
+            style={[
+              styles.infoBannerText,
+              { color: theme.colors.onSurfaceDisabled },
+            ]}
+          >
+            {TAB_NOTES[tab]}
+          </Text>
+        </Surface>
         {data.length === 0
           ? renderEmptyState(tab)
           : data.map((offerDoc) => renderOfferCard(offerDoc, tab))}
@@ -642,6 +674,9 @@ export default function WhatsNewScreen() {
                     disabled_label: { color: theme.colors.onSurfaceDisabled },
                     selected: { backgroundColor: theme.colors.primary, borderRadius: 8 },
                     selected_label: { color: "#fff" },
+                    range_fill: {
+                      backgroundColor: theme.colors.primary + "25",
+                    },
                   }}
                 />
 
@@ -830,6 +865,20 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: "700",
   },
+
+  infoBanner: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    padding: 12,
+    borderRadius: 10,
+    marginBottom: 14,
+  },
+  infoBannerText: {
+    fontSize: 13,
+    flex: 1,
+  },
+
 
   // Scroll
   scrollView: {

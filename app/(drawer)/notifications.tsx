@@ -7,6 +7,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
 import { Card, Text } from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 type Notification = {
     id: string;
@@ -47,7 +48,7 @@ export default function NotificationScreen() {
     };
 
     return (
-        <View style={[styles.screen, { backgroundColor: theme.colors.background }]}>
+        <SafeAreaView style={[styles.screen, { backgroundColor: theme.colors.background }]}>
             <GradientHeader title="Notifications" />
 
             {loading ? (
@@ -115,7 +116,7 @@ export default function NotificationScreen() {
 
                                         <Text style={styles.time}>
                                             {new Date(
-                                                item.created_at._seconds * 1000
+                                                item.created_at
                                             ).toLocaleString()}
                                         </Text>
                                     </View>
@@ -126,7 +127,7 @@ export default function NotificationScreen() {
                     <View style={{ height: 60 }} />
                 </ScrollView>
             )}
-        </View>
+        </SafeAreaView>
     );
 }
 const createStyles = (theme: any) =>
