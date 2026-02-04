@@ -13,6 +13,7 @@ interface AuthStore {
   user: User | null;
   loading: boolean;
   idToken: string | null;
+  isLoggingOut: boolean,
   setUser: (user: User | null) => void;
   register: (payload: UserPayload) => Promise<void>;
   login: (
@@ -30,6 +31,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   user: null,
   loading: false,
   idToken: null,
+  isLoggingOut: false,
   setUser: (user) => set({ user }),
 
   register: async (payload: UserPayload) => {
@@ -138,7 +140,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
       // Prefer passed token, or fallback to stored one
       const token = idToken || user?.idToken;
-      set({ loading: true });
+      set({ isLoggingOut: true });
       await axios.post(
         `${API_URL}/logout`,
         {
@@ -151,9 +153,9 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         }
       );
       await AsyncStorage.removeItem("user");
-      set({ user: null, loading: false });
+      set({ user: null, isLoggingOut: false });
     } catch (err) {
-      set({ loading: false });
+      set({ isLoggingOut: false });
       console.error("Logout error:", err);
     }
   },
