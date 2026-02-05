@@ -127,7 +127,7 @@ export default function SellerLayout() {
           ),
         }}
       />
-      <Tabs.Screen
+      {/* <Tabs.Screen
         name="redeem-qr"
         options={{
           title: "Redeem",
@@ -140,7 +140,7 @@ export default function SellerLayout() {
             />
           ),
         }}
-      />
+      /> */}
       <Tabs.Screen
         name="ai-insights"
         options={{

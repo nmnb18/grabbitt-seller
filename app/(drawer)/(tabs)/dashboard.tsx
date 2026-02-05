@@ -36,7 +36,6 @@ export default function SellerDashboardContainer() {
       }
 
       const s = data.data;
-
       setStats({
         total_users: s.total_users,
         total_qrs: s.total_qrs,

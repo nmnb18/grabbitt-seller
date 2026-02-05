@@ -6,6 +6,7 @@ import { AppStyles } from '@/utils/theme';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
+import { RefreshControl } from 'react-native-gesture-handler';
 import { Card, Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -34,7 +35,6 @@ export default function NotificationScreen() {
             setLoading(true);
 
             const res = await api.get('/getNotifications');
-            console.log(res.data)
             if (res.data.success) {
 
                 setNotifications(res.data?.notifications || []);
@@ -59,6 +59,9 @@ export default function NotificationScreen() {
                 <ScrollView
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={styles.scrollContainer}
+                    refreshControl={
+                        <RefreshControl refreshing={loading} onRefresh={fetchNotifications} />
+                    }
                 >
                     {notifications.length === 0 ? (
                         <View style={styles.emptyState}>

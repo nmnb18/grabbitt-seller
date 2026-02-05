@@ -29,6 +29,7 @@ type PeakDay = { weekday: number; scans: number };
 
 type TopCustomer = {
     user_id: string;
+    customer_name: string
     total_scans: number;
     total_points: number;
     last_scan?: string | Date | null;
@@ -394,12 +395,12 @@ export default function SellerProAnalyticsInsights({
                             <View key={c.user_id} style={styles.customerRow}>
                                 <View style={styles.customerAvatar}>
                                     <Text style={styles.customerAvatarText}>
-                                        {c.user_id?.slice(0, 2).toUpperCase()}
+                                        {c.customer_name?.slice(0, 2).toUpperCase()}
                                     </Text>
                                 </View>
                                 <View style={{ flex: 1 }}>
                                     <Text style={styles.customerTitle}>
-                                        Customer {c.user_id.slice(0, 6)}…
+                                        Customer {c.customer_name}
                                     </Text>
                                     <Text style={styles.customerSubtitle}>
                                         {c.total_scans} scans • {c.total_points} pts
@@ -623,7 +624,7 @@ const createStyles = (theme: any) =>
 
         segRow: {
             flexDirection: 'row',
-            justifyContent: 'space-between',
+            gap: 10,
             marginBottom: 6,
         },
         segPill: {

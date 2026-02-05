@@ -11,7 +11,7 @@ import { useAuthStore } from "@/store/authStore";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import dayjs from "dayjs";
 import { useFocusEffect, useRouter } from "expo-router";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Alert,
   Dimensions,
@@ -88,6 +88,25 @@ export default function WhatsNewScreen() {
   const [copyEndDate, setCopyEndDate] = useState(dayjs().add(1, "day"));
   const [copyOffers, setCopyOffers] = useState<Offer[]>([]);
   const [savingCopy, setSavingCopy] = useState(false);
+  const [redeemed, setRedeemed] = useState<any[]>([]);
+  const [redeemedOpen, setRedeemedOpen] = useState(false);
+  const [loadingRedeemed, setLoadingRedeemed] = useState(false);
+
+  const fetchRedeemed = async () => {
+    try {
+      setLoadingRedeemed(true);
+      const resp = await api.get("/getSellerRedeemedPerks");
+
+      if (resp.data.success) {
+        setRedeemed(resp.data.perks || []);
+      }
+    } catch (e) {
+      console.error("redeemed error", e);
+    } finally {
+      setLoadingRedeemed(false);
+    }
+  };
+
 
   const fetchOffers = useCallback(async () => {
     if (user?.user.seller_profile?.subscription.tier === "free") {
@@ -116,6 +135,13 @@ export default function WhatsNewScreen() {
       fetchOffers();
     }, [])
   );
+
+  useEffect(() => {
+    if (tab === "active" && redeemed.length === 0) {
+      fetchRedeemed();
+    }
+  }, [tab]);
+
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -433,6 +459,16 @@ export default function WhatsNewScreen() {
     );
   };
 
+  const getStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'pending': return theme.colors.warning;
+      case 'redeemed': return theme.colors.success;
+      case 'claimed': return theme.colors.warning;
+      case 'expired': return theme.colors.error;
+      default: return theme.colors.onSurfaceVariant;
+    }
+  };
+
   // Render tab content
   const renderTabContent = () => {
     const data = tab === "active" ? active : tab === "upcoming" ? upcoming : expired;
@@ -468,6 +504,76 @@ export default function WhatsNewScreen() {
         {data.length === 0
           ? renderEmptyState(tab)
           : data.map((offerDoc) => renderOfferCard(offerDoc, tab))}
+        {tab === "active" && (
+          <Surface
+            style={[
+              styles.redeemedAccordion,
+              { backgroundColor: theme.colors.surfaceVariant },
+            ]}
+          >
+            <TouchableOpacity
+              style={styles.redeemedHeader}
+              onPress={() => setRedeemedOpen(!redeemedOpen)}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                <MaterialCommunityIcons
+                  name="history"
+                  size={18}
+                  color={theme.colors.primary}
+                />
+                <Text style={{ color: theme.colors.onSurface, fontWeight: "600" }}>
+                  Perks Information
+                </Text>
+              </View>
+
+              <MaterialCommunityIcons
+                name={redeemedOpen ? "chevron-up" : "chevron-down"}
+                size={22}
+                color={theme.colors.onSurface}
+              />
+            </TouchableOpacity>
+
+            {redeemedOpen && (
+              <>
+                {loadingRedeemed ? (
+                  <ActivityIndicator style={{ marginVertical: 12 }} />
+                ) : redeemed.length === 0 ? (
+                  <Text
+                    style={{
+                      padding: 12,
+                      color: theme.colors.onSurfaceDisabled,
+                    }}
+                  >
+                    No redeemed perks yet
+                  </Text>
+                ) : (
+                  redeemed.map((perk) => (
+                    <View
+                      key={perk.id}
+                      style={[
+                        styles.redeemedItem,
+                        { borderBottomColor: theme.colors.outline },
+                      ]}
+                    >
+                      <Text style={{ fontWeight: "600", color: theme.colors.onSurface }}>
+                        {perk.customer_name}
+                      </Text>
+
+                      <Text style={{ color: theme.colors.onSurface }}>
+                        {perk.offer_title} | {perk.redeem_code}
+                      </Text>
+
+                      <Text style={{ fontSize: 12, color: theme.colors.onSurfaceDisabled }}>
+                        ₹ {perk.min_spend}+ | <Text style={{ color: getStatusColor(perk.status) || theme.colors.onSurfaceDisabled }}>{perk.status}</Text>
+                      </Text>
+                    </View>
+                  ))
+                )}
+              </>
+            )}
+          </Surface>
+        )}
+
         <View style={{ height: 100 }} />
       </ScrollView>
     );
@@ -810,6 +916,25 @@ export default function WhatsNewScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
+  },
+  redeemedAccordion: {
+    borderRadius: 14,
+    marginTop: 20,
+    paddingVertical: 8,
+  },
+
+  redeemedHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+
+  redeemedItem: {
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
   },
   loaderContainer: {
     flex: 1,

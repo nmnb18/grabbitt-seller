@@ -4,7 +4,7 @@ import { useAuthStore } from "@/store/authStore";
 import { SUBSCRIPTION_PLANS } from "@/utils/constant";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React from "react";
+import React, { useState } from "react";
 import {
     Image,
     RefreshControl,
@@ -13,8 +13,9 @@ import {
     TouchableOpacity,
     View
 } from "react-native";
-import { Card, Chip, Surface, Text } from "react-native-paper";
+import { Card, Chip, Portal, Surface, Text } from "react-native-paper";
 import { StatCard } from "../shared/stats-card";
+import RedeemModal from "../whats-new/redeem-modal";
 
 // ------------------------------
 // TYPES
@@ -93,6 +94,7 @@ export default function SellerDashboard({
     const { user } = useAuthStore();
     const theme = useTheme();
     const router = useRouter();
+    const [redeemVisible, setRedeemVisible] = useState(false);
 
     const sellerProfile = user?.user.seller_profile;
 
@@ -166,13 +168,13 @@ export default function SellerDashboard({
                     <View style={styles.statsGrid}>
                         <StatCard
                             icon="account-group"
-                            value={stats?.active_customers || 0}
+                            value={stats?.total_users || 0}
                             label="Total Users"
                             backgroundColor={theme.colors.surface}
                         />
                         <StatCard
                             icon="star-circle"
-                            value={stats?.total_points_distributed || 0}
+                            value={stats?.total_points_issued || 0}
                             label="Points Issued"
                             backgroundColor={theme.colors.surface}
                         />
@@ -187,7 +189,7 @@ export default function SellerDashboard({
                         />
                         <StatCard
                             icon="qrcode"
-                            value={stats?.total_scans || 0}
+                            value={stats?.total_scanned || 0}
                             label="Total Scans"
                             backgroundColor={theme.colors.surface}
                         />
@@ -212,12 +214,12 @@ export default function SellerDashboard({
                     />
 
                     <ActionCard
-                        title="Redeem Points"
+                        title="Redeem Today's Perk"
                         subtitle="Scan redemption QR"
                         bgColor={theme.colors.surface}
                         icon="star-four-points-outline"
                         iconColor={theme.colors.secondary}
-                        onPress={() => router.push("/(drawer)/(tabs)/redeem-qr")}
+                        onPress={() => setRedeemVisible(true)}
                     />
 
                     <ActionCard
@@ -232,8 +234,11 @@ export default function SellerDashboard({
 
                 <View style={styles.bottomSpacer} />
             </ScrollView>
-
+            <Portal>
+                <RedeemModal visible={redeemVisible} onClose={() => setRedeemVisible(false)} />
+            </Portal>
         </View>
+
     );
 }
 

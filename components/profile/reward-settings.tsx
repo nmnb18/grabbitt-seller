@@ -87,7 +87,7 @@ export default function RewardsSettings() {
         max: String(r.max),
         points: String(r.points),
       }))
-      : [{ max: "500", points: "5" }, { max: "1000", points: "15" }];
+      : [];
 
   const [slabRules, setSlabRules] = useState<SlabRuleUI[]>(initialSlabRules);
 
@@ -98,7 +98,7 @@ export default function RewardsSettings() {
         reward_name: r.reward_name,
         reward_description: r.reward_description,
       }))
-      : [{ reward_points: "100", reward_name: "Free Coffee", reward_description: "Redeem 100 points for a free coffee" }];
+      : [];
 
   const [offers, setOffers] = useState<Offer[]>(initialOffers);
   const [upiIds, setUpiIds] = useState<string[]>(upiFromProfile);
@@ -376,11 +376,20 @@ export default function RewardsSettings() {
 
               {/* Quick Stats */}
               <View style={styles.statsRow}>
-                <View style={[styles.statBox, { backgroundColor: theme.colors.surfaceVariant }]}>
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  onPress={() => setIsEditing(true)}
+                  style={[styles.statBox, { backgroundColor: theme.colors.surfaceVariant }]}
+                >
                   <MaterialCommunityIcons name="tag-multiple" size={18} color={theme.colors.primary} />
-                  <Text style={[styles.statValue, { color: theme.colors.onSurface }]}>{offers.length}</Text>
-                  <Text style={[styles.statLabel, { color: theme.colors.onSurfaceDisabled }]}>Offers</Text>
-                </View>
+                  <Text style={[styles.statValue, { color: theme.colors.onSurface }]}>
+                    {offers.length}
+                  </Text>
+                  <Text style={[styles.statLabel, { color: theme.colors.onSurfaceDisabled }]}>
+                    Offers
+                  </Text>
+                </TouchableOpacity>
+
                 {/* <View style={[styles.statBox, { backgroundColor: theme.colors.surfaceVariant }]}>
                   <MaterialCommunityIcons name="bank" size={18} color={theme.colors.primary} />
                   <Text style={[styles.statValue, { color: theme.colors.onSurface }]}>{upiIds.length}</Text>
@@ -490,7 +499,11 @@ export default function RewardsSettings() {
                     <Text style={[styles.configLabel, { color: theme.colors.onSurfaceDisabled }]}>
                       Set spending tiers
                     </Text>
-
+                    {slabRules.length === 0 && (
+                      <Text style={[styles.sectionHint, { color: theme.colors.onSurfaceDisabled }]}>
+                        No tiers added yet. Add your first spending tier.
+                      </Text>
+                    )}
                     {slabRules.map((rule, index) => {
                       const prevMax = Number(slabRules[index - 1]?.max || -1);
                       const min = index === 0 ? 0 : prevMax + 1;
@@ -573,7 +586,11 @@ export default function RewardsSettings() {
                   <Text style={[styles.sectionHint, { color: theme.colors.onSurfaceDisabled }]}>
                     What can customers redeem points for?
                   </Text>
-
+                  {offers.length === 0 && (
+                    <Text style={[styles.sectionHint, { color: theme.colors.onSurfaceDisabled }]}>
+                      No redemption offers yet. Add one to let customers redeem points.
+                    </Text>
+                  )}
                   {offers.map((offer, index) => (
                     <Surface
                       key={index}
@@ -622,6 +639,25 @@ export default function RewardsSettings() {
                           },
                         }}
                       />
+                      <TextInput
+                        label="Offer Description"
+                        value={offer.reward_description}
+                        onChangeText={(v) => updateOffer(index, "reward_description", v)}
+                        mode="outlined"
+                        multiline
+                        numberOfLines={2}
+                        style={[styles.offerInput, { backgroundColor: theme.colors.surface }]}
+                        outlineColor={theme.colors.outline}
+                        activeOutlineColor={theme.colors.onSurface}
+                        placeholder="e.g. Redeem points for a free coffee on your next visit"
+                        theme={{
+                          colors: {
+                            primary: theme.colors.primary,
+                            onSurfaceVariant: theme.colors.onSurface,
+                          },
+                        }}
+                      />
+
                     </Surface>
                   ))}
 
@@ -805,7 +841,7 @@ const styles = StyleSheet.create({
   sectionHint: {
     fontSize: 12,
     marginBottom: 12,
-    marginTop: -6,
+    marginTop: 6,
   },
   typeSelector: {
     flexDirection: "row",

@@ -53,10 +53,11 @@ export function OrderAmountInput({
     if (rewardType === "percentage") {
       setCalculatedPoints(Math.floor((numAmount * percentageValue) / 100));
     } else if (rewardType === "slab") {
-      const matchingSlab = slabRules.find(
-        (slab) => numAmount >= slab.min && numAmount <= slab.max
-      );
-      setCalculatedPoints(matchingSlab?.points || 0);
+      const applicableSlab = slabRules
+        .filter((slab) => numAmount >= slab.min)
+        .sort((a, b) => b.min - a.min)[0];
+
+      setCalculatedPoints(applicableSlab?.points || 0);
     }
   }, [amount, rewardType, percentageValue, slabRules]);
 
@@ -180,22 +181,28 @@ export function OrderAmountInput({
                   <Text style={[styles.slabTitle, { color: theme.colors.onSurface }]}>
                     Point Tiers:
                   </Text>
-                  {slabRules.map((slab, index) => (
-                    <View
-                      key={index}
-                      style={[
-                        styles.slabItem,
-                        { backgroundColor: theme.colors.surfaceVariant },
-                      ]}
-                    >
-                      <Text style={{ color: theme.colors.onSurface }}>
-                        ₹{slab.min} - ₹{slab.max}
-                      </Text>
-                      <Chip compact mode="flat" style={{ backgroundColor: theme.colors.primary }}>
-                        <Text style={{ color: "#fff" }}>{slab.points} pts</Text>
-                      </Chip>
-                    </View>
-                  ))}
+                  {slabRules.map((slab, index) => {
+                    const isLast = index === slabRules.length - 1;
+
+                    return (
+                      <View
+                        key={index}
+                        style={[
+                          styles.slabItem,
+                          { backgroundColor: theme.colors.surfaceVariant },
+                        ]}
+                      >
+                        <Text style={{ color: theme.colors.onSurface }}>
+                          {isLast ? `₹${slab.min}+` : `₹${slab.min} - ₹${slab.max}`}
+                        </Text>
+
+                        <Chip compact mode="flat" style={{ backgroundColor: theme.colors.primary }}>
+                          <Text style={{ color: "#fff" }}>{slab.points} pts</Text>
+                        </Chip>
+                      </View>
+                    );
+                  })}
+
                 </View>
               )}
             </Card.Content>
