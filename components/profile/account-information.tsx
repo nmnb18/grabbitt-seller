@@ -1,4 +1,4 @@
-import api from "@/services/axiosInstance";
+import { userApi as fbUserApi } from '@/services/firebaseFunctions';
 import { useAuthStore } from "@/store/authStore";
 import React, { useMemo, useState } from "react";
 import { ActivityIndicator, Alert, StyleSheet, View } from "react-native";
@@ -20,7 +20,6 @@ export default function AccountInformation({
   const { user, fetchUserDetails } = useAuthStore();
 
   const uid = user?.uid;
-  const idToken = user?.idToken;
 
   const profile = user?.user?.seller_profile?.account;
 
@@ -58,18 +57,11 @@ export default function AccountInformation({
     try {
       setSaving(true);
 
-      await api.patch(
-        "/updateSellerProfile",
-        {
-          section: "account",
-          data: {
-            name,
-            phone,
-            established_year: establishedYear ? Number(establishedYear) : null,
-          },
-        },
-        { headers: { Authorization: `Bearer ${idToken}` } }
-      );
+      await fbUserApi.updateProfile('account', {
+        name,
+        phone,
+        established_year: establishedYear ? Number(establishedYear) : null,
+      } as any);
 
       if (uid) await fetchUserDetails(uid, "seller");
       setInitial({ name, phone, establishedYear });

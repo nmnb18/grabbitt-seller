@@ -4,7 +4,7 @@
  */
 
 import { useTheme } from "@/hooks/use-theme-color";
-import api from "@/services/axiosInstance";
+import { userApi as fbUserApi } from '@/services/firebaseFunctions';
 import { useAuthStore } from "@/store/authStore";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
@@ -194,18 +194,15 @@ export default function RewardsSettings() {
     try {
       setSaving(true);
 
-      await api.patch("/updateSellerProfile", {
-        section: "rewards",
-        data: {
-          default_points_value: Number(pointsPerVisit),
-          offers: offers,
-          reward_type: rewardType,
-          percentage_value: percentageValue ? Number(percentageValue) : 0,
-          slab_rules: numericSlabs,
-          upi_ids: upiIds,
-          payment_reward_enabled: upiIds?.length > 0,
-        },
-      });
+      await fbUserApi.updateProfile('rewards', {
+        default_points_value: Number(pointsPerVisit),
+        offers: offers,
+        reward_type: rewardType,
+        percentage_value: percentageValue ? Number(percentageValue) : 0,
+        slab_rules: numericSlabs,
+        upi_ids: upiIds,
+        payment_reward_enabled: upiIds?.length > 0,
+      } as any);
 
       if (uid) await fetchUserDetails(uid, "seller");
       setIsEditing(false);

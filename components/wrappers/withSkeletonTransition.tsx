@@ -13,7 +13,7 @@ export default function withSkeletonTransition<SkeletonProps = any>(
     return function <P extends SkeletonTransitionProps>(
         WrappedComponent: React.ComponentType<P>
     ) {
-        return function (props: P & SkeletonProps) {
+        const Component = function (props: P & SkeletonProps) {
             const { loading = false, hasData = false } = props;
             const theme = useTheme();
 
@@ -79,5 +79,8 @@ export default function withSkeletonTransition<SkeletonProps = any>(
                 </View>
             );
         };
+
+        Component.displayName = `withSkeletonTransition(${WrappedComponent.displayName || WrappedComponent.name || 'Component'})`;
+        return Component;
     };
 }

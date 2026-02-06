@@ -149,7 +149,7 @@ export default function SellerLogin() {
             size="medium"
             fullWidth
           >
-            Don't have an account? Register
+            Don&apos;t have an account? Register
           </Button>
 
           <Button

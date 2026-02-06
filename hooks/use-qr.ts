@@ -1,5 +1,5 @@
 // hooks/use-qr.ts
-import api from '@/services/axiosInstance';
+import { qrCodeApi } from '@/services/firebaseFunctions';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 export type QRMode = 'dynamic' | 'static' | 'multiple';
@@ -36,10 +36,10 @@ export function useSellerQR(options?: UseSellerQROptions) {
             setError(null);
             setLoadingQR(true);
 
-            const resp = await api.get('/getActiveQR');
+            const resp = await qrCodeApi.getActiveQR();
 
-            if (resp.status === 200 && resp.data?.success && Array.isArray(resp.data.data)) {
-                setActiveQR(resp.data.data);
+            if (resp?.success && Array.isArray(resp.data || resp)) {
+                setActiveQR(resp.data || resp);
             } else {
                 setActiveQR([]);
             }
@@ -115,7 +115,7 @@ export function useSellerQR(options?: UseSellerQROptions) {
     // ====================================================
     const generateQR = useCallback(
         async (payload: any) => {
-            const resp = await api.post('/generateQRCode', payload);
+            const resp = await qrCodeApi.generateQRCode(payload);
             await fetchActiveQR();
             return resp;
         },

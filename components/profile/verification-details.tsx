@@ -1,5 +1,5 @@
 import { useTheme } from '@/hooks/use-theme-color';
-import api from '@/services/axiosInstance';
+import { userApi as fbUserApi } from '@/services/firebaseFunctions';
 import { useAuthStore } from '@/store/authStore';
 import React, { useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, StyleSheet, View } from 'react-native';
@@ -17,7 +17,6 @@ export default function VerificationInformation() {
     const { user, fetchUserDetails } = useAuthStore();
 
     const uid = user?.uid;
-    const idToken = user?.idToken;
 
     const profile = user?.user?.seller_profile?.verification;
 
@@ -55,18 +54,11 @@ export default function VerificationInformation() {
         try {
             setSaving(true);
 
-            await api.patch(
-                '/updateSellerProfile',
-                {
-                    section: 'verification',
-                    data: {
-                        gst_number: gst || null,
-                        pan_number: pan || null,
-                        business_registration_number: regNum || null,
-                    },
-                },
-                { headers: { Authorization: `Bearer ${idToken}` } }
-            );
+            await fbUserApi.updateProfile('verification', {
+                gst_number: gst || null,
+                pan_number: pan || null,
+                business_registration_number: regNum || null,
+            } as any);
 
             if (uid) await fetchUserDetails(uid, 'seller');
 

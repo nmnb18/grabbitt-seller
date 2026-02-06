@@ -2,8 +2,9 @@
  * Services Barrel Export
  */
 
-export { default as api } from "./axiosInstance";
-export { default as apiService } from "./api";
+// Legacy `api` now maps to the firebase-backed API wrapper
 export * from "./api";
-export * from "./userService";
+export { default as api, default as apiService } from "./api";
 export * from "./notificationService";
+export * from "./userService";
+

@@ -1,5 +1,5 @@
 import { useTheme } from '@/hooks/use-theme-color';
-import api from '@/services/axiosInstance';
+import { userApi as fbUserApi } from '@/services/firebaseFunctions';
 import { useAuthStore } from '@/store/authStore';
 import * as Location from 'expo-location';
 import React, { useMemo, useState } from 'react';
@@ -18,7 +18,6 @@ export default function LocationInformation() {
     const { user, fetchUserDetails } = useAuthStore();
 
     const uid = user?.uid;
-    const idToken = user?.idToken;
     const profile = user?.user?.seller_profile?.location;
 
     const subscriptionTier = user?.user?.seller_profile?.subscription.tier || "free";
@@ -126,25 +125,18 @@ export default function LocationInformation() {
         try {
             setSaving(true);
 
-            await api.patch(
-                "/updateSellerProfile",
-                {
-                    section: "location",
-                    data: {
-                        address: {
-                            street,
-                            city,
-                            state: stateName,
-                            pincode,
-                            country,
-                        },
-                        lat,
-                        lng,
-                        radius_meters: Number(radius),
-                    },
+            await fbUserApi.updateProfile('location', {
+                address: {
+                    street,
+                    city,
+                    state: stateName,
+                    pincode,
+                    country,
                 },
-                { headers: { Authorization: `Bearer ${idToken}` } }
-            );
+                lat,
+                lng,
+                radius_meters: Number(radius),
+            } as any);
 
             if (uid) await fetchUserDetails(uid, "seller");
 

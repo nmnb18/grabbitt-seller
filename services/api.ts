@@ -6,7 +6,21 @@
 import { SimplifiedSeller, StoreDetails } from "@/types/seller";
 import { WalletData } from "@/types/wallet";
 import { logError } from "@/utils/errorHandler";
-import api from "./axiosInstance";
+import {
+  analyticsApi as fbAnalyticsApi,
+  mediaApi as fbMediaApi,
+  notificationApi as fbNotificationApi,
+  offersApi as fbOffersApi,
+  paymentApi as fbPaymentApi,
+  perksApi as fbPerksApi,
+  qrCodeApi as fbQrApi,
+  redemptionApi as fbRedemptionApi,
+  sellerRedemptionsApi as fbSellerRedemptionsApi,
+  storeApi as fbStoreApi,
+  subscriptionApi as fbSubscriptionApi,
+  userApi as fbUserApi,
+  walletApi as fbWalletApi,
+} from "./firebaseFunctions";
 
 // ============================================
 // User APIs
@@ -17,33 +31,28 @@ export const userApi = {
    * Get user details by UID
    */
   getDetails: async (uid: string) => {
-    const response = await api.get(`/getUserDetails?uid=${uid}`);
-    return response.data;
+    return await fbUserApi.getDetails(uid);
   },
 
   /**
    * Update user profile section
    */
   updateProfile: async (section: string, data: Record<string, unknown>) => {
-    const response = await api.patch("/updateUserProfile", { section, data });
-    return response.data;
+    return await fbUserApi.updateProfile(section, data as any);
   },
 
   /**
    * Delete user account
    */
   deleteAccount: async () => {
-    const response = await api.delete("/deleteUser");
-    return response.data;
+    return await fbUserApi.deleteAccount();
   },
 
   /**
    * Change password
    */
   changePassword: async (currentPassword: string, newPassword: string) => {
-    await api.post("/reauthenticate", { currentPassword });
-    const response = await api.post("/changePassword", { newPassword });
-    return response.data;
+    return await fbUserApi.changePassword(currentPassword, newPassword);
   },
 };
 
@@ -65,8 +74,7 @@ export const storeApi = {
         params.lat = lat;
         params.lng = lng;
       }
-      const response = await api.get("/getNearbySellers", { params });
-      return response.data;
+      return await fbStoreApi.getNearbySellers(params.lat, params.lng);
     } catch (error) {
       logError("getNearbySellers", error);
       throw error;
@@ -79,20 +87,14 @@ export const storeApi = {
   getStoreDetails: async (
     sellerId: string
   ): Promise<{ success: boolean; user: { seller_profile: StoreDetails } }> => {
-    const response = await api.get("/getSellerDetails", {
-      params: { seller_id: sellerId },
-    });
-    return response.data;
+    return await fbStoreApi.getStoreDetails(sellerId as string);
   },
 
   /**
    * Get balance by seller
    */
   getBalanceBySeller: async (sellerId: string) => {
-    const response = await api.get("/getBalanceBySeller", {
-      params: { seller_id: sellerId },
-    });
-    return response.data;
+    return await fbStoreApi.getBalanceBySeller(sellerId);
   },
 };
 
@@ -105,18 +107,14 @@ export const walletApi = {
    * Get wallet data
    */
   getWallet: async (): Promise<{ success: boolean; data: WalletData }> => {
-    const response = await api.get("/getWallet");
-    return response.data;
+    return await fbWalletApi.getWallet();
   },
 
   /**
    * Get transaction history
    */
   getTransactions: async (limit = 50) => {
-    const response = await api.get("/getTransactions", {
-      params: { limit },
-    });
-    return response.data;
+    return await fbWalletApi.getTransactions(limit);
   },
 };
 
@@ -129,8 +127,7 @@ export const redemptionApi = {
    * Get redemption history
    */
   getHistory: async () => {
-    const response = await api.get("/getRedemptionHistory");
-    return response.data;
+    return await fbRedemptionApi.getHistory();
   },
 
   /**
@@ -141,18 +138,14 @@ export const redemptionApi = {
     offer_id: string;
     points: number;
   }) => {
-    const response = await api.post("/createRedemption", data);
-    return response.data;
+    return await fbRedemptionApi.createRedemption(data as any);
   },
 
   /**
    * Get redemption QR code
    */
   getRedemptionQR: async (redemptionId: string) => {
-    const response = await api.get("/getRedemptionQR", {
-      params: { redemption_id: redemptionId },
-    });
-    return response.data;
+    return await fbRedemptionApi.getRedemptionQR(redemptionId);
   },
 };
 
@@ -167,18 +160,14 @@ export const perksApi = {
    * Claim a perk
    */
   claimPerk: async (sellerId: string) => {
-    const response = await api.post("/claimPerk", { seller_id: sellerId });
-    return response.data;
+    return await fbPerksApi.claimPerk(sellerId);
   },
 
   /**
    * Get today's perk for a store
    */
   getTodayPerk: async (sellerId: string) => {
-    const response = await api.get("/getTodayPerk", {
-      params: { seller_id: sellerId },
-    });
-    return response.data;
+    return await fbPerksApi.getTodayPerk(sellerId);
   },
 };
 
@@ -191,11 +180,7 @@ export const notificationApi = {
    * Register push token
    */
   registerToken: async (userId: string, pushToken: string) => {
-    const response = await api.post("/api/notifications/register-token", {
-      user_id: userId,
-      push_token: pushToken,
-    });
-    return response.data;
+    return await fbNotificationApi.registerToken({ user_id: userId, push_token: pushToken });
   },
 };
 
@@ -207,4 +192,20 @@ export default {
   redemption: redemptionApi,
   perks: perksApi,
   notification: notificationApi,
+  // legacy mappings to firebase functions
+  firebase: {
+    user: fbUserApi,
+    store: fbStoreApi,
+    wallet: fbWalletApi,
+    redemption: fbRedemptionApi,
+    perks: fbPerksApi,
+    notification: fbNotificationApi,
+    qr: fbQrApi,
+    payment: fbPaymentApi,
+    offers: fbOffersApi,
+    analytics: fbAnalyticsApi,
+    media: fbMediaApi,
+    subscription: fbSubscriptionApi,
+    sellerRedemptions: fbSellerRedemptionsApi,
+  },
 };

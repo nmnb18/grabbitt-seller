@@ -2,7 +2,7 @@ import { AppHeader } from '@/components/shared/app-header';
 import { SubscriptionLegalFooter } from '@/components/shared/subscription-legal-footer';
 import { Button } from '@/components/ui/paper-button';
 import { useTheme } from '@/hooks/use-theme-color';
-import api from '@/services/axiosInstance';
+import { paymentApi } from '@/services/firebaseFunctions';
 import { requestIOSPurchase } from "@/services/iap";
 import { clearIAPCallbacks, setIAPCallbacks } from '@/services/iapState';
 import { useAuthStore } from '@/store/authStore';
@@ -52,11 +52,6 @@ export default function CheckoutScreen() {
         );
     }
 
-    // Calculate prices
-    const originalPrice = parseFloat(selectedPlan.price.replace('₹', ''));
-    const discount = appliedCoupon?.discountAmount || 0;
-    const finalAmount = Math.max(originalPrice - discount, 0);
-
     const handleApplyCoupon = async () => {
         if (!couponCode.trim()) {
             Alert.alert('Error', 'Please enter a coupon code');
@@ -65,17 +60,13 @@ export default function CheckoutScreen() {
 
         setApplyingCoupon(true);
         try {
-            const response = await api.post('/applyCoupon', {
-                couponCode: couponCode.trim(),
-                planId: selectedPlan.id,
-                sellerId: user?.user.uid,
-            });
+            const response = await paymentApi.applyCoupon({ couponCode: couponCode.trim(), planId: selectedPlan.id, sellerId: user?.user.uid });
 
-            if (response.data.success) {
-                setAppliedCoupon(response.data.coupon);
-                Alert.alert('Success', `Coupon applied! ${response.data.coupon.discountValue} discount`);
+            if (response?.success) {
+                setAppliedCoupon(response.coupon || response.data?.coupon);
+                Alert.alert('Success', `Coupon applied! ${response.coupon?.discountValue || response.data?.coupon?.discountValue} discount`);
             } else {
-                Alert.alert('Invalid Coupon', response.data.message);
+                Alert.alert('Invalid Coupon', response?.message || response?.error || 'Invalid coupon');
             }
         } catch (error: any) {
             console.error('Coupon error:', error);
@@ -124,13 +115,9 @@ export default function CheckoutScreen() {
     const handleAndroidRazorpayPayment = async () => {
         setLoading(true);
         try {
-            const response = await api.post(`/createOrder`, {
-                planId: selectedPlan.id,
-                sellerId: user?.user.uid,
-                couponCode: appliedCoupon?.code,
-            });
+            const response = await paymentApi.createOrder({ planId: selectedPlan.id, sellerId: user?.user.uid, couponCode: appliedCoupon?.code });
 
-            const { order_id, key_id, amount, currency } = response.data;
+            const { order_id, key_id, amount, currency } = response;
 
             const options = {
                 description: `Grabbitt ${selectedPlan.name} Plan`,
@@ -151,14 +138,9 @@ export default function CheckoutScreen() {
                 .then(async (data) => {
                     setVerifying(true);
 
-                    const verifyRes = await api.post(`/verifyPayment`, {
-                        ...data,
-                        sellerId: user?.user.uid,
-                        planId: selectedPlan.id,
-                        couponCode: appliedCoupon?.code,
-                    });
+                    const verifyRes = await paymentApi.verifyPayment({ ...data, sellerId: user?.user.uid, planId: selectedPlan.id, couponCode: appliedCoupon?.code });
 
-                    if (verifyRes.data.success) {
+                    if (verifyRes?.success) {
                         await fetchUserDetails(user?.user.uid ?? '', 'seller');
 
                         setLoading(false);
@@ -167,9 +149,9 @@ export default function CheckoutScreen() {
                         router.replace({
                             pathname: '/(drawer)/payment-sucess',
                             params: {
-                                orderId: verifyRes.data.subscription.order_id,
+                                orderId: verifyRes.subscription.order_id,
                                 plan: selectedPlan.id,
-                                expiresAt: verifyRes.data.subscription.expires_at,
+                                expiresAt: verifyRes.subscription.expires_at,
                                 finalAmount: finalAmount.toString(),
                                 couponUsed: appliedCoupon?.code || 'none',
                             },
@@ -177,7 +159,7 @@ export default function CheckoutScreen() {
                     } else {
                         setLoading(false);
                         setVerifying(false);
-                        Alert.alert('Verification Failed', verifyRes.data.error);
+                        Alert.alert('Verification Failed', verifyRes?.error || verifyRes?.message || 'Verification failed');
                     }
                 })
                 .catch((error) => {
@@ -230,6 +212,13 @@ export default function CheckoutScreen() {
             clearIAPCallbacks();
         };
     }, []);
+
+
+
+    // Calculate prices
+    const originalPrice = parseFloat(selectedPlan.price.replace('₹', ''));
+    const discount = appliedCoupon?.discountAmount || 0;
+    const finalAmount = Math.max(originalPrice - discount, 0);
 
 
 

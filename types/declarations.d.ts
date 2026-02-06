@@ -5,7 +5,7 @@
 // Lottie React Native
 declare module 'lottie-react-native' {
   import { Component } from 'react';
-  import { ViewStyle, StyleProp } from 'react-native';
+  import { StyleProp, ViewStyle } from 'react-native';
 
   export interface AnimatedLottieViewProps {
     source: object | string;
@@ -98,10 +98,26 @@ declare module 'firebase/auth' {
   export function createUserWithEmailAndPassword(auth: Auth, email: string, password: string): Promise<UserCredential>;
   export function signOut(auth: Auth): Promise<void>;
   export function sendPasswordResetEmail(auth: Auth, email: string): Promise<void>;
+  export function confirmPasswordReset(auth: Auth, code: string, newPassword: string): Promise<void>;
+  export function getIdToken(user: User, forceRefresh?: boolean): Promise<string>;
+  export function connectAuthEmulator(auth: Auth, url: string, options?: any): void;
   export function onAuthStateChanged(auth: Auth, callback: (user: User | null) => void): () => void;
 
   export const PhoneAuthProvider: {
     PROVIDER_ID: string;
     credential(verificationId: string, code: string): AuthCredential;
   };
+}
+
+// Firebase Functions (lightweight declarations for callable functions)
+declare module 'firebase/functions' {
+  import { FirebaseApp } from 'firebase/app';
+
+  export interface HttpsCallableResult<T = any> {
+    data: T;
+  }
+
+  export function getFunctions(app?: FirebaseApp, region?: string): any;
+  export function httpsCallable<T = any, R = any>(functions: any, name: string): (data?: T) => Promise<HttpsCallableResult<R>>;
+  export function connectFunctionsEmulator(functions: any, host: string, port: number): void;
 }

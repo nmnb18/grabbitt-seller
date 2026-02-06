@@ -1,7 +1,7 @@
 import { AppHeader } from '@/components/shared/app-header';
 import { GradientText } from '@/components/ui/gradient-text';
 import { useTheme } from '@/hooks/use-theme-color';
-import api from '@/services/axiosInstance';
+import { subscriptionApi } from '@/services/firebaseFunctions';
 import { useAuthStore } from '@/store/authStore';
 import { AppStyles } from '@/utils/theme';
 import { useFocusEffect } from 'expo-router';
@@ -42,10 +42,10 @@ export default function SubscriptionHistoryScreen() {
 
         try {
             setLoading(true);
-            const response = await api.get(`/getSubscriptionHistory?sellerId=${user.user.uid}`);
+            const response = await subscriptionApi.getSubscriptionHistory(user.user.uid);
 
-            if (response.data.success) {
-                setHistory(response.data.history);
+            if (response?.success) {
+                setHistory(response.history || response.data || []);
             } else {
                 Alert.alert('Error', 'Failed to fetch subscription history');
             }

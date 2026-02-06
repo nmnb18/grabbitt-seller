@@ -1,7 +1,7 @@
 import { AppHeader } from "@/components/shared/app-header";
 import { StatCard } from "@/components/shared/stats-card";
 import { useTheme } from "@/hooks/use-theme-color";
-import api from "@/services/axiosInstance";
+import { sellerRedemptionsApi } from '@/services/firebaseFunctions';
 import { AppStyles } from "@/utils/theme";
 import { useFocusEffect } from "expo-router";
 import React, { useCallback, useState } from "react";
@@ -29,11 +29,11 @@ export default function SellerRedemptionsScreen() {
 
   const fetchRedemptions = useCallback(async () => {
     try {
-      const resp = await api.get("/getSellerRedemptions");
+      const resp = await sellerRedemptionsApi.getSellerRedemptions();
 
-      if (resp.data?.success) {
-        setRedemptions(resp.data.redemptions || []);
-        setStats(resp.data.stats || []);
+      if (resp?.success) {
+        setRedemptions(resp.redemptions || resp.data?.redemptions || []);
+        setStats(resp.stats || resp.data?.stats || []);
       }
     } catch (error) {
       console.log("Redemption fetch error:", error);

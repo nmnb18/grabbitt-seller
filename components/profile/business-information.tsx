@@ -1,5 +1,5 @@
 import { useTheme } from '@/hooks/use-theme-color';
-import api from '@/services/axiosInstance';
+import { userApi as fbUserApi } from '@/services/firebaseFunctions';
 import { useAuthStore } from '@/store/authStore';
 import { BUSINESS_TYPES, CATEGORIES } from '@/utils/constant';
 import React, { useMemo, useState } from 'react';
@@ -19,7 +19,6 @@ export default function BusinessInformation() {
     const { user, fetchUserDetails } = useAuthStore();
 
     const uid = user?.uid;
-    const idToken = user?.idToken;
 
     const profile = user?.user?.seller_profile?.business;
     const subscriptionTier = user?.user?.seller_profile?.subscription.tier || "free";
@@ -65,19 +64,12 @@ export default function BusinessInformation() {
         try {
             setSaving(true);
 
-            await api.patch(
-                "/updateSellerProfile",
-                {
-                    section: "business",
-                    data: {
-                        shop_name: shopName,
-                        business_type: businessType,
-                        category,
-                        description,
-                    },
-                },
-                { headers: { Authorization: `Bearer ${idToken}` } }
-            );
+            await fbUserApi.updateProfile('business', {
+                shop_name: shopName,
+                business_type: businessType,
+                category,
+                description,
+            } as any);
 
             if (uid) await fetchUserDetails(uid, "seller");
 

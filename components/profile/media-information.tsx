@@ -1,4 +1,4 @@
-import api from "@/services/axiosInstance";
+import { mediaApi } from '@/services/firebaseFunctions';
 import { useAuthStore } from "@/store/authStore";
 import { SellerMedia } from "@/types/auth";
 import { uriToBase64 } from "@/utils/helper";
@@ -18,7 +18,6 @@ export default function MediaInformation() {
   const { user, fetchUserDetails } = useAuthStore();
 
   const uid = user?.uid;
-  const idToken = user?.idToken;
 
   const media = user?.user?.seller_profile?.media || ({} as SellerMedia);
 
@@ -82,7 +81,7 @@ export default function MediaInformation() {
         payload.banner = await uriToBase64(banner);
       }
 
-      await api.post("/updateSellerMedia", payload);
+      await mediaApi.updateSellerMedia(payload);
 
       if (uid) await fetchUserDetails(uid, "seller");
 

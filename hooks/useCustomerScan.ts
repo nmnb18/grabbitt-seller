@@ -3,7 +3,7 @@
  * Handles scanning customer QR codes and awarding points
  */
 
-import api from "@/services/axiosInstance";
+import { qrCodeApi } from '@/services/firebaseFunctions';
 import { useAuthStore } from "@/store/authStore";
 import { useCallback, useState } from "react";
 
@@ -121,21 +121,18 @@ export function useCustomerScan(options?: UseCustomerScanOptions) {
 
       try {
 
-        const response = await api.post("/scanUserQRCode", {
-          token,
-          amount: orderAmount,
-        });
+        const response = await qrCodeApi.scanUserQRCode({ token, amount: orderAmount } as any);
 
-        if (!response.data.success) {
-          const error = response.data.error || "Failed to award points";
+        if (!response?.success) {
+          const error = response?.error || response?.message || "Failed to award points";
           options?.onError?.(error);
           return { success: false, error };
         }
 
         const result: AwardResult = {
           success: true,
-          points_awarded: response.data.data.points_earned,
-          customer_name: response.data.data.customer_name,
+          points_awarded: response.points_earned || response.data?.points_earned,
+          customer_name: response.customer_name || response.data?.customer_name,
         };
 
         options?.onAwardSuccess?.(result);

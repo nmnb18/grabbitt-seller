@@ -150,7 +150,7 @@ export function OrderAmountInput({
                     color={theme.colors.error}
                   />
                   <Text style={[styles.warningText, { color: theme.colors.error }]}>
-                    Order amount doesn't match any reward tier
+                    Order amount doesn&apos;t match any reward tier
                   </Text>
                 </View>
               )}

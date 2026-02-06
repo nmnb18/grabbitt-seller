@@ -2,7 +2,7 @@ import { FormTextInput } from "@/components/form/form-text-input";
 import { AppHeader } from "@/components/shared/app-header";
 import { GradientText } from "@/components/ui/gradient-text";
 import { useTheme } from "@/hooks/use-theme-color";
-import api from "@/services/axiosInstance";
+import { offersApi } from '@/services/firebaseFunctions';
 import { AppStyles } from "@/utils/theme";
 import dayjs, { Dayjs } from "dayjs";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -67,9 +67,10 @@ export default function SellerEditOfferScreen() {
   useEffect(() => {
     const loadOffer = async () => {
       try {
-        const resp = await api.get(`/getSellerOffers?date=${selectedDate}`);
-        if (resp.data?.offer) {
-          const loaded = resp.data.offer.offers.map((o: any) => ({
+        const resp = await offersApi.getSellerOffers(selectedDate);
+        if (resp?.success && (resp.offer || resp.data?.offer)) {
+          const offerPayload = resp.offer || resp.data.offer;
+          const loaded = offerPayload.offers.map((o: any) => ({
             id: o.id,
             title: o.title,
             min_spend: String(o.min_spend),
@@ -133,7 +134,7 @@ export default function SellerEditOfferScreen() {
     try {
       setSaving(true);
 
-      await api.post("/saveSellerOffer", {
+      await offersApi.saveSellerOffer({
         date: selectedDate, // locked date
         offers: offers.map((o) => ({
           id: o.id,

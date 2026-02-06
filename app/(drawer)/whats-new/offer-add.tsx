@@ -9,7 +9,7 @@
 import { AppHeader } from "@/components/shared/app-header";
 import { Button } from "@/components/ui/paper-button";
 import { useTheme } from "@/hooks/use-theme-color";
-import api from "@/services/axiosInstance";
+import { offersApi } from '@/services/firebaseFunctions';
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import dayjs from "dayjs";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -99,12 +99,12 @@ export default function AddOfferScreen() {
   const loadExistingOffer = async (date: string) => {
     try {
       setLoading(true);
-      const resp = await api.get("/getSellerOffers");
+      const resp = await offersApi.getSellerOffers();
 
-      if (resp.data.success) {
+      if (resp?.success) {
         const allOffers = [
-          ...(resp.data.active || []),
-          ...(resp.data.upcoming || []),
+          ...(resp.active || resp.data?.active || []),
+          ...(resp.upcoming || resp.data?.upcoming || []),
         ];
 
         const existingOffer = allOffers.find((o: any) => o.date === date);
@@ -284,7 +284,7 @@ export default function AddOfferScreen() {
 
         // Save for each date
         for (const date of dates) {
-          await api.post("/saveSellerOffer", {
+          await offersApi.saveSellerOffer({
             date,
             offers: sortedOffers.map((o) => ({
               id: o.id,
@@ -302,7 +302,7 @@ export default function AddOfferScreen() {
         );
       } else {
         // Single date
-        await api.post("/saveSellerOffer", {
+        await offersApi.saveSellerOffer({
           date: startDate.format("YYYY-MM-DD"),
           offers: sortedOffers.map((o) => ({
             id: o.id,

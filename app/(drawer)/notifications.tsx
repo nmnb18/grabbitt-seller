@@ -1,6 +1,6 @@
 import { GradientHeader } from '@/components/shared/app-header';
 import { useTheme } from '@/hooks/use-theme-color';
-import { api } from '@/services';
+import { notificationApi } from '@/services/firebaseFunctions';
 import { useNotificationStore } from '@/store/notificationStore';
 import { AppStyles } from '@/utils/theme';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -34,10 +34,9 @@ export default function NotificationScreen() {
         try {
             setLoading(true);
 
-            const res = await api.get('/getNotifications');
-            if (res.data.success) {
-
-                setNotifications(res.data?.notifications || []);
+            const res = await notificationApi.getNotifications();
+            if (res?.success) {
+                setNotifications(res.notifications || res.data?.notifications || []);
             }
             setUnreadCount(0);
         } catch (err) {

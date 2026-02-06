@@ -2,7 +2,7 @@ import { GradientText } from '@/components/ui/gradient-text';
 import { Button } from '@/components/ui/paper-button';
 import AuthScreenWrapper from '@/components/wrappers/authScreenWrapper';
 import { useTheme, useThemeColor } from '@/hooks/use-theme-color';
-import api from '@/services/axiosInstance';
+import { userApi } from '@/services/firebaseFunctions';
 import { AppStyles } from '@/utils/theme';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
@@ -28,13 +28,7 @@ export default function ForgotPasswordScreen() {
 
         try {
             setLoading(true);
-            const resp = await api.post('/requestPasswordReset', { email });
-
-            if (!resp.data.success) {
-                Alert.alert('Error', resp.data.error || 'Failed to send reset link');
-                return;
-            }
-
+            await userApi.forgotPassword(email);
             Alert.alert('Email Sent', 'Check your inbox for reset link.');
             router.replace('/auth/login');
         } catch (err: any) {

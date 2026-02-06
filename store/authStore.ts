@@ -1,18 +1,12 @@
+import { userApi as fbUserApi } from "@/services/firebaseFunctions";
 import { LoginResponse as User, UserPayload } from "@/types/auth";
 import { startSubscriptionWatcher } from "@/utils/subscription-watcher";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
-import Constants from "expo-constants";
 import { create } from "zustand";
-
-const API_URL =
-  Constants.expoConfig?.extra?.EXPO_PUBLIC_BACKEND_URL ||
-  process.env.EXPO_PUBLIC_BACKEND_URL;
 
 interface AuthStore {
   user: User | null;
   loading: boolean;
-  idToken: string | null;
   isLoggingOut: boolean,
   setUser: (user: User | null) => void;
   register: (payload: UserPayload) => Promise<void>;
@@ -30,7 +24,6 @@ interface AuthStore {
 export const useAuthStore = create<AuthStore>((set, get) => ({
   user: null,
   loading: false,
-  idToken: null,
   isLoggingOut: false,
   setUser: (user) => set({ user }),
 
@@ -38,81 +31,51 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     try {
       set({ loading: true });
 
-      await axios.post(`${API_URL}/registerSeller`, payload);
-      // Fetch full structured seller profile
+      const response = await fbUserApi.registerUser(payload as any);
+
+      if (!response?.success) {
+        throw new Error(response?.error || "Registration failed");
+      }
+
     } catch (err: any) {
       set({ loading: false });
-      console.error("Register error:", err.response?.data || err.message);
-      throw new Error(err.response?.data?.message || "Registration failed");
+      console.error("Register error:", err?.message || err);
+      throw new Error(err?.message || "Registration failed");
     }
   },
 
   login: async (email, password, role) => {
     try {
       set({ loading: true });
-      const response = await axios.post(`${API_URL}/loginSeller`, {
-        email,
-        password,
-        role,
-      });
 
-      const { uid, idToken, refreshToken } = response.data;
+      const response = await fbUserApi.loginUser({ email, password, role });
 
-      // Fetch full structured profile
-      const details = await axios.get(
-        `${API_URL}/getSellerDetails?uid=${uid}`,
-        {
-          headers: { Authorization: `Bearer ${idToken}` },
-        }
-      );
+      if (!response?.success) {
+        throw new Error(response?.error || "Login failed");
+      }
 
-      const fullUser: User = {
-        success: true,
-        uid,
-        idToken,
-        refreshToken,
-        user: details.data.user,
-      };
+      const fullUser: User = response.user as any;
 
       await AsyncStorage.setItem("user", JSON.stringify(fullUser));
 
-      set({
-        user: fullUser,
-        idToken,
-        loading: false,
-      });
+      set({ user: fullUser, loading: false });
     } catch (err: any) {
       set({ loading: false });
-      console.error("Login error:", err.response?.data || err.message);
-      throw new Error(err.response?.data?.error || err.message || "Login failed");
+      console.error("Login error:", err?.message || err);
+      throw new Error(err?.message || "Login failed");
     }
   },
 
   fetchUserDetails: async (uid) => {
     try {
-      const { idToken, user } = get();
-
-      // Prefer passed token, or fallback to stored one
-      const token = idToken || user?.idToken;
-
-      if (!token) {
-        console.warn("No idToken found in store.");
-        throw new Error("Not authenticated.");
-      }
+      const { user } = get();
       set({ loading: true });
-      const response = await axios.get(
-        `${API_URL}/getSellerDetails?uid=${uid}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fbUserApi.getDetails(uid);
       const updatedUser: User = {
         ...user!,
         success: true,
-        user: response.data.user,
-      };
+        user: response.user || response,
+      } as any;
       await AsyncStorage.setItem("user", JSON.stringify(updatedUser));
       set({ user: updatedUser });
       // Restart watcher with new expiry
@@ -136,22 +99,8 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
   logout: async (uid: string) => {
     try {
-      const { idToken, user } = get();
-
-      // Prefer passed token, or fallback to stored one
-      const token = idToken || user?.idToken;
       set({ isLoggingOut: true });
-      await axios.post(
-        `${API_URL}/logout`,
-        {
-          uid,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await fbUserApi.logout(uid);
       await AsyncStorage.removeItem("user");
       set({ user: null, isLoggingOut: false });
     } catch (err) {
@@ -186,23 +135,8 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   refreshToken: async () => {
     try {
       const { user } = get();
-      if (!user?.refreshToken) return null;
-      const response = await axios.post(`${API_URL}/refreshToken`, {
-        refreshToken: user.refreshToken,
-      });
-
-      if (!response.data.success) {
-        console.warn("Token refresh failed:", response.data.error);
-        return null;
-      }
-
-      const { idToken, refreshToken } = response.data;
-      const updatedUser = { ...user, idToken, refreshToken };
-
-      await AsyncStorage.setItem("user", JSON.stringify(updatedUser));
-      set({ user: updatedUser, idToken });
-
-      return idToken;
+      const token = user?.idToken || null;
+      return token;
     } catch (error) {
       console.error("Refresh token error:", error);
       return null;
