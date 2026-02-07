@@ -2,18 +2,29 @@
  * Common UI Components - Reusable across the app
  */
 
-import React from "react";
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  ViewStyle,
-  TextStyle,
-} from "react-native";
-import { Text, ActivityIndicator, Surface } from "react-native-paper";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+// Export new common components (advanced reusable patterns)
+export { ButtonRow } from "./button-row";
+export { CardSection } from "./card-section";
+export { EditableSection } from "./editable-section";
+export { EmptyState } from "./empty-state";
+export { FeatureList } from "./feature-list";
+export { FormCard } from "./form-card";
+export { FormRow } from "./form-row";
+export { LoadingOverlay } from "./loading-overlay";
+export { PlanCard } from "./plan-card";
+export { StatCard } from "./stat-card";
+export { SuccessMessage } from "./success-message";
+
 import { useTheme } from "@/hooks/use-theme-color";
 import { layoutStyles, textStyles } from "@/utils/styles";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import React from "react";
+import {
+  StyleSheet,
+  TouchableOpacity,
+  View
+} from "react-native";
+import { Text } from "react-native-paper";
 
 // ============================================
 // Spacer Component
@@ -50,7 +61,7 @@ export function Divider({
   marginVertical = 16,
 }: DividerProps) {
   const theme = useTheme();
-  
+
   return (
     <View
       style={{
@@ -73,7 +84,7 @@ interface BadgeProps {
 
 export function Badge({ label, variant = "default", size = "medium" }: BadgeProps) {
   const theme = useTheme();
-  
+
   const getColors = () => {
     switch (variant) {
       case "success":
@@ -134,7 +145,7 @@ export function IconButton({
   disabled = false,
 }: IconButtonProps) {
   const theme = useTheme();
-  
+
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -165,7 +176,7 @@ interface InfoRowProps {
 
 export function InfoRow({ label, value, icon }: InfoRowProps) {
   const theme = useTheme();
-  
+
   return (
     <View style={styles.infoRow}>
       <View style={layoutStyles.row}>
@@ -203,7 +214,7 @@ interface EmptyStateProps {
 
 export function EmptyStateView({ icon, title, message, action }: EmptyStateProps) {
   const theme = useTheme();
-  
+
   return (
     <View style={styles.emptyContainer}>
       <View
@@ -264,7 +275,7 @@ interface SectionHeaderProps {
 
 export function SectionHeader({ title, subtitle, action }: SectionHeaderProps) {
   const theme = useTheme();
-  
+
   return (
     <View style={styles.sectionHeader}>
       <View>

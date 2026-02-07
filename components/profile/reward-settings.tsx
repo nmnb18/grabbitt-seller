@@ -7,7 +7,7 @@ import { useTheme } from "@/hooks/use-theme-color";
 import { userApi as fbUserApi } from '@/services/firebaseFunctions';
 import { useAuthStore } from "@/store/authStore";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Alert,
   StyleSheet,
@@ -62,11 +62,12 @@ const REWARD_TYPES = [
 
 export default function RewardsSettings() {
   const theme = useTheme();
-  const { user, fetchUserDetails } = useAuthStore();
+  const user = useAuthStore((state) => state.user);
+  const fetchUserDetails = useAuthStore((state) => state.fetchUserDetails);
 
   const uid = user?.uid;
   const rewards = user?.user?.seller_profile?.rewards;
-  const upiFromProfile: string[] = rewards?.upi_ids || [];
+  const upiFromProfile = useMemo(() => rewards?.upi_ids || [], [rewards]);
 
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -81,30 +82,51 @@ export default function RewardsSettings() {
     rewards?.percentage_value != null ? String(rewards.percentage_value) : "2"
   );
 
-  const initialSlabRules: SlabRuleUI[] =
-    Array.isArray(rewards?.slab_rules) && rewards!.slab_rules.length > 0
-      ? rewards!.slab_rules.map((r: any) => ({
-        max: String(r.max),
-        points: String(r.points),
-      }))
-      : [];
+  const initialSlabRules: SlabRuleUI[] = useMemo(
+    () =>
+      Array.isArray(rewards?.slab_rules) && rewards!.slab_rules.length > 0
+        ? rewards!.slab_rules.map((r: any) => ({
+          max: String(r.max),
+          points: String(r.points),
+        }))
+        : [],
+    [rewards]
+  );
 
   const [slabRules, setSlabRules] = useState<SlabRuleUI[]>(initialSlabRules);
 
-  const initialOffers: Offer[] =
-    Array.isArray(rewards?.offers) && rewards!.offers.length > 0
-      ? rewards!.offers.map((r: any) => ({
-        reward_points: String(r.reward_points),
-        reward_name: r.reward_name,
-        reward_description: r.reward_description,
-      }))
-      : [];
+  const initialOffers: Offer[] = useMemo(
+    () =>
+      Array.isArray(rewards?.offers) && rewards!.offers.length > 0
+        ? rewards!.offers.map((r: any) => ({
+          reward_points: String(r.reward_points),
+          reward_name: r.reward_name,
+          reward_description: r.reward_description,
+        }))
+        : [],
+    [rewards]
+  );
 
   const [offers, setOffers] = useState<Offer[]>(initialOffers);
   const [upiIds, setUpiIds] = useState<string[]>(upiFromProfile);
   const [newUpi, setNewUpi] = useState("");
 
-  const selectedType = REWARD_TYPES.find((t) => t.id === rewardType);
+  const selectedType = useMemo(() => REWARD_TYPES.find((t) => t.id === rewardType), [rewardType]);
+
+  const slabPreviewRows = useMemo(
+    () =>
+      slabRules.map((slab, index) => {
+        const prevMax = Number(slabRules[index - 1]?.max || -1);
+        const min = index === 0 ? 0 : prevMax + 1;
+        return {
+          key: `slab-${min}-${slab.max}`,
+          min,
+          max: slab.max,
+          points: slab.points,
+        };
+      }),
+    [slabRules]
+  );
 
   // Sync state when rewards data changes from parent/store
   useEffect(() => {
@@ -132,7 +154,7 @@ export default function RewardsSettings() {
     }
   }, [rewards, isEditing]);
 
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     setRewardType(rewards?.reward_type || "default");
     setPointsPerVisit(rewards?.default_points_value ? String(rewards.default_points_value) : "10");
     setPercentageValue(rewards?.percentage_value != null ? String(rewards.percentage_value) : "2");
@@ -141,7 +163,7 @@ export default function RewardsSettings() {
     setUpiIds(upiFromProfile);
     setIsEditing(false);
     setShowAdvanced(false);
-  };
+  }, [rewards, initialSlabRules, initialOffers, upiFromProfile]);
 
   const buildNumericSlabs = (): { min: number; max: number; points: number }[] => {
     const numericSlabs: { min: number; max: number; points: number }[] = [];
@@ -217,49 +239,63 @@ export default function RewardsSettings() {
   };
 
   // Slab helpers
-  const updateSlab = (index: number, field: "max" | "points", value: string) => {
-    const updated = [...slabRules];
-    updated[index][field] = value;
-    setSlabRules(updated);
-  };
+  const updateSlab = useCallback((index: number, field: "max" | "points", value: string) => {
+    setSlabRules((prev) => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], [field]: value };
+      return updated;
+    });
+  }, []);
 
-  const addSlab = () => setSlabRules([...slabRules, { max: "", points: "" }]);
-  const removeSlab = (index: number) => setSlabRules(slabRules.filter((_, i) => i !== index));
+  const addSlab = useCallback(() => {
+    setSlabRules((prev) => [...prev, { max: "", points: "" }]);
+  }, []);
+
+  const removeSlab = useCallback((index: number) => {
+    setSlabRules((prev) => prev.filter((_, i) => i !== index));
+  }, []);
 
   // Offer helpers
-  const updateOffer = (index: number, field: keyof Offer, value: string) => {
-    const updated = [...offers];
-    updated[index][field] = value;
-    setOffers(updated);
-  };
+  const updateOffer = useCallback((index: number, field: keyof Offer, value: string) => {
+    setOffers((prev) => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], [field]: value };
+      return updated;
+    });
+  }, []);
 
-  const addOffer = () => setOffers([...offers, { reward_points: "", reward_name: "", reward_description: "" }]);
-  const removeOffer = (index: number) => setOffers(offers.filter((_, i) => i !== index));
+  const addOffer = useCallback(() => {
+    setOffers((prev) => [...prev, { reward_points: "", reward_name: "", reward_description: "" }]);
+  }, []);
+
+  const removeOffer = useCallback((index: number) => {
+    setOffers((prev) => prev.filter((_, i) => i !== index));
+  }, []);
 
   // UPI helpers
-  const validateUpi = (value: string): string | null => {
+  const validateUpi = useCallback((value: string): string | null => {
     const trimmed = value.trim().toLowerCase();
     if (!trimmed) return "UPI ID cannot be empty.";
     const upiRegex = /^[a-zA-Z0-9.\-]{3,}@[a-zA-Z0-9.\-]+$/;
     if (!upiRegex.test(trimmed)) return "Invalid format (e.g. shop@upi)";
     if (upiIds.includes(trimmed)) return "Already added.";
     return null;
-  };
+  }, [upiIds]);
 
-  const handleAddUpi = () => {
+  const handleAddUpi = useCallback(() => {
     const err = validateUpi(newUpi);
     if (err) return Alert.alert("Invalid UPI", err);
-    setUpiIds([...upiIds, newUpi.trim().toLowerCase()]);
+    setUpiIds((prev) => [...prev, newUpi.trim().toLowerCase()]);
     setNewUpi("");
-  };
+  }, [newUpi, validateUpi]);
 
   // Get current value display
-  const getCurrentValueDisplay = () => {
+  const getCurrentValueDisplay = useMemo(() => {
     if (rewardType === "default") return `${pointsPerVisit} pts/scan`;
     if (rewardType === "percentage") return `${percentageValue}% of bill`;
     if (rewardType === "slab") return `${slabRules.length} tiers`;
     return "";
-  };
+  }, [rewardType, pointsPerVisit, percentageValue, slabRules.length]);
 
   return (
     <Card style={[styles.card, { backgroundColor: theme.colors.surface }]} testID="reward-settings-card">
@@ -333,7 +369,7 @@ export default function RewardsSettings() {
                     {selectedType?.title}
                   </Text>
                   <Text style={[styles.activeTypeValue, { color: theme.colors.warning }]}>
-                    {getCurrentValueDisplay()}
+                    {getCurrentValueDisplay}
                   </Text>
                 </View>
                 <Chip
@@ -348,26 +384,22 @@ export default function RewardsSettings() {
               {/* Slab Tiers Preview */}
               {rewardType === "slab" && (
                 <View style={styles.tiersPreview}>
-                  {slabRules.map((slab, index) => {
-                    const prevMax = Number(slabRules[index - 1]?.max || -1);
-                    const min = index === 0 ? 0 : prevMax + 1;
-                    return (
-                      <View
-                        key={index}
-                        style={[
-                          styles.tierRow,
-                          { backgroundColor: theme.colors.surfaceVariant }
-                        ]}
-                      >
-                        <Text style={[styles.tierRange, { color: theme.colors.onSurface }]}>
-                          ₹{min} - ₹{slab.max}
-                        </Text>
-                        <View style={[styles.tierPoints, { backgroundColor: theme.colors.primary }]}>
-                          <Text style={styles.tierPointsText}>{slab.points}</Text>
-                        </View>
+                  {slabPreviewRows.map((slab) => (
+                    <View
+                      key={slab.key}
+                      style={[
+                        styles.tierRow,
+                        { backgroundColor: theme.colors.surfaceVariant }
+                      ]}
+                    >
+                      <Text style={[styles.tierRange, { color: theme.colors.onSurface }]}>
+                        ₹{slab.min} - ₹{slab.max}
+                      </Text>
+                      <View style={[styles.tierPoints, { backgroundColor: theme.colors.primary }]}>
+                        <Text style={styles.tierPointsText}>{slab.points}</Text>
                       </View>
-                    );
-                  })}
+                    </View>
+                  ))}
                 </View>
               )}
 
@@ -505,7 +537,7 @@ export default function RewardsSettings() {
                       const prevMax = Number(slabRules[index - 1]?.max || -1);
                       const min = index === 0 ? 0 : prevMax + 1;
                       return (
-                        <View key={index} style={styles.slabRow}>
+                        <View key={`slab-${min}-${rule.max}`} style={styles.slabRow}>
                           <View style={styles.slabRangeCol}>
                             <Text style={[styles.slabFieldLabel, { color: theme.colors.onSurfaceDisabled }]}>
                               ₹{min} to
@@ -590,7 +622,7 @@ export default function RewardsSettings() {
                   )}
                   {offers.map((offer, index) => (
                     <Surface
-                      key={index}
+                      key={`offer-${offer.reward_name || "offer"}-${index}`}
                       style={[styles.offerCard, { backgroundColor: theme.colors.surfaceVariant }]}
                     >
                       <View style={styles.offerHeader}>

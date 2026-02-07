@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/paper-button";
 import { useTheme } from "@/hooks/use-theme-color";
 import { SlabRule } from "@/hooks/useCustomerScan";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -39,6 +39,19 @@ export function OrderAmountInput({
   calculating = false,
 }: OrderAmountInputProps) {
   const theme = useTheme();
+
+  const formattedSlabs = useMemo(
+    () =>
+      slabRules.map((slab, index) => {
+        const isLast = index === slabRules.length - 1;
+        return {
+          key: `slab-${slab.min}-${slab.max}`,
+          label: isLast ? `₹${slab.min}+` : `₹${slab.min} - ₹${slab.max}`,
+          points: slab.points,
+        };
+      }),
+    [slabRules]
+  );
   const [amount, setAmount] = useState("");
   const [calculatedPoints, setCalculatedPoints] = useState<number | null>(null);
 
@@ -176,32 +189,28 @@ export function OrderAmountInput({
                 </View>
               )}
 
-              {rewardType === "slab" && slabRules.length > 0 && (
+              {rewardType === "slab" && formattedSlabs.length > 0 && (
                 <View style={styles.slabList}>
                   <Text style={[styles.slabTitle, { color: theme.colors.onSurface }]}>
                     Point Tiers:
                   </Text>
-                  {slabRules.map((slab, index) => {
-                    const isLast = index === slabRules.length - 1;
+                  {formattedSlabs.map((slab) => (
+                    <View
+                      key={slab.key}
+                      style={[
+                        styles.slabItem,
+                        { backgroundColor: theme.colors.surfaceVariant },
+                      ]}
+                    >
+                      <Text style={{ color: theme.colors.onSurface }}>
+                        {slab.label}
+                      </Text>
 
-                    return (
-                      <View
-                        key={index}
-                        style={[
-                          styles.slabItem,
-                          { backgroundColor: theme.colors.surfaceVariant },
-                        ]}
-                      >
-                        <Text style={{ color: theme.colors.onSurface }}>
-                          {isLast ? `₹${slab.min}+` : `₹${slab.min} - ₹${slab.max}`}
-                        </Text>
-
-                        <Chip compact mode="flat" style={{ backgroundColor: theme.colors.primary }}>
-                          <Text style={{ color: "#fff" }}>{slab.points} pts</Text>
-                        </Chip>
-                      </View>
-                    );
-                  })}
+                      <Chip compact mode="flat" style={{ backgroundColor: theme.colors.primary }}>
+                        <Text style={{ color: "#fff" }}>{slab.points} pts</Text>
+                      </Chip>
+                    </View>
+                  ))}
 
                 </View>
               )}

@@ -5,7 +5,7 @@ import { useNotificationStore } from '@/store/notificationStore';
 import { AppStyles } from '@/utils/theme';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React, { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, View } from 'react-native';
 import { RefreshControl } from 'react-native-gesture-handler';
 import { Card, Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -25,6 +25,15 @@ export default function NotificationScreen() {
     const [loading, setLoading] = useState(true);
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const { setUnreadCount } = useNotificationStore();
+
+    const formattedNotifications = useMemo(
+        () =>
+            notifications.map((item) => ({
+                ...item,
+                createdAtText: new Date(item.created_at).toLocaleString(),
+            })),
+        [notifications]
+    );
 
     useEffect(() => {
         fetchNotifications();
@@ -55,14 +64,60 @@ export default function NotificationScreen() {
                     <ActivityIndicator size="large" color={theme.colors.primary} />
                 </View>
             ) : (
-                <ScrollView
+                <FlatList
+                    data={formattedNotifications}
+                    keyExtractor={(item) => item.id}
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={styles.scrollContainer}
                     refreshControl={
                         <RefreshControl refreshing={loading} onRefresh={fetchNotifications} />
                     }
-                >
-                    {notifications.length === 0 ? (
+                    renderItem={({ item }) => (
+                        <Card
+                            style={[
+                                styles.card,
+                                !item.read && styles.unreadCard,
+                            ]}
+                            elevation={1}
+                        >
+                            <Card.Content style={styles.cardContent}>
+                                <MaterialCommunityIcons
+                                    name={
+                                        item.read
+                                            ? 'bell-outline'
+                                            : 'bell-ring-outline'
+                                    }
+                                    size={22}
+                                    color={
+                                        item.read
+                                            ? theme.colors.onSurface
+                                            : theme.colors.primary
+                                    }
+                                />
+
+                                <View style={styles.textWrap}>
+                                    <Text
+                                        variant="titleSmall"
+                                        style={[
+                                            styles.title,
+                                            !item.read && styles.unreadTitle,
+                                        ]}
+                                    >
+                                        {item.title}
+                                    </Text>
+
+                                    <Text style={styles.body}>
+                                        {item.body}
+                                    </Text>
+
+                                    <Text style={styles.time}>
+                                        {item.createdAtText}
+                                    </Text>
+                                </View>
+                            </Card.Content>
+                        </Card>
+                    )}
+                    ListEmptyComponent={
                         <View style={styles.emptyState}>
                             <MaterialCommunityIcons
                                 name="bell-outline"
@@ -76,58 +131,9 @@ export default function NotificationScreen() {
                                 We’ll notify you when something important happens.
                             </Text>
                         </View>
-                    ) : (
-                        notifications.map((item) => (
-                            <Card
-                                key={item.id}
-                                style={[
-                                    styles.card,
-                                    !item.read && styles.unreadCard,
-                                ]}
-                                elevation={1}
-                            >
-                                <Card.Content style={styles.cardContent}>
-                                    <MaterialCommunityIcons
-                                        name={
-                                            item.read
-                                                ? 'bell-outline'
-                                                : 'bell-ring-outline'
-                                        }
-                                        size={22}
-                                        color={
-                                            item.read
-                                                ? theme.colors.onSurface
-                                                : theme.colors.primary
-                                        }
-                                    />
-
-                                    <View style={styles.textWrap}>
-                                        <Text
-                                            variant="titleSmall"
-                                            style={[
-                                                styles.title,
-                                                !item.read && styles.unreadTitle,
-                                            ]}
-                                        >
-                                            {item.title}
-                                        </Text>
-
-                                        <Text style={styles.body}>
-                                            {item.body}
-                                        </Text>
-
-                                        <Text style={styles.time}>
-                                            {new Date(
-                                                item.created_at
-                                            ).toLocaleString()}
-                                        </Text>
-                                    </View>
-                                </Card.Content>
-                            </Card>
-                        ))
-                    )}
-                    <View style={{ height: 60 }} />
-                </ScrollView>
+                    }
+                    ListFooterComponent={<View style={{ height: 60 }} />}
+                />
             )}
         </SafeAreaView>
     );

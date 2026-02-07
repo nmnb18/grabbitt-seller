@@ -14,8 +14,8 @@ const api = axios.create({
 // 🔄 Interceptor to refresh token if needed
 api.interceptors.request.use(
   async (config) => {
-    const { refreshToken, idToken } = useAuthStore.getState();
-    let token = idToken;
+    const { user, refreshToken } = useAuthStore.getState();
+    let token = user?.idToken || null;
     try {
       const fresh = await refreshToken();
       if (fresh) token = fresh;

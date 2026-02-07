@@ -22,7 +22,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function DrawerLayout() {
   const theme = useTheme();
-  const { isLoggingOut } = useAuthStore();
+  const isLoggingOut = useAuthStore((state) => state.isLoggingOut);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -51,12 +51,40 @@ export default function DrawerLayout() {
   );
 }
 
+function DrawerMenuItem({
+  label,
+  icon,
+  onPress,
+  testID,
+  styles,
+}: {
+  label: string;
+  icon: string;
+  onPress: () => void;
+  testID?: string;
+  styles: any;
+}) {
+  return (
+    <TouchableOpacity
+      style={styles.menuItem}
+      onPress={onPress}
+      data-testid={testID}
+      activeOpacity={0.7}
+    >
+      <GradientIcon name={icon} size={22} />
+      <Text style={styles.menuLabel}>{label}</Text>
+    </TouchableOpacity>
+  );
+}
+
 function CustomDrawerContent() {
   const theme = useTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const router = useRouter();
-  const { logout, user, loading } = useAuthStore();
+  const logout = useAuthStore((state) => state.logout);
+  const user = useAuthStore((state) => state.user);
+  const loading = useAuthStore((state) => state.loading);
   const version = Constants.expoConfig?.version || "1.0.0";
 
   const handleLogout = () => {
@@ -74,95 +102,42 @@ function CustomDrawerContent() {
     ]);
   };
 
-  const MenuItem = ({ label, icon, onPress, testID }: { label: string; icon: string; onPress: () => void; testID?: string }) => (
-    <TouchableOpacity
-      style={styles.menuItem}
-      onPress={onPress}
-      data-testid={testID}
-      activeOpacity={0.7}
-    >
-      <GradientIcon name={icon} size={22} />
-      <Text style={styles.menuLabel}>{label}</Text>
-    </TouchableOpacity>
-  );
+  const DRAWER_MENU_ITEMS = [
+    { label: "Dashboard", icon: "grid", testID: "drawer-dashboard", route: "/(drawer)/(tabs)/dashboard" },
+    { label: "Profile", icon: "account", testID: "drawer-profile", route: "/(drawer)/profile-setup" },
+    { label: "Plans", icon: "star", testID: "drawer-plans", route: "/(drawer)/subscription" },
+    { label: "Plans History", icon: "history", testID: "drawer-plans-history", route: "/(drawer)/subscription-history" },
+    { label: "Redemption", icon: "star-four-points-outline", testID: "drawer-redemption", route: "/(drawer)/redemptions" },
+    { label: "What's New", icon: "gift-outline", testID: "drawer-whats-new", route: "/(drawer)/whats-new/whats-new-home" },
+    { label: "Contact Us", icon: "mail", testID: "drawer-contact", external: true, url: `mailto:${EXTERNAL_LINKS.SUPPORT_EMAIL}` },
+    { label: "Privacy Policy", icon: "lock", testID: "drawer-privacy", external: true, url: EXTERNAL_LINKS.PRIVACY_POLICY },
+    { label: "Terms & Conditions", icon: "file", testID: "drawer-terms", external: true, url: EXTERNAL_LINKS.TERMS_CONDITIONS },
+  ];
 
   return (
     <SafeAreaView style={styles.safeContainer}>
-
-
       <View style={styles.container}>
         <ScrollView style={styles.menuContainer} showsVerticalScrollIndicator={false}>
-
-          <MenuItem
-            label="Dashboard"
-            icon="grid"
-            testID="drawer-dashboard"
-            onPress={() => router.push("/(drawer)/(tabs)/dashboard")}
-          />
-
-          <MenuItem
-            label="Profile"
-            icon="account"
-            testID="drawer-profile"
-            onPress={() => router.push("/(drawer)/profile-setup")}
-          />
-
-          <MenuItem
-            label="Plans"
-            icon="star"
-            testID="drawer-plans"
-            onPress={() => router.push("/(drawer)/subscription")}
-          />
-
-          <MenuItem
-            label="Plans History"
-            icon="history"
-            testID="drawer-plans-history"
-            onPress={() => router.push("/(drawer)/subscription-history")}
-          />
-
-          <MenuItem
-            label="Redemption"
-            icon="star-four-points-outline"
-            testID="drawer-redemption"
-            onPress={() => router.push("/(drawer)/redemptions")}
-          />
-
-          <MenuItem
-            label="What's New"
-            icon="gift-outline"
-            testID="drawer-whats-new"
-            onPress={() => router.push("/(drawer)/whats-new/whats-new-home")}
-          />
-
-          <MenuItem
-            label="Contact Us"
-            icon="mail"
-            testID="drawer-contact"
-            onPress={() => Linking.openURL(`mailto:${EXTERNAL_LINKS.SUPPORT_EMAIL}`)}
-          />
-
-          <MenuItem
-            label="Privacy Policy"
-            icon="lock"
-            testID="drawer-privacy"
-            onPress={() => Linking.openURL(EXTERNAL_LINKS.PRIVACY_POLICY)}
-          />
-
-          <MenuItem
-            label="Terms & Conditions"
-            icon="file"
-            testID="drawer-terms"
-            onPress={() => Linking.openURL(EXTERNAL_LINKS.TERMS_CONDITIONS)}
-          />
-
+          {DRAWER_MENU_ITEMS.map((item) => (
+            <DrawerMenuItem
+              key={item.label}
+              label={item.label}
+              icon={item.icon}
+              testID={item.testID}
+              styles={styles}
+              onPress={() =>
+                item.external ? Linking.openURL((item as any).url) : router.push((item as any).route)
+              }
+            />
+          ))}
         </ScrollView>
 
         <View style={styles.logoutContainer}>
-          <MenuItem
+          <DrawerMenuItem
             label="Logout"
             icon="logout"
             testID="drawer-logout"
+            styles={styles}
             onPress={handleLogout}
           />
         </View>

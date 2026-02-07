@@ -34,7 +34,8 @@ import {
 
 export default function SellerProfileSetup() {
   const router = useRouter();
-  const { user, logout } = useAuthStore();
+  const user = useAuthStore((state) => state.user);
+  const logout = useAuthStore((state) => state.logout);
 
   const theme = useTheme();
   const outlineColor = theme.colors.outline;

@@ -14,8 +14,8 @@ import { useCustomerScan } from "@/hooks/useCustomerScan";
 import { sellerRedemptionsApi } from '@/services/firebaseFunctions';
 import { useAuthStore } from "@/store/authStore";
 
-import { OrderAmountInput } from "@/components/scan/OrderAmountInput";
-import { ScanSuccess } from "@/components/scan/ScanSuccess";
+import { OrderAmountInput } from "@/components/scan/order-amount-input";
+import { ScanSuccess } from "@/components/scan/scan-success";
 import { LoadingView } from "@/components/shared/loading-view";
 import { PermissionView } from "@/components/shared/permission-view";
 import { ScannerOverlay } from "@/components/shared/scan-overlay";
@@ -25,7 +25,8 @@ type ScreenState = "scanning" | "amount_input" | "processing" | "success";
 export default function ScanCustomer() {
   const theme = useTheme();
   const router = useRouter();
-  const { user, fetchUserDetails } = useAuthStore();
+  const user = useAuthStore((state) => state.user);
+  const fetchUserDetails = useAuthStore((state) => state.fetchUserDetails);
 
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
 

@@ -1,3 +1,4 @@
+import { ButtonRow, FormCard, FormRow } from "@/components/common";
 import { FormTextInput } from "@/components/form/form-text-input";
 import { GradientText } from "@/components/ui/gradient-text";
 import { Button } from "@/components/ui/paper-button";
@@ -7,8 +8,8 @@ import { useTheme } from "@/hooks/use-theme-color";
 import { AppStyles } from "@/utils/theme";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Alert, Linking, Platform, StyleSheet, View } from "react-native";
-import { Surface, TextInput } from "react-native-paper";
+import { Alert, Linking, Platform, StyleSheet } from "react-native";
+import { TextInput } from "react-native-paper";
 import { useAuthStore } from "../../store/authStore";
 
 export default function SellerLogin() {
@@ -27,7 +28,7 @@ export default function SellerLogin() {
   } = useNotifications();
 
   const router = useRouter();
-  const { login } = useAuthStore();
+  const login = useAuthStore((state) => state.login);
   const theme = useTheme();
 
   const handleInputChange = (field: keyof typeof formData) => (value: string) => {
@@ -94,20 +95,10 @@ export default function SellerLogin() {
 
   return (
     <AuthScreenWrapper>
-      <Surface
-        style={[
-          styles.formCard,
-          {
-            backgroundColor: theme.colors.surface,
-            borderColor: theme.colors.outline,
-          },
-        ]}
-        elevation={2}
-      >
+      <FormCard>
         <GradientText style={styles.gradientTitle}>Login</GradientText>
 
-        <View style={styles.form}>
-
+        <FormRow>
           <FormTextInput
             label="Email *"
             value={formData.email}
@@ -130,8 +121,9 @@ export default function SellerLogin() {
               />
             }
           />
+        </FormRow>
 
-
+        <ButtonRow vertical>
           <Button
             onPress={handleLogin}
             loading={uiState.loading}
@@ -160,8 +152,8 @@ export default function SellerLogin() {
           >
             Forgot Password?
           </Button>
-        </View>
-      </Surface>
+        </ButtonRow>
+      </FormCard>
     </AuthScreenWrapper>
   );
 }
@@ -173,17 +165,5 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     textAlign: "center",
     marginBottom: AppStyles.spacing.lg,
-  },
-  formCard: {
-    borderRadius: 12,
-    padding: AppStyles.spacing.lg,
-    borderWidth: 1,
-  },
-  form: {
-    gap: AppStyles.spacing.md,
-  },
-  input: {},
-  passwordInput: {
-    marginBottom: 20,
   },
 });

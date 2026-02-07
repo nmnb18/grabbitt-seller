@@ -37,7 +37,7 @@ interface UseCustomerScanOptions {
 }
 
 export function useCustomerScan(options?: UseCustomerScanOptions) {
-  const { user } = useAuthStore();
+  const user = useAuthStore((state) => state.user);
   const sellerProfile = user?.user?.seller_profile;
 
   const [scanning, setScanning] = useState(false);

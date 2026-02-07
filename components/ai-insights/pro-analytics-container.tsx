@@ -14,7 +14,7 @@ const SellerProAnalyticsWithSkeleton = withSkeletonTransition(
 // CONTAINER
 // ------------------------------
 export default function SellerProAnalyticsInsightsContainer() {
-  const { user } = useAuthStore();
+  const user = useAuthStore((state) => state.user);
   const tier = user?.user?.seller_profile?.subscription?.tier || "free";
 
   const [data, setData] = useState<any>(null);

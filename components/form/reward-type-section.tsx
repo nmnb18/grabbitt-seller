@@ -117,7 +117,7 @@ export const RewardTypeSection: React.FC<RewardTypeSectionProps> = ({
                 <View style={{ marginTop: 10 }}>
                     <Text style={styles.sectionLabel}>Slab Rules</Text>
                     {slabRules.map((rule, index) => (
-                        <View key={index} style={styles.slabRuleContainer}>
+                        <View key={`slab-${rule.min || index}`} style={styles.slabRuleContainer}>
                             <FormTextInput
                                 label="Min Amount"
                                 value={String(rule.min)}

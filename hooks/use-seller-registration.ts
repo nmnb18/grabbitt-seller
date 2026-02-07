@@ -1,8 +1,9 @@
 import { useAuthStore } from "@/store/authStore";
 import { isValidEmail, isValidPassword, isValidPhone } from "@/utils/helper";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useCallback } from "react";
 import { Alert } from "react-native";
+import { useMultiStepForm } from "./useMultiStepForm";
 
 // Define a more flexible form data interface
 export interface SellerFormData {
@@ -84,138 +85,132 @@ const initialFormData: SellerFormData = {
   newUpiId: "",
 };
 
-export const useSellerRegistration = () => {
-  const [formData, setFormData] = useState<SellerFormData>(initialFormData);
-  const [loading, setLoading] = useState(false);
-  const [slabRules, setSlabRules] = useState<
-    { min: number; max: string; points: string }[]
-  >([{ min: 0, max: "", points: "" }]);
+// Step-based validators
+const stepValidators = {
+  1: (values: SellerFormData): { valid: boolean; errors: string[] } => {
+    const errors: string[] = [];
 
-  const router = useRouter();
-  const { register } = useAuthStore();
-
-  const updateFormData = (field: FormField, value: any) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const validateStep = (step: number): boolean => {
-    switch (step) {
-      case 1:
-        if (
-          !formData.email ||
-          !formData.password ||
-          !formData.confirmPassword ||
-          !formData.name
-        ) {
-          Alert.alert("Error", "Please fill all required fields");
-          return false;
-        }
-        if (formData.password !== formData.confirmPassword) {
-          Alert.alert("Error", "Passwords do not match");
-          return false;
-        }
-        if (!isValidPassword(formData.password)) {
-          Alert.alert(
-            "Weak Password",
-            "Password must be at least 8 characters with 1 uppercase, 1 lowercase, 1 number and 1 special character."
-          );
-          return false;
-        }
-        if (!isValidEmail(formData.email)) {
-          Alert.alert("Error", "Please enter valid email.");
-          return false;
-        }
-        if (formData.phone && !isValidPhone(formData.phone)) {
-          Alert.alert("Error", "Please enter valid 10 digit phone number.");
-          return false;
-        }
-        return true;
-
-      case 2:
-        if (
-          !formData.shopName ||
-          !formData.businessType ||
-          !formData.category ||
-          !formData.description
-        ) {
-          Alert.alert("Error", "Please fill all business information");
-          return false;
-        }
-        return true;
-
-      case 3:
-        if (
-          !formData.street ||
-          !formData.city ||
-          !formData.state ||
-          !formData.pincode
-        ) {
-          Alert.alert("Error", "Please fill all address fields");
-          return false;
-        }
-        // Location is now mandatory
-        if (!formData.latitude || !formData.longitude) {
-          Alert.alert(
-            "Location Required",
-            "Please enable location and save your coordinates. This helps customers find your store."
-          );
-          return false;
-        }
-        return true;
-      case 4:
-        if (
-          !formData.panNumber
-        ) {
-          Alert.alert("Error", "Please fill all required fields");
-          return false;
-        }
-
-        return true;
-
-      case 5:
-        if (!formData.acceptTerms) {
-          Alert.alert("Error", "You must accept the terms and conditions");
-          return false;
-        }
-        return true;
-
-      default:
-        return true;
+    if (!values.email || !values.password || !values.confirmPassword || !values.name) {
+      errors.push("Please fill all required fields");
     }
+    if (values.password !== values.confirmPassword) {
+      errors.push("Passwords do not match");
+    }
+    if (!isValidPassword(values.password)) {
+      errors.push(
+        "Password must be at least 8 characters with 1 uppercase, 1 lowercase, 1 number and 1 special character."
+      );
+    }
+    if (!isValidEmail(values.email)) {
+      errors.push("Please enter a valid email");
+    }
+    if (values.phone && !isValidPhone(values.phone)) {
+      errors.push("Please enter a valid 10 digit phone number");
+    }
+
+    return { valid: errors.length === 0, errors };
+  },
+
+  2: (values: SellerFormData): { valid: boolean; errors: string[] } => {
+    const errors: string[] = [];
+
+    if (!values.shopName || !values.businessType || !values.category || !values.description) {
+      errors.push("Please fill all business information");
+    }
+
+    return { valid: errors.length === 0, errors };
+  },
+
+  3: (values: SellerFormData): { valid: boolean; errors: string[] } => {
+    const errors: string[] = [];
+
+    if (!values.street || !values.city || !values.state || !values.pincode) {
+      errors.push("Please fill all address fields");
+    }
+
+    if (!values.latitude || !values.longitude) {
+      errors.push(
+        "Location is required. Please enable location and save your coordinates."
+      );
+    }
+
+    return { valid: errors.length === 0, errors };
+  },
+
+  4: (values: SellerFormData): { valid: boolean; errors: string[] } => {
+    const errors: string[] = [];
+
+    if (!values.panNumber) {
+      errors.push("PAN number is required");
+    }
+
+    return { valid: errors.length === 0, errors };
+  },
+
+  5: (values: SellerFormData): { valid: boolean; errors: string[] } => {
+    const errors: string[] = [];
+
+    if (!values.acceptTerms) {
+      errors.push("You must accept the terms and conditions");
+    }
+
+    return { valid: errors.length === 0, errors };
+  },
+};
+
+export const useSellerRegistration = () => {
+  const router = useRouter();
+  const register = useAuthStore((state) => state.register);
+
+  const form = useMultiStepForm<SellerFormData>({
+    initialValues: initialFormData,
+    stepValidators,
+    totalSteps: 5,
+    alertHandler: (title, message) => Alert.alert(title, message),
+  });
+
+  // Shorthand for formData and updateFormData for backward compatibility
+  const formData = form.values;
+  const updateFormData = (field: FormField, value: any) => {
+    form.setValue(field, value);
   };
 
-  const updateSlab = (
-    index: number,
-    field: "max" | "points",
-    value: string
-  ) => {
-    setSlabRules((prev) => {
-      const updated = [...prev];
-      updated[index][field] = value;
-      return updated;
-    });
-  };
+  // Slab management helpers
+  const updateSlab = useCallback(
+    (index: number, field: "max" | "points", value: string) => {
+      const updated = formData.slabRules.map((r, i) =>
+        i === index ? { ...r, [field]: value } : r
+      );
+      updateFormData("slabRules", updated);
+    },
+    [formData.slabRules, updateFormData]
+  );
 
-  const addSlab = () => {
-    const last = slabRules[slabRules.length - 1];
+  const addSlab = useCallback(() => {
+    const last = formData.slabRules[formData.slabRules.length - 1];
     if (!last.max || !last.points) {
       Alert.alert("Incomplete", "Please fill max amount & points first");
       return;
     }
-    setSlabRules((prev) => [
-      ...prev,
-      { min: parseFloat(last.max), max: "", points: "" },
-    ]);
-  };
+    const newSlab = { min: parseFloat(last.max), max: "", points: "" };
+    updateFormData("slabRules", [...formData.slabRules, newSlab]);
+  }, [formData.slabRules, updateFormData]);
 
-  const removeSlab = (index: number) => {
-    setSlabRules((prev) => prev.filter((_, i) => i !== index));
-  };
+  const removeSlab = useCallback(
+    (index: number) => {
+      const updated = formData.slabRules.filter((_, i) => i !== index);
+      updateFormData("slabRules", updated);
+    },
+    [formData.slabRules, updateFormData]
+  );
 
-  const handleRegister = async () => {
-    if (!validateStep(5)) return;
-    setLoading(true);
+  // Register handler
+  const handleRegister = useCallback(async () => {
+    if (!form.validateStep(5)) return;
+
     try {
+      form.setError("_form" as any, ""); // Clear form errors
+
       const payload = {
         email: formData.email,
         password: formData.password,
@@ -241,8 +236,7 @@ export const useSellerRegistration = () => {
         longitude: formData.longitude,
         gstNumber: formData.gstNumber || undefined,
         panNumber: formData.panNumber || undefined,
-        businessRegistrationNumber:
-          formData.businessRegistrationNumber || undefined,
+        businessRegistrationNumber: formData.businessRegistrationNumber || undefined,
         qrCodeType: formData.qrCodeType,
         defaultPoints: parseInt(formData.defaultPoints),
         subscriptionTier: formData.subscriptionTier,
@@ -254,7 +248,7 @@ export const useSellerRegistration = () => {
             : undefined,
         slabRules:
           formData.rewardType === "slab"
-            ? slabRules
+            ? formData.slabRules
               .filter((r) => r.max !== "" && r.points !== "")
               .map((r) => ({
                 min: r.min,
@@ -272,21 +266,45 @@ export const useSellerRegistration = () => {
       );
       router.push("/auth/login");
     } catch (error: any) {
+      form.setError("_form" as any, error.message);
       Alert.alert("Registration Error", error.message);
-    } finally {
-      setLoading(false);
     }
-  };
+  }, [formData, register, router, form]);
 
   return {
+    // Form data and updates
     formData,
     updateFormData,
-    validateStep,
+
+    // Step navigation
+    currentStep: form.currentStep,
+    isFirstStep: form.isFirstStep,
+    isLastStep: form.isLastStep,
+    handleNext: form.handleNext,
+    handlePrevious: form.handlePrevious,
+    goToStep: form.goToStep,
+
+    // Validation
+    validateStep: form.validateStep,
+    validateForm: form.validateForm,
+
+    // Submission
     handleRegister,
-    loading,
-    slabRules,
+    isSubmitting: form.isSubmitting,
+
+    // Field management
+    setValue: form.setValue,
+    setError: form.setError,
+
+    // Slab management (backward compatible)
+    slabRules: formData.slabRules,
     updateSlab,
     addSlab,
     removeSlab,
+
+    // Deprecated: loading is now isSubmitting
+    get loading() {
+      return form.isSubmitting;
+    },
   };
 };

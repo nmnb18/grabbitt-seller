@@ -20,7 +20,8 @@ export default function CheckoutScreen() {
     const router = useRouter();
     const params = useLocalSearchParams();
 
-    const { user, fetchUserDetails } = useAuthStore();
+    const user = useAuthStore((state) => state.user);
+    const fetchUserDetails = useAuthStore((state) => state.fetchUserDetails);
     const [loading, setLoading] = useState(false);
     const [verifying, setVerifying] = useState(false);
     const [couponCode, setCouponCode] = useState('');
