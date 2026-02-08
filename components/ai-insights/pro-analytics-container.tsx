@@ -1,6 +1,6 @@
 import ProAnalyticsSkeleton from "@/components/skeletons/pro-analytics";
 import withSkeletonTransition from "@/components/wrappers/withSkeletonTransition";
-import { analyticsApi } from '@/services/firebaseFunctions';
+import { analyticsApi } from "@/services";
 import { useAuthStore } from "@/store/authStore";
 import { useFocusEffect } from "expo-router";
 import React, { useCallback, useState } from "react";

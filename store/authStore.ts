@@ -1,4 +1,4 @@
-import { userApi as fbUserApi } from "@/services/firebaseFunctions";
+import { userApi } from "@/services/api";
 import { LoginResponse as User, UserPayload } from "@/types/auth";
 import { startSubscriptionWatcher } from "@/utils/subscription-watcher";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -6,9 +6,12 @@ import { create } from "zustand";
 
 interface AuthStore {
   user: User | null;
+  idToken: string | null;
+  refreshTokenValue: string | null;
   loading: boolean;
-  isLoggingOut: boolean,
+  isLoggingOut: boolean;
   setUser: (user: User | null) => void;
+  setTokens: (idToken: string | null, refreshToken: string | null) => void;
   register: (payload: UserPayload) => Promise<void>;
   login: (
     email: string,
@@ -23,15 +26,28 @@ interface AuthStore {
 
 export const useAuthStore = create<AuthStore>((set, get) => ({
   user: null,
+  idToken: null,
+  refreshTokenValue: null,
   loading: false,
   isLoggingOut: false,
+
   setUser: (user) => set({ user }),
+
+  setTokens: (idToken, refreshToken) => {
+    set({ idToken, refreshTokenValue: refreshToken });
+    if (idToken) {
+      AsyncStorage.setItem("idToken", idToken).catch(console.error);
+    }
+    if (refreshToken) {
+      AsyncStorage.setItem("refreshToken", refreshToken).catch(console.error);
+    }
+  },
 
   register: async (payload: UserPayload) => {
     try {
       set({ loading: true });
 
-      const response = await fbUserApi.registerUser(payload as any);
+      const response = await userApi.registerUser(payload as any);
 
       if (!response?.success) {
         throw new Error(response?.error || "Registration failed");
@@ -48,17 +64,27 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     try {
       set({ loading: true });
 
-      const response = await fbUserApi.loginUser({ email, password, role });
+      const response = await userApi.loginUser({ email, password, role });
 
       if (!response?.success) {
         throw new Error(response?.error || "Login failed");
       }
 
       const fullUser: User = response.user as any;
+      const token = response.idToken || response.user?.idToken;
+      const refreshToken = response.refreshToken || response.user?.refreshToken;
 
+      // Save tokens
       await AsyncStorage.setItem("user", JSON.stringify(fullUser));
+      if (token) await AsyncStorage.setItem("idToken", token);
+      if (refreshToken) await AsyncStorage.setItem("refreshToken", refreshToken);
 
-      set({ user: fullUser, loading: false });
+      set({
+        user: fullUser,
+        idToken: token || null,
+        refreshTokenValue: refreshToken || null,
+        loading: false
+      });
     } catch (err: any) {
       set({ loading: false });
       console.error("Login error:", err?.message || err);
@@ -70,7 +96,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     try {
       const { user } = get();
       set({ loading: true });
-      const response = await fbUserApi.getDetails(uid);
+      const response = await userApi.getDetails(uid);
       const updatedUser: User = {
         ...user!,
         success: true,
@@ -100,9 +126,9 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   logout: async (uid: string) => {
     try {
       set({ isLoggingOut: true });
-      await fbUserApi.logout(uid);
-      await AsyncStorage.removeItem("user");
-      set({ user: null, isLoggingOut: false });
+      await userApi.logout(uid);
+      await AsyncStorage.multiRemove(["user", "idToken", "refreshToken"]);
+      set({ user: null, idToken: null, refreshTokenValue: null, isLoggingOut: false });
     } catch (err) {
       set({ isLoggingOut: false });
       console.error("Logout error:", err);
@@ -112,10 +138,20 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   loadUser: async () => {
     try {
       set({ loading: true });
-      const userStr = await AsyncStorage.getItem("user");
-      if (userStr) {
-        const user = JSON.parse(userStr);
-        set({ user });
+      const [userStr, idToken, refreshToken] = await AsyncStorage.multiGet([
+        "user",
+        "idToken",
+        "refreshToken",
+      ]);
+
+      if (userStr[1]) {
+        const user = JSON.parse(userStr[1]);
+        set({
+          user,
+          idToken: idToken[1] || null,
+          refreshTokenValue: refreshToken[1] || null,
+        });
+
         const expiry = user?.user?.seller_profile?.subscription?.expires_at
           ? user.user.seller_profile.subscription.expires_at._seconds * 1000
           : null;
@@ -134,9 +170,19 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
   refreshToken: async () => {
     try {
-      const { user } = get();
-      const token = user?.idToken || null;
-      return token;
+      const { idToken, refreshTokenValue } = get();
+
+      // If we have a refresh token, try to refresh
+      if (refreshTokenValue) {
+        const response = await userApi.refreshToken(refreshTokenValue);
+        if (response?.idToken) {
+          const newToken = response.idToken;
+          get().setTokens(newToken, refreshTokenValue);
+          return newToken;
+        }
+      }
+
+      return idToken || null;
     } catch (error) {
       console.error("Refresh token error:", error);
       return null;

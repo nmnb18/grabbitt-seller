@@ -1,7 +1,7 @@
 
 import FreeAnalyticsSkeleton from "@/components/skeletons/free-analytics";
 import withSkeletonTransition from "@/components/wrappers/withSkeletonTransition";
-import { analyticsApi } from '@/services/firebaseFunctions';
+import { analyticsApi } from "@/services";
 import { useFocusEffect } from "expo-router";
 import React, { useCallback, useState } from "react";
 import SellerFreeAIInsights from "./free-analytics";

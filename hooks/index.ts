@@ -3,7 +3,6 @@
  */
 
 export { useColorScheme } from "./use-color-scheme";
-export { useSellerQR } from "./use-qr";
 export { useTheme, useThemeColor } from "./use-theme-color";
 export { useAnalytics } from "./useAnalytics";
 export type { LastScan, SellerStats, TodayStats } from "./useAnalytics";

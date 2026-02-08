@@ -1,10 +1,17 @@
 /**
  * Services Barrel Export
+ * REST API service layer with Bearer token authentication
  */
 
-// Legacy `api` now maps to the firebase-backed API wrapper
+// Export REST API services
 export * from "./api";
+export { default as axiosInstance } from "./axiosInstance";
+
+// Legacy exports for backwards compatibility
 export { default as api, default as apiService } from "./api";
+
+// Other services
 export * from "./notificationService";
 export * from "./userService";
+
 
