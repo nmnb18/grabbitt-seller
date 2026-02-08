@@ -4,7 +4,7 @@
  * Used by: subscription-history.tsx
  */
 
-import { subscriptionApi } from "@/services/firebaseFunctions";
+import { subscriptionApi } from "@/services";
 import { useCallback, useState } from "react";
 import { Alert } from "react-native";
 

@@ -1,5 +1,5 @@
 import { Offer } from "@/components/whats-new/offer-form";
-import { offersApi } from "@/services/firebaseFunctions";
+import { offersApi } from "@/services";
 import dayjs from "dayjs";
 import { useCallback } from "react";
 

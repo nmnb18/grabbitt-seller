@@ -1,6 +1,6 @@
 import { GradientHeader } from '@/components/shared/app-header';
 import { useTheme } from '@/hooks/use-theme-color';
-import { notificationApi } from '@/services/firebaseFunctions';
+import { notificationApi } from '@/services';
 import { useNotificationStore } from '@/store/notificationStore';
 import { AppStyles } from '@/utils/theme';
 import { MaterialCommunityIcons } from '@expo/vector-icons';

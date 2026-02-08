@@ -4,7 +4,7 @@
  * Used by: whats-new-home.tsx, offer-add.tsx
  */
 
-import { offersApi } from "@/services/firebaseFunctions";
+import { offersApi } from "@/services";
 import { useCallback, useState } from "react";
 import { Alert } from "react-native";
 

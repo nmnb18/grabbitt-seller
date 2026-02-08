@@ -2,7 +2,7 @@ import { AppHeader } from '@/components/shared/app-header';
 import { SubscriptionLegalFooter } from '@/components/shared/subscription-legal-footer';
 import { Button } from '@/components/ui/paper-button';
 import { useTheme } from '@/hooks/use-theme-color';
-import { paymentApi } from '@/services/firebaseFunctions';
+import { paymentApi } from '@/services';
 import { requestIOSPurchase } from "@/services/iap";
 import { clearIAPCallbacks, setIAPCallbacks } from '@/services/iapState';
 import { useAuthStore } from '@/store/authStore';

@@ -12,7 +12,7 @@ import { ActivityIndicator, Surface, Text } from "react-native-paper";
 
 import { Button } from "@/components/ui/paper-button";
 import { useTheme } from "@/hooks/use-theme-color";
-import { offersApi } from '@/services/firebaseFunctions';
+import { offersApi } from '@/services';
 
 interface RedeemModalProps {
     visible: boolean;

@@ -4,7 +4,7 @@
  * Used by: whats-new-home.tsx, redemptions.tsx
  */
 
-import { offersApi, sellerRedemptionsApi } from "@/services/firebaseFunctions";
+import { offersApi, sellerRedemptionsApi } from "@/services";
 import { useCallback, useState } from "react";
 
 export interface PerkItem {

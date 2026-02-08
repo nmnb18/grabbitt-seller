@@ -47,7 +47,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     try {
       set({ loading: true });
 
-      const response = await userApi.registerUser(payload as any);
+      const response = await userApi.registerSeller(payload as any);
 
       if (!response?.success) {
         throw new Error(response?.error || "Registration failed");
@@ -64,7 +64,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     try {
       set({ loading: true });
 
-      const response = await userApi.loginUser({ email, password, role });
+      const response = await userApi.loginSeller({ email, password, role });
 
       if (!response?.success) {
         throw new Error(response?.error || "Login failed");
@@ -74,16 +74,15 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       const token = response.idToken || response.user?.idToken;
       const refreshToken = response.refreshToken || response.user?.refreshToken;
 
+      await get().fetchUserDetails(fullUser.uid, "seller");
+
       // Save tokens
-      await AsyncStorage.setItem("user", JSON.stringify(fullUser));
       if (token) await AsyncStorage.setItem("idToken", token);
       if (refreshToken) await AsyncStorage.setItem("refreshToken", refreshToken);
 
       set({
-        user: fullUser,
         idToken: token || null,
         refreshTokenValue: refreshToken || null,
-        loading: false
       });
     } catch (err: any) {
       set({ loading: false });

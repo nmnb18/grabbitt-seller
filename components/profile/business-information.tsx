@@ -1,6 +1,6 @@
 import { EditableSection, InfoRow } from '@/components/common';
 import { BusinessInfoForm } from '@/components/form/business-info-form';
-import { userApi as fbUserApi } from '@/services/firebaseFunctions';
+import { userApi as fbUserApi } from '@/services';
 import { useAuthStore } from '@/store/authStore';
 import React, { useMemo, useState } from 'react';
 import { Alert } from 'react-native';
@@ -52,7 +52,7 @@ export default function BusinessInformation() {
         try {
             setSaving(true);
 
-            await fbUserApi.updateProfile('business', {
+            await fbUserApi.updateSellerProfile('business', {
                 shop_name: shopName,
                 business_type: businessType,
                 category,

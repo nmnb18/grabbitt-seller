@@ -7,7 +7,7 @@ import Constants from "expo-constants";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
-import { notificationApi } from './firebaseFunctions';
+import { notificationApi } from './api';
 
 // Types
 export interface PushNotificationState {

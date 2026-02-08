@@ -3,7 +3,7 @@ import { GradientText } from '@/components/ui/gradient-text';
 import { Button } from '@/components/ui/paper-button';
 import AuthScreenWrapper from '@/components/wrappers/authScreenWrapper';
 import { useTheme } from '@/hooks/use-theme-color';
-import { userApi } from '@/services/firebaseFunctions';
+import { userApi } from '@/services';
 import { isValidPassword } from '@/utils/helper';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -49,7 +49,7 @@ export default function ResetPasswordScreen() {
 
         try {
             setLoading(true);
-            await userApi.resetPassword(oobCode as string, password);
+            await userApi.confirmPasswordReset(oobCode as string, password);
             router.replace(`/auth/reset-success`);
 
         } catch (err: any) {

@@ -1,4 +1,4 @@
-import { notificationApi } from './firebaseFunctions';
+import { notificationApi } from './api';
 
 export const getUnreadNotificationCount = async () => {
   const res = await notificationApi.getUnreadCount();

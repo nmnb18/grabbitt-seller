@@ -1,7 +1,7 @@
 import { EditableSection, FormRow, InfoRow } from '@/components/common';
 import { FormTextInput } from '@/components/form/form-text-input';
 import { useTheme } from '@/hooks/use-theme-color';
-import { userApi as fbUserApi } from '@/services/firebaseFunctions';
+import { userApi as fbUserApi } from '@/services';
 import { useAuthStore } from '@/store/authStore';
 import React, { useMemo, useState } from 'react';
 import { Alert, View } from 'react-native';
@@ -50,7 +50,7 @@ export default function VerificationInformation() {
         try {
             setSaving(true);
 
-            await fbUserApi.updateProfile('verification', {
+            await fbUserApi.updateSellerProfile('verification', {
                 gst_number: gst || null,
                 pan_number: pan || null,
                 business_registration_number: regNum || null,

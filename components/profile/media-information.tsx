@@ -1,5 +1,5 @@
 import { EditableSection } from "@/components/common";
-import { mediaApi } from '@/services/firebaseFunctions';
+import { mediaApi } from '@/services';
 import { useAuthStore } from "@/store/authStore";
 import { SellerMedia } from "@/types/auth";
 import { uriToBase64 } from "@/utils/helper";

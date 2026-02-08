@@ -1,6 +1,6 @@
 import { EditableSection, FormRow, InfoRow } from "@/components/common";
 import { FormTextInput } from "@/components/form/form-text-input";
-import { userApi as fbUserApi } from '@/services/firebaseFunctions';
+import { userApi as fbUserApi } from '@/services';
 import { useAuthStore } from "@/store/authStore";
 import React, { useMemo, useState } from "react";
 import { Alert, View } from "react-native";
@@ -53,7 +53,7 @@ export default function AccountInformation({
     try {
       setSaving(true);
 
-      await fbUserApi.updateProfile('account', {
+      await fbUserApi.updateSellerProfile('account', {
         name,
         phone,
         established_year: establishedYear ? Number(establishedYear) : null,

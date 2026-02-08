@@ -12,6 +12,5 @@ export { default as api, default as apiService } from "./api";
 
 // Other services
 export * from "./notificationService";
-export * from "./userService";
 
 

@@ -8,7 +8,7 @@ import VerificationDetails from '@/components/profile/verification-details';
 import { AppHeader } from '@/components/shared/app-header';
 import { Button as CustomButton } from '@/components/ui/paper-button';
 import { useTheme } from '@/hooks/use-theme-color';
-import { userApi as fbUserApi } from '@/services/firebaseFunctions';
+import { userApi as fbUserApi } from '@/services';
 import { useAuthStore } from '@/store/authStore';
 import { isValidPassword } from '@/utils/helper';
 import { useRouter } from 'expo-router';
@@ -102,8 +102,8 @@ export default function SellerProfileSetup() {
 
     try {
       setChanging(true);
-
-      await fbUserApi.changePassword(currentPassword, newPassword);
+      await fbUserApi.reauthenticate(currentPassword);
+      await fbUserApi.changePassword(newPassword);
 
       Alert.alert("Success", "Password updated.");
 

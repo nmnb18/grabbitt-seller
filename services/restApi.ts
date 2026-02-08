@@ -5,8 +5,6 @@
  * Handles authentication via Bearer token (stored in authStore)
  */
 
-import { SimplifiedSeller, StoreDetails } from '@/types/seller';
-import { WalletData } from '@/types/wallet';
 import { logError } from '@/utils/errorHandler';
 import api from './axiosInstance';
 
@@ -37,9 +35,9 @@ export const userApi = {
      * Login user
      * POST /api/auth/login
      */
-    loginUser: async (payload: { email: string; password: string; role?: string }) => {
+    loginSeller: async (payload: { email: string; password: string; role?: string }) => {
         try {
-            const response = await api.post('/api/auth/login', payload);
+            const response = await api.post('/loginSeller', payload);
             return response.data;
         } catch (error) {
             throw handleApiError(error, 'loginUser');
@@ -47,28 +45,15 @@ export const userApi = {
     },
 
     /**
-     * Register user
-     * POST /api/auth/register
-     */
-    registerUser: async (payload: Record<string, any>) => {
-        try {
-            const response = await api.post('/api/auth/register', payload);
-            return response.data;
-        } catch (error) {
-            throw handleApiError(error, 'registerUser');
-        }
-    },
-
-    /**
      * Forgot password
      * POST /api/auth/forgot-password
      */
-    forgotPassword: async (email: string) => {
+    requestPasswordReset: async (email: string) => {
         try {
-            const response = await api.post('/api/auth/forgot-password', { email });
+            const response = await api.post('/requestPasswordReset', { email });
             return response.data;
         } catch (error) {
-            throw handleApiError(error, 'forgotPassword');
+            throw handleApiError(error, 'requestPasswordReset');
         }
     },
 
@@ -76,15 +61,15 @@ export const userApi = {
      * Reset password
      * POST /api/auth/reset-password
      */
-    resetPassword: async (oobCode: string, newPassword: string) => {
+    confirmPasswordReset: async (oobCode: string, newPassword: string) => {
         try {
-            const response = await api.post('/api/auth/reset-password', {
+            const response = await api.post('/confirmPasswordReset', {
                 oob_code: oobCode,
                 new_password: newPassword,
             });
             return response.data;
         } catch (error) {
-            throw handleApiError(error, 'resetPassword');
+            throw handleApiError(error, 'confirmPasswordReset');
         }
     },
 
@@ -94,10 +79,10 @@ export const userApi = {
      */
     getDetails: async (uid: string) => {
         try {
-            const response = await api.get(`/api/users/${uid}`);
+            const response = await api.get(`/getUserDetails/${uid}`);
             return response.data;
         } catch (error) {
-            throw handleApiError(error, 'getDetails');
+            throw handleApiError(error, 'getUserDetails');
         }
     },
 
@@ -107,7 +92,7 @@ export const userApi = {
      */
     logout: async (uid: string) => {
         try {
-            const response = await api.post('/api/auth/logout', { uid });
+            const response = await api.post('/logout', { uid });
             return response.data;
         } catch (error) {
             throw handleApiError(error, 'logout');
@@ -118,12 +103,12 @@ export const userApi = {
      * Update user profile section
      * PATCH /api/users/profile/:section
      */
-    updateProfile: async (section: string, data: Record<string, unknown>) => {
+    updateSellerProfile: async (section: string, data: Record<string, unknown>) => {
         try {
-            const response = await api.patch(`/api/users/profile/${section}`, data);
+            const response = await api.patch(`/updateSellerProfile`, { section, data });
             return response.data;
         } catch (error) {
-            throw handleApiError(error, 'updateProfile');
+            throw handleApiError(error, 'updateSellerProfile');
         }
     },
 
@@ -133,7 +118,7 @@ export const userApi = {
      */
     registerSeller: async (payload: Record<string, any>) => {
         try {
-            const response = await api.post('/api/sellers/register', payload);
+            const response = await api.post('/registerSeller', payload);
             return response.data;
         } catch (error) {
             throw handleApiError(error, 'registerSeller');
@@ -144,9 +129,9 @@ export const userApi = {
      * Delete user account
      * DELETE /api/users/account
      */
-    deleteAccount: async () => {
+    deleteSellerAccount: async () => {
         try {
-            const response = await api.delete('/api/users/account');
+            const response = await api.delete('/deleteSellerAccount');
             return response.data;
         } catch (error) {
             throw handleApiError(error, 'deleteAccount');
@@ -154,16 +139,17 @@ export const userApi = {
     },
 
     /**
-     * Delete seller account
-     * DELETE /api/sellers/:sellerId
+     * Change password
+     * POST /api/auth/change-password
      */
-    deleteSellerAccount: async (sellerId?: string) => {
+    changePassword: async (newPassword: string) => {
         try {
-            const url = sellerId ? `/api/sellers/${sellerId}` : '/api/sellers/account';
-            const response = await api.delete(url);
+            const response = await api.post('/changePassword', {
+                newPassword: newPassword,
+            });
             return response.data;
         } catch (error) {
-            throw handleApiError(error, 'deleteSellerAccount');
+            throw handleApiError(error, 'changePassword');
         }
     },
 
@@ -171,15 +157,14 @@ export const userApi = {
      * Change password
      * POST /api/auth/change-password
      */
-    changePassword: async (currentPassword: string, newPassword: string) => {
+    reauthenticate: async (currentPassword: string) => {
         try {
-            const response = await api.post('/api/auth/change-password', {
-                current_password: currentPassword,
-                new_password: newPassword,
+            const response = await api.post('/reauthenticate', {
+                currentPassword: currentPassword
             });
             return response.data;
         } catch (error) {
-            throw handleApiError(error, 'changePassword');
+            throw handleApiError(error, 'reauthenticate');
         }
     },
 
@@ -189,7 +174,7 @@ export const userApi = {
      */
     refreshToken: async (refreshToken: string) => {
         try {
-            const response = await api.post('/api/auth/refresh', { refresh_token: refreshToken });
+            const response = await api.post('/refreshToken', { refresh_token: refreshToken });
             return response.data;
         } catch (error) {
             throw handleApiError(error, 'refreshToken');
@@ -197,172 +182,6 @@ export const userApi = {
     },
 };
 
-// =====================================
-// Seller/Store APIs
-// =====================================
-export const storeApi = {
-    /**
-     * Get nearby sellers
-     * GET /api/sellers/nearby
-     */
-    getNearbySellers: async (
-        lat?: number,
-        lng?: number
-    ): Promise<{ success: boolean; sellers: SimplifiedSeller[]; error?: string }> => {
-        try {
-            const params: Record<string, any> = {};
-            if (lat !== undefined && lng !== undefined) {
-                params.lat = lat;
-                params.lng = lng;
-            }
-            const response = await api.get('/api/sellers/nearby', { params });
-            return response.data;
-        } catch (error) {
-            logError('getNearbySellers', error);
-            throw handleApiError(error, 'getNearbySellers');
-        }
-    },
-
-    /**
-     * Get store details by ID
-     * GET /api/sellers/:sellerId
-     */
-    getStoreDetails: async (
-        sellerId: string
-    ): Promise<{ success: boolean; user: { seller_profile: StoreDetails } }> => {
-        try {
-            const response = await api.get(`/api/sellers/${sellerId}`);
-            return response.data;
-        } catch (error) {
-            throw handleApiError(error, 'getStoreDetails');
-        }
-    },
-
-    /**
-     * Get balance by seller
-     * GET /api/sellers/:sellerId/balance
-     */
-    getBalanceBySeller: async (sellerId: string) => {
-        try {
-            const response = await api.get(`/api/sellers/${sellerId}/balance`);
-            return response.data;
-        } catch (error) {
-            throw handleApiError(error, 'getBalanceBySeller');
-        }
-    },
-};
-
-// =====================================
-// Wallet APIs
-// =====================================
-export const walletApi = {
-    /**
-     * Get wallet data
-     * GET /api/wallet
-     */
-    getWallet: async (): Promise<{ success: boolean; data: WalletData }> => {
-        try {
-            const response = await api.get('/api/wallet');
-            return response.data;
-        } catch (error) {
-            throw handleApiError(error, 'getWallet');
-        }
-    },
-
-    /**
-     * Get transaction history
-     * GET /api/wallet/transactions
-     */
-    getTransactions: async (limit = 50) => {
-        try {
-            const response = await api.get('/api/wallet/transactions', {
-                params: { limit },
-            });
-            return response.data;
-        } catch (error) {
-            throw handleApiError(error, 'getTransactions');
-        }
-    },
-};
-
-// =====================================
-// Redemption APIs
-// =====================================
-export const redemptionApi = {
-    /**
-     * Get redemption history
-     * GET /api/redemptions/history
-     */
-    getHistory: async () => {
-        try {
-            const response = await api.get('/api/redemptions/history');
-            return response.data;
-        } catch (error) {
-            throw handleApiError(error, 'getHistory');
-        }
-    },
-
-    /**
-     * Create redemption request
-     * POST /api/redemptions
-     */
-    createRedemption: async (data: {
-        seller_id: string;
-        offer_id: string;
-        points: number;
-    }) => {
-        try {
-            const response = await api.post('/api/redemptions', data);
-            return response.data;
-        } catch (error) {
-            throw handleApiError(error, 'createRedemption');
-        }
-    },
-
-    /**
-     * Get redemption QR code
-     * GET /api/redemptions/:redemptionId/qr
-     */
-    getRedemptionQR: async (redemptionId: string) => {
-        try {
-            const response = await api.get(`/api/redemptions/${redemptionId}/qr`);
-            return response.data;
-        } catch (error) {
-            throw handleApiError(error, 'getRedemptionQR');
-        }
-    },
-};
-
-// =====================================
-// Perks APIs
-// =====================================
-export const perksApi = {
-    /**
-     * Claim a perk
-     * POST /api/perks/claim
-     */
-    claimPerk: async (sellerId: string) => {
-        try {
-            const response = await api.post('/api/perks/claim', { seller_id: sellerId });
-            return response.data;
-        } catch (error) {
-            throw handleApiError(error, 'claimPerk');
-        }
-    },
-
-    /**
-     * Get today's perk for a store
-     * GET /api/sellers/:sellerId/perk
-     */
-    getTodayPerk: async (sellerId: string) => {
-        try {
-            const response = await api.get(`/api/sellers/${sellerId}/perk`);
-            return response.data;
-        } catch (error) {
-            throw handleApiError(error, 'getTodayPerk');
-        }
-    },
-};
 
 // =====================================
 // Notification APIs
@@ -374,7 +193,7 @@ export const notificationApi = {
      */
     registerToken: async (payload: Record<string, any>) => {
         try {
-            const response = await api.post('/api/notifications/register', payload);
+            const response = await api.post('/registerToken', payload);
             return response.data;
         } catch (error) {
             throw handleApiError(error, 'registerToken');
@@ -387,7 +206,7 @@ export const notificationApi = {
      */
     unregisterPushToken: async (payload: { push_token: string }) => {
         try {
-            const response = await api.post('/api/notifications/unregister', payload);
+            const response = await api.post('/unregisterPushToken', payload);
             return response.data;
         } catch (error) {
             throw handleApiError(error, 'unregisterPushToken');
@@ -400,7 +219,7 @@ export const notificationApi = {
      */
     getUnreadCount: async () => {
         try {
-            const response = await api.get('/api/notifications/unread-count');
+            const response = await api.get('/unreadCount');
             return response.data;
         } catch (error) {
             throw handleApiError(error, 'getUnreadCount');
@@ -413,7 +232,7 @@ export const notificationApi = {
      */
     getNotifications: async () => {
         try {
-            const response = await api.get('/api/notifications');
+            const response = await api.get('/getNotifications');
             return response.data;
         } catch (error) {
             throw handleApiError(error, 'getNotifications');
@@ -426,7 +245,7 @@ export const notificationApi = {
      */
     markNotificationsRead: async (ids: string[]) => {
         try {
-            const response = await api.patch('/api/notifications/mark-read', {
+            const response = await api.patch('/markNotificationsRead', {
                 notification_ids: ids,
             });
             return response.data;
@@ -446,7 +265,7 @@ export const qrCodeApi = {
      */
     scanUserQRCode: async (payload: { user_id: string; amount?: number }) => {
         try {
-            const response = await api.post('/api/qr/scan-user', payload);
+            const response = await api.post('/scanUserQRCode', payload);
             return response.data;
         } catch (error) {
             throw handleApiError(error, 'scanUserQRCode');
@@ -464,7 +283,7 @@ export const paymentApi = {
      */
     createOrder: async (data: Record<string, unknown>) => {
         try {
-            const response = await api.post('/api/payments/orders', data);
+            const response = await api.post('/createOrder', data);
             return response.data;
         } catch (error) {
             throw handleApiError(error, 'createOrder');
@@ -477,7 +296,7 @@ export const paymentApi = {
      */
     verifyPayment: async (data: Record<string, unknown>) => {
         try {
-            const response = await api.post('/api/payments/verify', data);
+            const response = await api.post('/verifyPayment', data);
             return response.data;
         } catch (error) {
             throw handleApiError(error, 'verifyPayment');
@@ -493,7 +312,7 @@ export const paymentApi = {
             const payload = typeof couponCode === 'string'
                 ? { coupon_code: couponCode }
                 : couponCode;
-            const response = await api.post('/api/coupons/apply', payload);
+            const response = await api.post('/applyCoupon', payload);
             return response.data;
         } catch (error) {
             throw handleApiError(error, 'applyCoupon');
@@ -506,7 +325,7 @@ export const paymentApi = {
      */
     verifyIAPPurchase: async (payload: Record<string, any>) => {
         try {
-            const response = await api.post('/api/payments/verify-iap', payload);
+            const response = await api.post('/verifyIAPPurchase', payload);
             return response.data;
         } catch (error) {
             throw handleApiError(error, 'verifyIAPPurchase');
@@ -526,7 +345,7 @@ export const offersApi = {
         try {
             const params: Record<string, any> = {};
             if (date) params.date = date;
-            const response = await api.get('/api/sellers/offers', { params });
+            const response = await api.get('/getSellerOffers', { params });
             return response.data;
         } catch (error) {
             throw handleApiError(error, 'getSellerOffers');
@@ -539,7 +358,7 @@ export const offersApi = {
      */
     getSellerRedeemedPerks: async () => {
         try {
-            const response = await api.get('/api/sellers/redeemed-perks');
+            const response = await api.get('/getSellerRedeemedPerks');
             return response.data;
         } catch (error) {
             throw handleApiError(error, 'getSellerRedeemedPerks');
@@ -552,7 +371,7 @@ export const offersApi = {
      */
     deleteSellerOffer: async (date: string) => {
         try {
-            const response = await api.delete(`/api/sellers/offers/${date}`);
+            const response = await api.delete(`/deleteSellerOffer/${date}`);
             return response.data;
         } catch (error) {
             throw handleApiError(error, 'deleteSellerOffer');
@@ -565,7 +384,7 @@ export const offersApi = {
      */
     saveSellerOffer: async (payload: Record<string, any>) => {
         try {
-            const response = await api.post('/api/sellers/offers', payload);
+            const response = await api.post('/saveSellerOffer', payload);
             return response.data;
         } catch (error) {
             throw handleApiError(error, 'saveSellerOffer');
@@ -578,7 +397,7 @@ export const offersApi = {
      */
     verifyRedeemCode: async (code: string) => {
         try {
-            const response = await api.post('/api/offers/verify-code', { code });
+            const response = await api.post('/verifyRedeemCode', { code });
             return response.data;
         } catch (error) {
             throw handleApiError(error, 'verifyRedeemCode');
@@ -627,7 +446,7 @@ export const mediaApi = {
      */
     updateSellerMedia: async (payload: Record<string, any>) => {
         try {
-            const response = await api.patch('/api/sellers/media', payload);
+            const response = await api.patch('/updateSellerMedia', payload);
             return response.data;
         } catch (error) {
             throw handleApiError(error, 'updateSellerMedia');
@@ -647,7 +466,7 @@ export const subscriptionApi = {
         try {
             const params: Record<string, any> = {};
             if (sellerId) params.seller_id = sellerId;
-            const response = await api.get('/api/subscriptions/history', { params });
+            const response = await api.get('/getSubscriptionHistory', { params });
             return response.data;
         } catch (error) {
             throw handleApiError(error, 'getSubscriptionHistory');
@@ -665,7 +484,7 @@ export const sellerRedemptionsApi = {
      */
     getSellerRedemptions: async () => {
         try {
-            const response = await api.get('/api/sellers/redemptions');
+            const response = await api.get('/getSellerRedemptions');
             return response.data;
         } catch (error) {
             throw handleApiError(error, 'getSellerRedemptions');
@@ -678,7 +497,7 @@ export const sellerRedemptionsApi = {
      */
     processRedemption: async (payload: Record<string, any>) => {
         try {
-            const response = await api.post('/api/sellers/redemptions/process', payload);
+            const response = await api.post('/processRedemption', payload);
             return response.data;
         } catch (error) {
             throw handleApiError(error, 'processRedemption');
@@ -691,10 +510,6 @@ export const sellerRedemptionsApi = {
 // =====================================
 export default {
     user: userApi,
-    store: storeApi,
-    wallet: walletApi,
-    redemption: redemptionApi,
-    perks: perksApi,
     notification: notificationApi,
     qrCode: qrCodeApi,
     payment: paymentApi,

@@ -1,7 +1,7 @@
 // services/iap.ts
 import { Platform } from "react-native";
 import * as RNIap from "react-native-iap";
-import { paymentApi } from './firebaseFunctions';
+import { paymentApi } from './api';
 import { notifyIAPError, notifyIAPSuccess, notifyIAPVerifying } from "./iapState";
 
 /**

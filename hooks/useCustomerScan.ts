@@ -3,7 +3,7 @@
  * Handles scanning customer QR codes and awarding points
  */
 
-import { qrCodeApi } from '@/services/firebaseFunctions';
+import { qrCodeApi } from '@/services';
 import { useAuthStore } from "@/store/authStore";
 import { useCallback, useState } from "react";
 

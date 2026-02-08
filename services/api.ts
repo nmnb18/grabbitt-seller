@@ -11,13 +11,9 @@ export {
   notificationApi,
   offersApi,
   paymentApi,
-  perksApi,
   qrCodeApi,
-  redemptionApi,
   sellerRedemptionsApi,
-  storeApi,
   subscriptionApi,
-  userApi,
-  walletApi
+  userApi
 } from './restApi';
 

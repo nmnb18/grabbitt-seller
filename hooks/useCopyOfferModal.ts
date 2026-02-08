@@ -4,7 +4,7 @@
  * Used by: whats-new-home.tsx
  */
 
-import { offersApi } from "@/services/firebaseFunctions";
+import { offersApi } from "@/services";
 import dayjs from "dayjs";
 import { useCallback, useState } from "react";
 import { Alert } from "react-native";
@@ -116,7 +116,7 @@ export function useCopyOfferModal(): UseCopyOfferModalReturn {
                         (a, b) => a.min_spend - b.min_spend
                     );
 
-                    await offersApi.createSellerOffer({
+                    await offersApi.saveSellerOffer({
                         date,
                         offers: sortedOffers.map((o) => ({
                             id: o.id,

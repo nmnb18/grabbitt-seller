@@ -11,7 +11,7 @@ import { Alert, StyleSheet, View } from "react-native";
 
 import { useTheme } from "@/hooks/use-theme-color";
 import { useCustomerScan } from "@/hooks/useCustomerScan";
-import { sellerRedemptionsApi } from '@/services/firebaseFunctions';
+import { sellerRedemptionsApi } from '@/services';
 import { useAuthStore } from "@/store/authStore";
 
 import { OrderAmountInput } from "@/components/scan/order-amount-input";

@@ -1,7 +1,7 @@
 import { EditableSection, FormRow, InfoRow } from '@/components/common';
 import { FormTextInput } from '@/components/form/form-text-input';
 import { useTheme } from '@/hooks/use-theme-color';
-import { userApi as fbUserApi } from '@/services/firebaseFunctions';
+import { userApi as fbUserApi } from '@/services';
 import { useAuthStore } from '@/store/authStore';
 import * as Location from 'expo-location';
 import React, { useMemo, useState } from 'react';
@@ -122,7 +122,7 @@ export default function LocationInformation() {
         try {
             setSaving(true);
 
-            await fbUserApi.updateProfile('location', {
+            await fbUserApi.updateSellerProfile('location', {
                 address: {
                     street,
                     city,

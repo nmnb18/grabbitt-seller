@@ -2,7 +2,7 @@ import SellerDashboard from "@/components/dashboard/dashboard";
 import DashboardSkeleton from "@/components/skeletons/dashboard";
 import withSkeletonTransition from "@/components/wrappers/withSkeletonTransition";
 import { useTheme } from "@/hooks/use-theme-color";
-import { analyticsApi } from '@/services/firebaseFunctions';
+import { analyticsApi } from '@/services';
 import { useFocusEffect } from "expo-router";
 import React, { useCallback, useState } from "react";
 import { Alert, StyleSheet } from "react-native";
