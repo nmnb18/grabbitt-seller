@@ -1,7 +1,7 @@
 // services/iap.ts
-import api from "@/services/axiosInstance";
 import { Platform } from "react-native";
 import * as RNIap from "react-native-iap";
+import { paymentApi } from './api';
 import { notifyIAPError, notifyIAPSuccess, notifyIAPVerifying } from "./iapState";
 
 /**
@@ -48,7 +48,7 @@ export async function initIAP() {
                     notifyIAPVerifying();
 
                     // Send to backend for Apple verification
-                    const res = await api.post("/verifyIAPPurchase", {
+                    const res = await paymentApi.verifyIAPPurchase({
                         purchaseToken,
                         productId,
                         transactionId,
@@ -60,7 +60,7 @@ export async function initIAP() {
                         isConsumable: false,
                     });
 
-                    notifyIAPSuccess(res.data);
+                    notifyIAPSuccess((res as any)?.data ?? res);
                 } catch (err) {
                     console.error("IAP purchase handling failed:", err);
                     notifyIAPError(err);

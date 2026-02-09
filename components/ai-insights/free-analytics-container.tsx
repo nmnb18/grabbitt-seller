@@ -1,7 +1,7 @@
 
 import FreeAnalyticsSkeleton from "@/components/skeletons/free-analytics";
 import withSkeletonTransition from "@/components/wrappers/withSkeletonTransition";
-import api from "@/services/axiosInstance";
+import { analyticsApi } from "@/services";
 import { useFocusEffect } from "expo-router";
 import React, { useCallback, useState } from "react";
 import SellerFreeAIInsights from "./free-analytics";
@@ -27,15 +27,14 @@ export default function SellerFreeAIInsightsContainer() {
             setError(null);
             setLoading(true);
 
-            const response = await api.get("/sellerStats");
-            const { data } = response;
+            const response = await analyticsApi.sellerStats();
 
-            if (!data?.success) {
-                setError(data?.error || "Failed to load analytics");
+            if (!response?.success) {
+                setError(response?.error || "Failed to load analytics");
                 return;
             }
 
-            setStats(data.data);
+            setStats(response.data || response);
 
         } catch (error: any) {
             console.error(error);

@@ -11,21 +11,22 @@ import { Alert, StyleSheet, View } from "react-native";
 
 import { useTheme } from "@/hooks/use-theme-color";
 import { useCustomerScan } from "@/hooks/useCustomerScan";
+import { sellerRedemptionsApi } from '@/services';
 import { useAuthStore } from "@/store/authStore";
 
-import { OrderAmountInput } from "@/components/scan/OrderAmountInput";
-import { ScanSuccess } from "@/components/scan/ScanSuccess";
+import { OrderAmountInput } from "@/components/scan/order-amount-input";
+import { ScanSuccess } from "@/components/scan/scan-success";
 import { LoadingView } from "@/components/shared/loading-view";
 import { PermissionView } from "@/components/shared/permission-view";
 import { ScannerOverlay } from "@/components/shared/scan-overlay";
-import { api } from "@/services";
 
 type ScreenState = "scanning" | "amount_input" | "processing" | "success";
 
 export default function ScanCustomer() {
   const theme = useTheme();
   const router = useRouter();
-  const { user, fetchUserDetails } = useAuthStore();
+  const user = useAuthStore((state) => state.user);
+  const fetchUserDetails = useAuthStore((state) => state.fetchUserDetails);
 
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
 
@@ -87,18 +88,16 @@ export default function ScanCustomer() {
       if (parsed?.redemption_id) {
         setScreenState("processing");
 
-        const res = await api.post("/processRedemption", {
-          redemption_id: parsed.redemption_id,
-        });
+        const res = await sellerRedemptionsApi.processRedemption({ redemption_id: parsed.redemption_id });
 
-        if (!res.data.success) throw new Error(res.data.error);
+        if (!res?.success) throw new Error(res?.error || 'Redemption failed');
 
         router.replace({
           pathname: "/(drawer)/redeem-success",
           params: {
             redemption_id: parsed.redemption_id,
-            points: res.data.points_redeemed,
-            user_name: res.data.user_name,
+            points: res.points_redeemed,
+            user_name: res.user_name,
           },
         });
 

@@ -1,17 +1,16 @@
+import { ButtonRow, FormCard, FormRow } from '@/components/common';
 import { GradientText } from '@/components/ui/gradient-text';
 import { Button } from '@/components/ui/paper-button';
 import AuthScreenWrapper from '@/components/wrappers/authScreenWrapper';
-import { useTheme, useThemeColor } from '@/hooks/use-theme-color';
-import api from '@/services/axiosInstance';
-import { AppStyles } from '@/utils/theme';
+import { useTheme } from '@/hooks/use-theme-color';
+import { userApi } from '@/services';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
     Alert,
     StyleSheet,
-    View
 } from 'react-native';
-import { Surface, Text, TextInput } from 'react-native-paper';
+import { Text, TextInput } from 'react-native-paper';
 
 export default function ForgotPasswordScreen() {
     const [email, setEmail] = useState('');
@@ -19,22 +18,13 @@ export default function ForgotPasswordScreen() {
 
     const router = useRouter();
     const theme = useTheme();
-    const backgroundColor = useThemeColor({}, 'background');
-    const outlineColor = useThemeColor({}, 'outline');
-    const accentColor = useThemeColor({}, 'accent');
 
     const handleSend = async () => {
         if (!email) return Alert.alert('Error', 'Please enter your email');
 
         try {
             setLoading(true);
-            const resp = await api.post('/requestPasswordReset', { email });
-
-            if (!resp.data.success) {
-                Alert.alert('Error', resp.data.error || 'Failed to send reset link');
-                return;
-            }
-
+            await userApi.requestPasswordReset(email);
             Alert.alert('Email Sent', 'Check your inbox for reset link.');
             router.replace('/auth/login');
         } catch (err: any) {
@@ -46,17 +36,16 @@ export default function ForgotPasswordScreen() {
 
     return (
         <AuthScreenWrapper>
-            {/* FORM CARD */}
-            <Surface style={[styles.formCard, { backgroundColor: theme.colors.surface, borderColor: outlineColor }]} elevation={2}>
+            <FormCard>
                 <GradientText style={styles.gradientTitle}>
                     Forgot Password
                 </GradientText>
 
                 <Text style={[styles.infoText, { color: theme.colors.accent }]}>
-                    Enter your email and we’ll send you a password reset link.
+                    Enter your email and we'll send you a password reset link.
                 </Text>
 
-                <View style={styles.form}>
+                <FormRow>
 
                     <TextInput
                         label="Email"
@@ -73,11 +62,13 @@ export default function ForgotPasswordScreen() {
                             ...theme,
                             colors: {
                                 ...theme.colors,
-                                onSurfaceVariant: theme.colors.onSurfaceDisabled, // 👈 placeholder color source
+                                onSurfaceVariant: theme.colors.onSurfaceDisabled, // ðŸ‘ˆ placeholder color source
                             },
                         }}
                     />
+                </FormRow>
 
+                <ButtonRow vertical>
                     <Button
                         onPress={handleSend}
                         loading={loading}
@@ -97,38 +88,23 @@ export default function ForgotPasswordScreen() {
                     >
                         Back to Login
                     </Button>
-
-                </View>
-            </Surface>
-
+                </ButtonRow>
+            </FormCard>
         </AuthScreenWrapper>
-
-
-
-
     );
 }
 
 
 const styles = StyleSheet.create({
-
-    formCard: {
-        borderRadius: 12,
-        padding: AppStyles.spacing.lg,
-        borderWidth: 1,
-    },
     gradientTitle: {
         fontSize: 24,
         fontWeight: '600',
         textAlign: 'center',
-        marginBottom: AppStyles.spacing.lg,
+        marginBottom: 16,
     },
     infoText: {
         textAlign: 'center',
-        marginBottom: AppStyles.spacing.lg,
-    },
-    form: {
-        gap: AppStyles.spacing.md,
+        marginBottom: 16,
     },
     input: {},
 });

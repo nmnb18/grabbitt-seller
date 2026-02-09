@@ -3,8 +3,7 @@ import { AppStyles } from '@/utils/theme';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Text } from 'react-native-paper';
-import { BusinessTypeSelector } from '../form/business-type-selector';
-import { FormTextInput } from '../form/form-text-input';
+import { BusinessInfoForm } from '../form/business-info-form';
 
 interface BusinessInfoStepProps {
     formData: Pick<SellerFormData,
@@ -21,35 +20,20 @@ export const BusinessInfoStep: React.FC<BusinessInfoStepProps> = ({
         <View style={styles.container}>
             <Text variant="titleMedium" style={styles.stepTitle}>Business Information</Text>
 
-            <FormTextInput
-                label="Shop/Business Name *"
-                value={formData.shopName}
-                onChangeText={(value) => onFormDataChange('shopName', value)}
-                autoCapitalize="words"
-                leftIcon="store"
-            />
-
-            <BusinessTypeSelector
+            <BusinessInfoForm
+                mode="step"
+                shopName={formData.shopName}
                 businessType={formData.businessType}
                 category={formData.category}
-                onBusinessTypeChange={(value) => onFormDataChange('businessType', value)}
-                onCategoryChange={(value) => onFormDataChange('category', value)}
-            />
-
-            <FormTextInput
-                label="Business Description *"
-                value={formData.description}
-                onChangeText={(value) => onFormDataChange('description', value)}
-                multiline
-                numberOfLines={3}
-            />
-
-            <FormTextInput
-                label="Established Year (Optional)"
-                value={formData.establishedYear}
-                onChangeText={(value) => onFormDataChange('establishedYear', value)}
-                keyboardType="numeric"
-                leftIcon="calendar"
+                description={formData.description}
+                establishedYear={formData.establishedYear}
+                showTitle={false}
+                showEstablishedYear={true}
+                onShopNameChange={(val) => onFormDataChange('shopName', val)}
+                onBusinessTypeChange={(val) => onFormDataChange('businessType', val)}
+                onCategoryChange={(val) => onFormDataChange('category', val)}
+                onDescriptionChange={(val) => onFormDataChange('description', val)}
+                onEstablishedYearChange={(val) => onFormDataChange('establishedYear', val)}
             />
         </View>
     );

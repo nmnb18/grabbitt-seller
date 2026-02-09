@@ -1,18 +1,17 @@
+import { ButtonRow, FormCard, FormRow } from '@/components/common';
 import { GradientText } from '@/components/ui/gradient-text';
 import { Button } from '@/components/ui/paper-button';
 import AuthScreenWrapper from '@/components/wrappers/authScreenWrapper';
-import { useTheme, useThemeColor } from '@/hooks/use-theme-color';
-import api from '@/services/axiosInstance';
+import { useTheme } from '@/hooks/use-theme-color';
+import { userApi } from '@/services';
 import { isValidPassword } from '@/utils/helper';
-import { AppStyles } from '@/utils/theme';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
     Alert,
     StyleSheet,
-    View
 } from 'react-native';
-import { Surface, TextInput } from 'react-native-paper';
+import { TextInput } from 'react-native-paper';
 
 export default function ResetPasswordScreen() {
     const router = useRouter();
@@ -25,7 +24,6 @@ export default function ResetPasswordScreen() {
     const [loading, setLoading] = useState(false);
 
     const theme = useTheme();
-    const outlineColor = useThemeColor({}, 'outline');
 
     useEffect(() => {
         if (!oobCode) {
@@ -51,13 +49,7 @@ export default function ResetPasswordScreen() {
 
         try {
             setLoading(true);
-            const resp = await api.post('/confirmPasswordReset', { oobCode, newPassword: password });
-
-            if (!resp.data.success) {
-                Alert.alert('Error', resp.data.error);
-                return;
-            }
-
+            await userApi.confirmPasswordReset(oobCode as string, password);
             router.replace(`/auth/reset-success`);
 
         } catch (err: any) {
@@ -69,10 +61,10 @@ export default function ResetPasswordScreen() {
 
     return (
         <AuthScreenWrapper>
-            <Surface style={[styles.formCard, { backgroundColor: theme.colors.surface, borderColor: outlineColor }]} elevation={2}>
+            <FormCard>
                 <GradientText style={styles.gradientTitle}>Reset Password</GradientText>
 
-                <View style={styles.form}>
+                <FormRow>
                     <TextInput
                         label="New Password"
                         value={password}
@@ -108,11 +100,13 @@ export default function ResetPasswordScreen() {
                             ...theme,
                             colors: {
                                 ...theme.colors,
-                                onSurfaceVariant: theme.colors.onSurfaceDisabled, // 👈 placeholder color source
+                                onSurfaceVariant: theme.colors.onSurfaceDisabled,
                             },
                         }}
                     />
+                </FormRow>
 
+                <ButtonRow vertical>
                     <Button
                         variant="contained"
                         fullWidth
@@ -130,9 +124,8 @@ export default function ResetPasswordScreen() {
                     >
                         Back to Login
                     </Button>
-
-                </View>
-            </Surface>
+                </ButtonRow>
+            </FormCard>
         </AuthScreenWrapper>
 
     );
@@ -140,17 +133,11 @@ export default function ResetPasswordScreen() {
 
 
 const styles = StyleSheet.create({
-    formCard: {
-        borderRadius: 12,
-        padding: AppStyles.spacing.lg,
-        borderWidth: 1,
-    },
     gradientTitle: {
         fontSize: 24,
         fontWeight: '600',
         textAlign: 'center',
-        marginBottom: AppStyles.spacing.lg,
+        marginBottom: 16,
     },
-    form: { gap: AppStyles.spacing.md },
     input: {},
 });

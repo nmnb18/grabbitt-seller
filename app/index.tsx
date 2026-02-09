@@ -8,7 +8,10 @@ import { useAuthStore } from '../store/authStore';
 
 export default function Index() {
   const router = useRouter();
-  const { user, loading, loadUser, refreshToken } = useAuthStore();
+  const user = useAuthStore((state) => state.user);
+  const loading = useAuthStore((state) => state.loading);
+  const loadUser = useAuthStore((state) => state.loadUser);
+  const refreshToken = useAuthStore((state) => state.refreshToken);
 
   useEffect(() => {
     const initAuth = async () => {

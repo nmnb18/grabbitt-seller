@@ -1,9 +1,16 @@
 /**
  * Services Barrel Export
+ * REST API service layer with Bearer token authentication
  */
 
-export { default as api } from "./axiosInstance";
-export { default as apiService } from "./api";
+// Export REST API services
 export * from "./api";
-export * from "./userService";
+export { default as axiosInstance } from "./axiosInstance";
+
+// Legacy exports for backwards compatibility
+export { default as api, default as apiService } from "./api";
+
+// Other services
 export * from "./notificationService";
+
+

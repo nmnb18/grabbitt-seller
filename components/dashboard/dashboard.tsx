@@ -91,7 +91,7 @@ export default function SellerDashboard({
     refreshing = false,
     onRefresh
 }: SellerDashboardProps) {
-    const { user } = useAuthStore();
+    const user = useAuthStore((state) => state.user);
     const theme = useTheme();
     const router = useRouter();
     const [redeemVisible, setRedeemVisible] = useState(false);

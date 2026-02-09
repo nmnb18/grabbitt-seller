@@ -1,4 +1,4 @@
-import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
+import { ErrorBoundary } from "@/components/shared/error-boundary";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import { useTheme } from "@/hooks/use-theme-color";
 import { endIAP, initIAP } from "@/services/iap";

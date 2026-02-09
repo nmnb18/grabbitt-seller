@@ -99,7 +99,7 @@ export const LocationStep: React.FC<LocationStepProps> = ({
                         Auto-fill Address from My Location
                     </Button>
                     <HelperText type="info" style={[styles.manualLocationHelper, { color: accentColor }]}>
-                        We'll use your current location to auto-fill your address and enable location-based QR scanning
+                        We&apos;ll use your current location to auto-fill your address and enable location-based QR scanning
                     </HelperText>
                 </View>
             )}

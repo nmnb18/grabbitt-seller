@@ -29,7 +29,7 @@ interface UsePushNotificationsReturn {
 
 export function usePushNotifications(): UsePushNotificationsReturn {
   const router = useRouter();
-  const { user } = useAuthStore();
+  const user = useAuthStore((state) => state.user);
   const { setUnreadCount } = useNotificationStore();
 
   const [expoPushToken, setExpoPushToken] = useState<string | null>(null);

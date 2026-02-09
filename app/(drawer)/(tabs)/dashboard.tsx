@@ -2,7 +2,7 @@ import SellerDashboard from "@/components/dashboard/dashboard";
 import DashboardSkeleton from "@/components/skeletons/dashboard";
 import withSkeletonTransition from "@/components/wrappers/withSkeletonTransition";
 import { useTheme } from "@/hooks/use-theme-color";
-import api from "@/services/axiosInstance";
+import { analyticsApi } from '@/services';
 import { useFocusEffect } from "expo-router";
 import React, { useCallback, useState } from "react";
 import { Alert, StyleSheet } from "react-native";
@@ -28,14 +28,13 @@ export default function SellerDashboardContainer() {
     try {
       setLoading(true);
 
-      const response = await api.get(`/sellerStats`);
-      const { data } = response;
-      if (!data?.success) {
-        Alert.alert("Error", data?.error || "Failed to load dashboard stats");
+      const response = await analyticsApi.sellerStats();
+      if (!response?.success) {
+        Alert.alert("Error", response?.error || "Failed to load dashboard stats");
         return;
       }
 
-      const s = data.data;
+      const s = response.data || response;
       setStats({
         total_users: s.total_users,
         total_qrs: s.total_qrs,

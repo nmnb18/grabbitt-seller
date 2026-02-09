@@ -2,13 +2,13 @@ import AccountInformation from '@/components/profile/account-information';
 import BusinessInformation from '@/components/profile/business-information';
 import LocationDetails from '@/components/profile/location-details';
 import MediaInformation from '@/components/profile/media-information';
-import RewardsSettings from '@/components/profile/reward-settings';
 import NotificationSettings from '@/components/profile/notification-settings';
+import RewardsSettings from '@/components/profile/reward-settings';
 import VerificationDetails from '@/components/profile/verification-details';
 import { AppHeader } from '@/components/shared/app-header';
 import { Button as CustomButton } from '@/components/ui/paper-button';
 import { useTheme } from '@/hooks/use-theme-color';
-import api from '@/services/axiosInstance';
+import { userApi as fbUserApi } from '@/services';
 import { useAuthStore } from '@/store/authStore';
 import { isValidPassword } from '@/utils/helper';
 import { useRouter } from 'expo-router';
@@ -34,7 +34,8 @@ import {
 
 export default function SellerProfileSetup() {
   const router = useRouter();
-  const { user, logout } = useAuthStore();
+  const user = useAuthStore((state) => state.user);
+  const logout = useAuthStore((state) => state.logout);
 
   const theme = useTheme();
   const outlineColor = theme.colors.outline;
@@ -65,13 +66,10 @@ export default function SellerProfileSetup() {
     try {
       setDeleting(true);
 
-      const idToken = user?.idToken;
-      const resp = await api.delete("/deleteSellerAccount", {
-        headers: { Authorization: `Bearer ${idToken}` }
-      });
+      const resp = await fbUserApi.deleteSellerAccount();
 
-      if (!resp.data.success) {
-        Alert.alert("Delete Failed", resp.data.error || "Unable to delete account");
+      if (!resp?.success) {
+        Alert.alert("Delete Failed", resp?.error || "Unable to delete account");
         return;
       }
 
@@ -104,9 +102,8 @@ export default function SellerProfileSetup() {
 
     try {
       setChanging(true);
-
-      await api.post("/reauthenticate", { currentPassword });
-      await api.post("/changePassword", { newPassword });
+      await fbUserApi.reauthenticate(currentPassword);
+      await fbUserApi.changePassword(newPassword);
 
       Alert.alert("Success", "Password updated.");
 

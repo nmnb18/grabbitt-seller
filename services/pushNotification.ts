@@ -3,11 +3,11 @@
  * Production-ready Expo push notifications with proper permissions
  */
 
+import Constants from "expo-constants";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
-import Constants from "expo-constants";
 import { Platform } from "react-native";
-import api from "./axiosInstance";
+import { notificationApi } from './api';
 
 // Types
 export interface PushNotificationState {
@@ -142,7 +142,7 @@ export async function getExpoPushToken(): Promise<string | null> {
     await setupNotificationChannel();
 
     // Get project ID from app config
-    const projectId = Constants.expoConfig?.extra?.eas?.projectId 
+    const projectId = Constants.expoConfig?.extra?.eas?.projectId
       ?? Constants.easConfig?.projectId;
 
     if (!projectId) {
@@ -171,13 +171,13 @@ export async function getExpoPushToken(): Promise<string | null> {
  */
 export async function registerPushToken(token: string): Promise<boolean> {
   try {
-    await api.post("/registerPushToken", {
+    await notificationApi.registerToken({
       push_token: token,
       platform: Platform.OS,
       device_name: Device.deviceName || "Unknown",
       device_model: Device.modelName || "Unknown",
     });
-    
+
     console.log("[PushNotification] Token registered with backend");
     return true;
   } catch (error) {
@@ -191,10 +191,7 @@ export async function registerPushToken(token: string): Promise<boolean> {
  */
 export async function unregisterPushToken(token: string): Promise<boolean> {
   try {
-    await api.post("/unregisterPushToken", {
-      push_token: token,
-    });
-    
+    await notificationApi.unregisterPushToken({ push_token: token });
     console.log("[PushNotification] Token unregistered from backend");
     return true;
   } catch (error) {

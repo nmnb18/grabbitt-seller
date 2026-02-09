@@ -1,3 +1,4 @@
+import { ButtonRow, FormCard } from '@/components/common';
 import { GradientText } from '@/components/ui/gradient-text';
 import { Button } from '@/components/ui/paper-button';
 import AuthScreenWrapper from '@/components/wrappers/authScreenWrapper';
@@ -5,8 +6,7 @@ import { useTheme, useThemeColor } from '@/hooks/use-theme-color';
 import { AppStyles } from '@/utils/theme';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Surface } from 'react-native-paper';
+import { StyleSheet } from 'react-native';
 
 // Import reusable components
 import { AccountInfoStep } from '@/components/auth/account-info-step';
@@ -100,14 +100,14 @@ export default function SellerRegister() {
 
     return (
         <AuthScreenWrapper>
-            <Surface style={[styles.formCard, { backgroundColor: theme.colors.surface, borderColor: outlineColor }]} elevation={2}>
+            <FormCard>
                 <GradientText style={styles.gradientTitle}>Step {currentStep} of 5</GradientText>
 
                 <StepIndicator currentStep={currentStep} totalSteps={5} />
 
                 {renderStep()}
 
-                <View style={styles.buttonContainer}>
+                <ButtonRow vertical>
                     {currentStep > 1 && (
                         <Button variant="outlined" fullWidth onPress={handlePrevious}>
                             Back
@@ -133,8 +133,8 @@ export default function SellerRegister() {
                     <Button variant="text" fullWidth onPress={() => router.push("/auth/login")}>
                         Already have an account? Login
                     </Button>
-                </View>
-            </Surface>
+                </ButtonRow>
+            </FormCard>
         </AuthScreenWrapper>
     );
 }
@@ -146,14 +146,5 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         textAlign: 'center',
         marginBottom: AppStyles.spacing.lg,
-    },
-    formCard: {
-        borderRadius: 12,
-        padding: AppStyles.spacing.lg,
-        borderWidth: 1,
-    },
-    buttonContainer: {
-        marginTop: 24,
-        gap: 14,
     },
 });

@@ -3,17 +3,16 @@
  * Catches React errors and displays a friendly recovery screen
  */
 
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { Component, ErrorInfo, ReactNode } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  SafeAreaView,
   Platform,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from "react-native";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 // expo-updates types - may not be available in dev builds
 let Updates: { reloadAsync?: () => Promise<void> } = {};
@@ -100,7 +99,7 @@ export class ErrorBoundary extends Component<Props, State> {
             {/* Error Message */}
             <Text style={styles.title}>Oops! Something went wrong</Text>
             <Text style={styles.message}>
-              The app encountered an unexpected error. Don't worry, your data is safe.
+              The app encountered an unexpected error. Don&apos;t worry, your data is safe.
             </Text>
 
             {/* Error Details (Development only) */}

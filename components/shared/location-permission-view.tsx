@@ -1,8 +1,8 @@
 // components/shared/location-permission-view.tsx
-import React from "react";
-import { View, StyleSheet, Text } from "react-native";
-import { Button } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import React from "react";
+import { StyleSheet, Text, View } from "react-native";
+import { Button } from "react-native-paper";
 
 interface LocationPermissionViewProps {
   onGrantPermission: () => void;
@@ -36,7 +36,7 @@ export function LocationPermissionView({
 
         {/* Description */}
         <Text style={styles.description}>
-          Location access helps us verify you're at the store when scanning QR
+          Location access helps us verify you&apos;re at the store when scanning QR
           codes.
           {"\n\n"}• Required for stores with location restrictions
           {"\n"}• Better reward experience

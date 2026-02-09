@@ -12,7 +12,7 @@ import { ActivityIndicator, Surface, Text } from "react-native-paper";
 
 import { Button } from "@/components/ui/paper-button";
 import { useTheme } from "@/hooks/use-theme-color";
-import api from "@/services/axiosInstance";
+import { offersApi } from '@/services';
 
 interface RedeemModalProps {
     visible: boolean;
@@ -45,15 +45,13 @@ export default function RedeemModal({
             setLoading(true);
             setError(null);
 
-            const resp = await api.post("/verifyRedeemCode", {
-                redeem_code,
-            });
+            const resp = await offersApi.verifyRedeemCode(redeem_code);
 
-            if (resp.data.success) {
-                setSuccessData(resp.data.redemption);
+            if (resp?.success) {
+                setSuccessData(resp.redemption || resp.data?.redemption);
                 onSuccess?.();
             } else {
-                setError(resp.data.error || "Invalid redeem code");
+                setError(resp?.error || resp?.message || "Invalid redeem code");
             }
         } catch (err: any) {
             setError(err.response?.data?.error || "Failed to verify code");

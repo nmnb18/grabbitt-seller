@@ -2,5 +2,6 @@
  * Scan Components Barrel Export
  */
 
-export { OrderAmountInput } from "./OrderAmountInput";
-export { ScanSuccess } from "./ScanSuccess";
+export { OrderAmountInput } from "./order-amount-input";
+export { ScanSuccess } from "./scan-success";
+

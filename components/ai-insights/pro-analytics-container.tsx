@@ -1,6 +1,6 @@
 import ProAnalyticsSkeleton from "@/components/skeletons/pro-analytics";
 import withSkeletonTransition from "@/components/wrappers/withSkeletonTransition";
-import api from "@/services/axiosInstance";
+import { analyticsApi } from "@/services";
 import { useAuthStore } from "@/store/authStore";
 import { useFocusEffect } from "expo-router";
 import React, { useCallback, useState } from "react";
@@ -14,7 +14,7 @@ const SellerProAnalyticsWithSkeleton = withSkeletonTransition(
 // CONTAINER
 // ------------------------------
 export default function SellerProAnalyticsInsightsContainer() {
-  const { user } = useAuthStore();
+  const user = useAuthStore((state) => state.user);
   const tier = user?.user?.seller_profile?.subscription?.tier || "free";
 
   const [data, setData] = useState<any>(null);
@@ -40,15 +40,13 @@ export default function SellerProAnalyticsInsightsContainer() {
       setError(null);
       setLoading(true);
 
-      const response = await api.get("/sellerAdvancedAnalytics");
-      const { data } = response;
-
-      if (!data?.success) {
-        setError(data?.error || "Failed to load advanced analytics");
+      const response = await analyticsApi.sellerAdvancedAnalytics();
+      if (!response?.success) {
+        setError(response?.error || "Failed to load advanced analytics");
         return;
       }
 
-      setData(data.data);
+      setData(response.data || response);
     } catch (error: any) {
       console.error(error);
       setError(

@@ -10,6 +10,100 @@ import { Text } from "react-native-paper";
 const { width } = Dimensions.get("window");
 const LOGO_WIDTH = width * 0.4;
 
+function HeaderTitle() {
+  return (
+    <GradientText
+      style={{
+        fontFamily: "JostMedium",
+        fontSize: 40,
+        textAlignVertical: "center",
+        includeFontPadding: false,
+      }}
+    >
+      grabbitt
+    </GradientText>
+  );
+}
+
+function HeaderMenuButton({ sellerTheme }: { sellerTheme: any }) {
+  const navigation = useNavigation<any>();
+  return (
+    <TouchableOpacity
+      onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+      style={{ marginLeft: 16 }}
+    >
+      <Ionicons
+        name="menu"
+        size={26}
+        color={sellerTheme.colors.onSurface}
+      />
+    </TouchableOpacity>
+  );
+}
+
+function NotificationBadge({
+  unreadCount,
+  sellerTheme,
+  router,
+}: {
+  unreadCount: number;
+  sellerTheme: any;
+  router: any;
+}) {
+  return (
+    <TouchableOpacity
+      onPress={() => router.push("/(drawer)/notifications")}
+      style={{ marginRight: 16 }}
+    >
+      <Ionicons
+        name="notifications-outline"
+        size={24}
+        color={sellerTheme.colors.onSurface}
+      />
+      {unreadCount > 0 && (
+        <View
+          style={{
+            position: "absolute",
+            top: -4,
+            right: -6,
+            backgroundColor: sellerTheme.colors.primary,
+            borderRadius: 10,
+            minWidth: 18,
+            height: 18,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Text style={{ color: "white", fontSize: 11, fontWeight: "bold" }}>
+            {unreadCount}
+          </Text>
+        </View>
+      )}
+    </TouchableOpacity>
+  );
+}
+
+const TABS_CONFIG = [
+  {
+    name: "dashboard" as const,
+    title: "Dashboard",
+    icon: "view-dashboard" as const,
+    headerShown: true,
+  },
+  {
+    name: "scan-customer" as const,
+    title: "Scan QR",
+    icon: "qrcode-scan" as const,
+    headerShown: false,
+  },
+  {
+    name: "ai-insights" as const,
+    title: "Insights",
+    icon: "chart-line" as const,
+    headerShown: true,
+  },
+];
+
 export default function SellerLayout() {
   const sellerTheme = useTheme();
   const { unreadCount } = useNotificationStore();
@@ -45,116 +139,34 @@ export default function SellerLayout() {
           borderBottomWidth: 0,
         },
 
-        headerTitle: () => (
-          <GradientText
-            style={{
-              fontFamily: "JostMedium",
-              fontSize: 40,
-              textAlignVertical: "center",
-              includeFontPadding: false,
-            }}
-          >
-            grabbitt
-          </GradientText>
-        ),
-
-        headerLeft: () => (
-          <TouchableOpacity
-            onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
-            style={{ marginLeft: 16 }}
-          >
-            <Ionicons
-              name="menu"
-              size={26}
-              color={sellerTheme.colors.onSurface}
-            />
-          </TouchableOpacity>
-        ),
-
+        headerTitle: () => <HeaderTitle />,
+        headerLeft: () => <HeaderMenuButton sellerTheme={sellerTheme} />,
         headerRight: () => (
-          <TouchableOpacity
-            onPress={() => router.push("/(drawer)/notifications")}
-            style={{ marginRight: 16 }}
-          >
-            <Ionicons
-              name="notifications-outline"
-              size={24}
-              color={sellerTheme.colors.onSurface}
-            />
-            {unreadCount > 0 && (
-              <View
-                style={{
-                  position: "absolute",
-                  top: -4,
-                  right: -6,
-                  backgroundColor: sellerTheme.colors.primary,
-                  borderRadius: 10,
-                  minWidth: 18,
-                  height: 18,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Text style={{ color: "white", fontSize: 11, fontWeight: "bold" }}>
-                  {unreadCount}
-                </Text>
-              </View>
-            )}
-          </TouchableOpacity>
+          <NotificationBadge
+            unreadCount={unreadCount}
+            sellerTheme={sellerTheme}
+            router={router}
+          />
         ),
       }}
     >
-      <Tabs.Screen
-        name="dashboard"
-        options={{
-          title: "Dashboard",
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons
-              name="view-dashboard"
-              size={size}
-              color={color}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="scan-customer"
-        options={{
-          title: "Scan QR",
-          headerShown: false,
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="qrcode-scan" size={size} color={color} />
-          ),
-        }}
-      />
-      {/* <Tabs.Screen
-        name="redeem-qr"
-        options={{
-          title: "Redeem",
-          headerShown: false,
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons
-              name="gift-outline"
-              size={size}
-              color={color}
-            />
-          ),
-        }}
-      /> */}
-      <Tabs.Screen
-        name="ai-insights"
-        options={{
-          title: "Insights",
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons
-              name="chart-line"
-              size={size}
-              color={color}
-            />
-          ),
-        }}
-      />
-
+      {TABS_CONFIG.map((tab) => (
+        <Tabs.Screen
+          key={tab.name}
+          name={tab.name}
+          options={{
+            title: tab.title,
+            headerShown: tab.headerShown,
+            tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons
+                name={tab.icon as any}
+                size={size}
+                color={color}
+              />
+            ),
+          }}
+        />
+      ))}
     </Tabs>
   );
 }
