@@ -22,10 +22,7 @@ export function LoadingOverlay({ visible, message }: LoadingOverlayProps) {
         <Modal transparent visible={visible} animationType="fade">
             <View style={styles.container}>
                 <View
-                    style={[
-                        styles.overlay,
-                        { backgroundColor: theme.colors.background + "CC" },
-                    ]}
+
                 >
                     <ActivityIndicator
                         size="large"

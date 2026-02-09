@@ -79,10 +79,10 @@ export const userApi = {
      */
     getDetails: async (uid: string) => {
         try {
-            const response = await api.get(`/getUserDetails/${uid}`);
+            const response = await api.get(`/getSellerDetails?uid=${uid}`);
             return response.data;
         } catch (error) {
-            throw handleApiError(error, 'getUserDetails');
+            throw handleApiError(error, 'getSellerDetails');
         }
     },
 
@@ -174,7 +174,8 @@ export const userApi = {
      */
     refreshToken: async (refreshToken: string) => {
         try {
-            const response = await api.post('/refreshToken', { refresh_token: refreshToken });
+            console.log('here', refreshToken)
+            const response = await api.post('/refreshToken', { refreshToken: refreshToken });
             return response.data;
         } catch (error) {
             throw handleApiError(error, 'refreshToken');
@@ -369,9 +370,12 @@ export const offersApi = {
      * Delete seller offer
      * DELETE /api/sellers/offers/:date
      */
-    deleteSellerOffer: async (date: string) => {
+
+    deleteSellerOffer: async (date?: string) => {
         try {
-            const response = await api.delete(`/deleteSellerOffer/${date}`);
+            const params: Record<string, any> = {};
+            if (date) params.date = date;
+            const response = await api.delete('/deleteSellerOffer', { params });
             return response.data;
         } catch (error) {
             throw handleApiError(error, 'deleteSellerOffer');
@@ -465,7 +469,7 @@ export const subscriptionApi = {
     getSubscriptionHistory: async (sellerId?: string) => {
         try {
             const params: Record<string, any> = {};
-            if (sellerId) params.seller_id = sellerId;
+            if (sellerId) params.sellerId = sellerId;
             const response = await api.get('/getSubscriptionHistory', { params });
             return response.data;
         } catch (error) {

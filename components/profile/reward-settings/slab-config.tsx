@@ -10,6 +10,7 @@ import { Text, TextInput } from "react-native-paper";
 import { SlabRuleUI } from "./types";
 
 interface SlabConfigProps {
+    noEdit: boolean;
     slabRules: SlabRuleUI[];
     onUpdateSlab: (index: number, field: "max" | "points", value: string) => void;
     onAddSlab: () => void;
@@ -17,6 +18,7 @@ interface SlabConfigProps {
 }
 
 export const SlabConfig = React.memo(function SlabConfig({
+    noEdit,
     slabRules,
     onUpdateSlab,
     onAddSlab,
@@ -83,6 +85,7 @@ export const SlabConfig = React.memo(function SlabConfig({
 
             <TouchableOpacity
                 onPress={onAddSlab}
+                disabled={noEdit}
                 style={[styles.addTierBtn, { borderColor: theme.colors.primary }]}
             >
                 <MaterialCommunityIcons name="plus" size={18} color={theme.colors.primary} />

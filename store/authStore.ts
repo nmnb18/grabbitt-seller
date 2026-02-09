@@ -70,11 +70,11 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         throw new Error(response?.error || "Login failed");
       }
 
-      const fullUser: User = response.user as any;
+      const fullUser: User = response as any;
       const token = response.idToken || response.user?.idToken;
       const refreshToken = response.refreshToken || response.user?.refreshToken;
 
-      await get().fetchUserDetails(fullUser.uid, "seller");
+
 
       // Save tokens
       if (token) await AsyncStorage.setItem("idToken", token);
@@ -84,6 +84,8 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         idToken: token || null,
         refreshTokenValue: refreshToken || null,
       });
+
+      await get().fetchUserDetails(fullUser.uid, "seller");
     } catch (err: any) {
       set({ loading: false });
       console.error("Login error:", err?.message || err);
@@ -93,7 +95,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
   fetchUserDetails: async (uid) => {
     try {
-      const { user } = get();
+      const { user, idToken } = get();
       set({ loading: true });
       const response = await userApi.getDetails(uid);
       const updatedUser: User = {

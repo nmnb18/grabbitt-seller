@@ -134,7 +134,7 @@ export default function SubscriptionHistoryScreen() {
                 <Text variant="titleMedium" style={{ color: theme.colors.onSurface, marginBottom: AppStyles.spacing.sm, textAlign: 'center' }}>
                     No subscription history found
                 </Text>
-                <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant, textAlign: 'center' }}>
+                <Text variant="bodyMedium" style={{ color: theme.colors.onSurface, textAlign: 'center' }}>
                     Your subscription purchases will appear here
                 </Text>
             </Card.Content>

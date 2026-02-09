@@ -338,6 +338,7 @@ export default function RewardsSettings() {
 
                                 {rewardType === "slab" && (
                                     <SlabConfig
+                                        noEdit={rewards?.noEdit ?? true}
                                         slabRules={slabRules}
                                         onUpdateSlab={updateSlab}
                                         onAddSlab={addSlab}

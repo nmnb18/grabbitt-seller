@@ -66,7 +66,7 @@ export default function SellerProfileSetup() {
     try {
       setDeleting(true);
 
-      const resp = await fbUserApi.deleteSellerAccount(user?.user.uid);
+      const resp = await fbUserApi.deleteSellerAccount();
 
       if (!resp?.success) {
         Alert.alert("Delete Failed", resp?.error || "Unable to delete account");

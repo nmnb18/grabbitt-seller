@@ -46,7 +46,7 @@ export default function SellerRedemptionsScreen() {
 
   if (loading) {
     return (
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
         <AppHeader />
         <LoadingOverlay
           visible={loading}

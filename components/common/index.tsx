@@ -342,6 +342,9 @@ const styles = StyleSheet.create({
   },
   infoValue: {
     fontSize: 14,
+    width: 200,
+    textAlign: 'right',
+    textTransform: 'capitalize',
     fontWeight: "600",
   },
   emptyContainer: {

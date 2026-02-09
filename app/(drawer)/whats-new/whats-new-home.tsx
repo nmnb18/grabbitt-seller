@@ -3,8 +3,9 @@
  * Interactive UX with proper validations
  */
 
+import { LoadingOverlay } from "@/components/common";
+import { AppHeader } from "@/components/shared";
 import { CopyOfferModal } from "@/components/whats-new/copy-offer-modal";
-import { LoadingState } from "@/components/whats-new/loading-state";
 import { OffersContent } from "@/components/whats-new/offers-content";
 import { SubscriptionBanner } from "@/components/whats-new/subscription-banner";
 import { TabSwitcher } from "@/components/whats-new/tab-switcher";
@@ -84,17 +85,28 @@ export default function WhatsNewScreen() {
 
     // Render loading state
     if (loading) {
-        return <LoadingState visible={loading} />;
+        return <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+            <AppHeader />
+            <LoadingOverlay
+                visible={loading}
+                message="Loading..."
+            />
+        </View>;
     }
 
     // Render subscription banner
     if (showSubscriptionBanner) {
-        return <SubscriptionBanner visible={showSubscriptionBanner} />;
+        return <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+            <AppHeader />
+            <SubscriptionBanner visible={showSubscriptionBanner} />
+        </View>;
+
     }
 
     return (
         <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
             {/* Tab Switcher */}
+            <AppHeader />
             <TabSwitcher
                 activeTab={tab}
                 counts={{ active: active.length, upcoming: upcoming.length, expired: expired.length }}
