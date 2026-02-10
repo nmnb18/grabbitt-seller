@@ -2,7 +2,7 @@ import { ButtonRow, FormCard } from '@/components/common';
 import { GradientText } from '@/components/ui/gradient-text';
 import { Button } from '@/components/ui/paper-button';
 import AuthScreenWrapper from '@/components/wrappers/authScreenWrapper';
-import { useTheme, useThemeColor } from '@/hooks/use-theme-color';
+import { useThemeColor } from '@/hooks/use-theme-color';
 import { AppStyles } from '@/utils/theme';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
@@ -41,8 +41,6 @@ export default function SellerRegister() {
     } = useLocation({ formData, updateFormData });
 
     const router = useRouter();
-    const theme = useTheme();
-    const outlineColor = useThemeColor({}, 'outline');
     const accentColor = useThemeColor({}, 'accent');
 
     const handleNext = () => {

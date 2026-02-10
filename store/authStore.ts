@@ -127,7 +127,8 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   logout: async (uid: string) => {
     try {
       set({ isLoggingOut: true });
-      await userApi.logout(uid);
+      const { user } = get();
+      await userApi.logout(user?.user.seller_profile?.user_id ?? '');
       await AsyncStorage.multiRemove(["user", "idToken", "refreshToken"]);
       set({ user: null, idToken: null, refreshTokenValue: null, isLoggingOut: false });
     } catch (err) {

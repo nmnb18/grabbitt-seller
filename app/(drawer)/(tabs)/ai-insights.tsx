@@ -29,10 +29,11 @@ export default function AnalyticsScreen() {
           onPress={() => setTab('free')}
           style={[
             styles.tab,
-            { backgroundColor: theme.colors.surfaceVariant },
+            { backgroundColor: theme.colors.surfaceVariant, borderTopLeftRadius: 10 },
             tab === 'free' && {
               backgroundColor: theme.colors.primaryContainer,
-              elevation: 2
+              elevation: 2,
+
             }
           ]}
         >
@@ -55,7 +56,7 @@ export default function AnalyticsScreen() {
           onPress={() => setTab('pro')}
           style={[
             styles.tab,
-            { backgroundColor: theme.colors.surfaceVariant },
+            { backgroundColor: theme.colors.surfaceVariant, borderTopRightRadius: 10 },
             tab === 'pro' && {
               backgroundColor: theme.colors.primaryContainer,
               elevation: 2
@@ -91,16 +92,15 @@ const styles = StyleSheet.create({
 
   tabs: {
     flexDirection: 'row',
-    padding: 12,
     marginHorizontal: 12,
     marginTop: 12,
     borderRadius: 12,
+    paddingHorizontal: 12
   },
 
   tab: {
     flex: 1,
     paddingVertical: 10,
-    borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
   },

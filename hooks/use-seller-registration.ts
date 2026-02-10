@@ -1,7 +1,7 @@
 import { useAuthStore } from "@/store/authStore";
 import { isValidEmail, isValidPassword, isValidPhone } from "@/utils/helper";
 import { useRouter } from "expo-router";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { Alert } from "react-native";
 import { useMultiStepForm } from "./useMultiStepForm";
 
@@ -161,6 +161,7 @@ const stepValidators = {
 export const useSellerRegistration = () => {
   const router = useRouter();
   const register = useAuthStore((state) => state.register);
+  const [loading, setLoading] = useState(false)
 
   const form = useMultiStepForm<SellerFormData>({
     initialValues: initialFormData,
@@ -210,7 +211,7 @@ export const useSellerRegistration = () => {
 
     try {
       form.setError("_form" as any, ""); // Clear form errors
-
+      setLoading(true);
       const payload = {
         email: formData.email,
         password: formData.password,
@@ -262,8 +263,9 @@ export const useSellerRegistration = () => {
       await register(payload);
       Alert.alert(
         "Registration Success",
-        "Please login with registered email id and password to continue."
+        "Please verify you email and wait for Grabbitt Team approval."
       );
+      setLoading(false)
       router.push("/auth/login");
     } catch (error: any) {
       form.setError("_form" as any, error.message);
@@ -290,7 +292,6 @@ export const useSellerRegistration = () => {
 
     // Submission
     handleRegister,
-    isSubmitting: form.isSubmitting,
 
     // Field management
     setValue: form.setValue,
@@ -301,10 +302,6 @@ export const useSellerRegistration = () => {
     updateSlab,
     addSlab,
     removeSlab,
-
-    // Deprecated: loading is now isSubmitting
-    get loading() {
-      return form.isSubmitting;
-    },
+    loading
   };
 };

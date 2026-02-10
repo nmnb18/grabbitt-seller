@@ -6,7 +6,7 @@ import { Skeleton } from "../ui/skeleton";
 export default function ProAnalyticsSkeleton() {
     const theme = useTheme();
     return (
-        <View style={[styles.container, { backgroundColor: theme.colors.background }]} >
+        <View style={[styles.container, { backgroundColor: theme.colors.background, paddingHorizontal: 22 }]} >
 
             {/* Header */}
             <Skeleton style={styles.title} />

@@ -1,70 +1,19 @@
-
 import FreeAnalyticsSkeleton from "@/components/skeletons/free-analytics";
 import withSkeletonTransition from "@/components/wrappers/withSkeletonTransition";
-import { analyticsApi } from "@/services";
-import { useFocusEffect } from "expo-router";
-import React, { useCallback, useState } from "react";
+import { useSellerStats } from "@/hooks/useSellerStats";
+import React, { useCallback } from "react";
 import SellerFreeAIInsights from "./free-analytics";
 
 const SellerFreeAIInsightsWithSkeleton =
     withSkeletonTransition(FreeAnalyticsSkeleton)(SellerFreeAIInsights);
 
-// ------------------------------
-// CONTAINER
-// ------------------------------
 export default function SellerFreeAIInsightsContainer() {
-    const [stats, setStats] = useState<any>(null);
-    const [loading, setLoading] = useState(true);
-    const [refreshing, setRefreshing] = useState(false);
-    const [hasData, setHasData] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const { stats, loading, refreshing, error, hasData, refetch } =
+        useSellerStats();
 
-    // ------------------------------
-    // LOAD ANALYTICS
-    // ------------------------------
-    const loadData = useCallback(async () => {
-        try {
-            setError(null);
-            setLoading(true);
-
-            const response = await analyticsApi.sellerStats();
-
-            if (!response?.success) {
-                setError(response?.error || "Failed to load analytics");
-                return;
-            }
-
-            setStats(response.data || response);
-
-        } catch (error: any) {
-            console.error(error);
-            setError(
-                error?.response?.data?.error ||
-                "Could not load analytics"
-            );
-        } finally {
-            setLoading(false);
-            setRefreshing(false);
-            setHasData(true);
-        }
-    }, []);
-
-    // ------------------------------
-    // AUTO LOAD ON FOCUS
-    // ------------------------------
-    useFocusEffect(
-        useCallback(() => {
-            loadData();
-        }, [loadData])
-    );
-
-    // ------------------------------
-    // PULL TO REFRESH
-    // ------------------------------
-    const handleRefresh = () => {
-        setRefreshing(true);
-        loadData();
-    };
+    const handleRefresh = useCallback(() => {
+        refetch();
+    }, [refetch]);
 
     return (
         <SellerFreeAIInsightsWithSkeleton

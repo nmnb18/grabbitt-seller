@@ -95,6 +95,7 @@ function CustomDrawerContent() {
         style: "destructive",
         onPress: async () => {
           router.back();
+          console.log(user)
           await logout(user?.uid ?? "");
           router.replace("/auth/login");
         },

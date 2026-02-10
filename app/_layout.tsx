@@ -2,13 +2,14 @@ import { ErrorBoundary } from "@/components/shared/error-boundary";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import { useTheme } from "@/hooks/use-theme-color";
 import { endIAP, initIAP } from "@/services/iap";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
 
 import * as Linking from "expo-linking";
 import { Stack, usePathname, useRouter, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import * as SystemUI from "expo-system-ui";
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { BackHandler, Platform, ToastAndroid } from "react-native";
 import { PaperProvider } from "react-native-paper";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -36,6 +37,19 @@ export default function RootLayout() {
 
   const exitPressedRef = useRef(false);
   const exitTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            retry: 1,
+            refetchOnWindowFocus: true,
+            refetchOnReconnect: true,
+          },
+        },
+      })
+  );
 
   // Check if we're on a root screen
   const isRootScreen = useCallback(() => {
@@ -145,8 +159,11 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <PaperProvider theme={theme}>
           <NotificationProvider>
-            <StatusBar translucent backgroundColor={"transparent"} />
-            <Stack screenOptions={{ headerShown: false }} />
+            <QueryClientProvider client={queryClient}>
+
+              <StatusBar translucent backgroundColor={"transparent"} />
+              <Stack screenOptions={{ headerShown: false }} />
+            </QueryClientProvider>
           </NotificationProvider>
         </PaperProvider>
       </SafeAreaProvider>

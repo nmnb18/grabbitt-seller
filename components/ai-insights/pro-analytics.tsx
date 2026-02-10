@@ -52,6 +52,7 @@ export default function SellerProAnalyticsInsights({
             style={{
                 flex: 1,
                 backgroundColor: theme.colors.background,
+                paddingHorizontal: 6
             }}
             contentContainerStyle={{
                 padding: 16,
