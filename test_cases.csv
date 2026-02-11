@@ -1,0 +1,360 @@
+Test Case ID,Module,Feature,Test Case Name,Precondition,Steps,Expected Result,Priority,Status
+TC001,Authentication,Login,Valid Login with Email and Password,User account exists in backend; App is opened to login screen,"1. Enter valid email
+2. Enter valid password
+3. Click Login button","User is logged in successfully, navigated to dashboard, user profile data is loaded","High","Not Started"
+TC002,Authentication,Login,Invalid Email Format,User is on login screen,"1. Enter invalid email format (e.g., 'test@invalid')
+2. Enter password
+3. Click Login button","Error message displayed: 'Invalid email format', Login fails","High","Not Started"
+TC003,Authentication,Login,Invalid Password,Valid user account exists; User is on login screen,"1. Enter valid email
+2. Enter incorrect password
+3. Click Login button","Error message displayed: 'Incorrect password', Login fails","High","Not Started"
+TC004,Authentication,Login,Empty Email Field,User is on login screen,"1. Leave email field empty
+2. Enter password
+3. Click Login button","Error message: 'Please fill all fields', Login button disabled or shows validation error","High","Not Started"
+TC005,Authentication,Login,Empty Password Field,User is on login screen,"1. Enter email
+2. Leave password field empty
+3. Click Login button","Error message: 'Please fill all fields', Login button disabled or shows validation error","High","Not Started"
+TC006,Authentication,Login,Toggle Password Visibility,User has entered a password,"1. Click password visibility toggle icon
+2. Verify password is visible
+3. Click toggle again","Password visibility toggles between masked and visible states","Medium","Not Started"
+TC007,Authentication,Registration,Complete Seller Registration,New user without account; Seller information ready,"1. Navigate to registration
+2. Fill account info (email, name, phone, password)
+3. Fill business info (shop name, business type, category)
+4. Fill location details (address, city, state, pincode)
+5. Configure reward settings (type, points/percentage)
+6. Accept terms and conditions
+7. Click Register button","Registration successful, confirmation message shown, redirected to login screen","High","Not Started"
+TC008,Authentication,Registration,Email Already Exists,Account with email already registered,"1. Enter registered email during registration
+2. Proceed to complete registration
+3. Click Register","Error message: 'Email already registered', Registration fails","High","Not Started"
+TC009,Authentication,Registration,Invalid Email Format During Registration,User on registration screen,"1. Enter invalid email format
+2. Fill other required fields
+3. Click Next/Register","Error shown: 'Invalid email format', Cannot proceed to next step","High","Not Started"
+TC010,Authentication,Registration,Password Validation (Strength),User on account info step,"1. Enter weak password (less than 6 characters)
+2. Try to proceed","Error message: 'Password must be at least 6 characters', Cannot proceed","High","Not Started"
+TC011,Authentication,Registration,Password Mismatch,User on account info step,"1. Enter password in password field
+2. Enter different password in confirm password field
+3. Try to proceed","Error message: 'Passwords do not match', Cannot proceed to next step","High","Not Started"
+TC012,Authentication,Registration,Missing Required Fields on Step 1,User on account info step,"1. Skip required field (e.g., shop name)
+2. Try to proceed to next step","Validation error shown for missing field, Cannot proceed","High","Not Started"
+TC013,Authentication,Registration,Phone Number Validation,User on account info step,"1. Enter invalid phone number format
+2. Try to proceed","Error message: 'Invalid phone number', Cannot proceed","High","Not Started"
+TC014,Authentication,Registration,Location Auto-fill,User enables location permission; User on location details step,"1. Click 'Auto-fill Location' button
+2. Allow location permission if prompted","Latitude and longitude populated, street address auto-filled (if API available)","High","Not Started"
+TC015,Authentication,Forgot Password,Valid Email in Forgot Password,User is on login screen; Email exists in system,"1. Click 'Forgot Password' link
+2. Enter valid registered email
+3. Click 'Send Reset Link'","Success message: 'Reset link sent to email', Email received with reset link","High","Not Started"
+TC016,Authentication,Forgot Password,Non-existent Email,User is on forgot password screen,"1. Enter non-existent email
+2. Click 'Send Reset Link'","Error message: 'Email not found', Request fails","High","Not Started"
+TC017,Authentication,Forgot Password,Reset Password with Valid Link,User has received password reset email; Valid reset link active,"1. Click reset link in email
+2. Enter new password
+3. Confirm new password
+4. Click Reset","Success message: 'Password reset successfully', Redirected to login with new password","High","Not Started"
+TC018,Authentication,Forgot Password,Expired Reset Link,Reset link has expired,"1. Click expired reset link
+2. Verify system response","Error message: 'Reset link has expired', User directed to request new link","Medium","Not Started"
+TC019,Dashboard,Dashboard Load,Dashboard Loads with Seller Data,User is logged in; Seller has scan history,"1. Navigate to dashboard
+2. Observe dashboard UI","Dashboard displays: total scans, total points distributed, active customers, monthly scans, recent activity","High","Not Started"
+TC020,Dashboard,Dashboard Load,Dashboard on First Login (No Data),New seller; No transaction history,"1. Log in with new seller account
+2. Navigate to dashboard","Dashboard shows empty states: 'No scans yet', 'Start scanning to earn points', Quick action buttons visible","High","Not Started"
+TC021,Dashboard,Quick Actions,Scan Customer QR,User is on dashboard,"1. Click 'Scan Customer' quick action card
+2. Verify navigation","Navigated to scan customer screen with camera ready","High","Not Started"
+TC022,Dashboard,Quick Actions,Redeem Points,User is on dashboard,"1. Click 'Redeem Points' quick action card
+2. Verify navigation","Navigated to redemption QR scanning screen","High","Not Started"
+TC023,Dashboard,Quick Actions,What's New,User is on dashboard,"1. Click 'What's New' quick action card
+2. Verify navigation","Navigated to What's New offers management screen","High","Not Started"
+TC024,Dashboard,Pull to Refresh,Refresh Dashboard Data,User is on dashboard with existing data,"1. Pull down on dashboard (refresh gesture)
+2. Observe data update","Dashboard data refreshes, last refresh time updates, loading indicator shows briefly","High","Not Started"
+TC025,Scan,Scan Customer QR,Successful Scan with Fixed Points,Seller has 'default' reward type configured; Customer QR code available,"1. Navigate to scan customer screen
+2. Allow camera permission if prompted
+3. Scan valid customer QR code
+4. System processes scan","QR code recognized, success screen shown with customer name and points awarded","High","Not Started"
+TC026,Scan,Scan Customer QR,Scan with Percentage Reward,Seller has 'percentage' reward type configured,"1. Navigate to scan customer screen
+2. Scan valid customer QR code
+3. Amount input screen appears
+4. Enter order amount (e.g., ₹1000)
+5. System calculates points
+6. Confirm to award points","Amount input modal appears, preview shows calculated points (% of amount), points awarded after confirmation","High","Not Started"
+TC027,Scan,Scan Customer QR,Scan with Tiered Reward (Slab),Seller has 'slab' reward type configured with rules (e.g., 100-500: 10pts, 500-1000: 20pts),"1. Navigate to scan customer screen
+2. Scan valid customer QR code
+3. Amount input screen appears
+4. Enter order amount (e.g., ₹700)
+5. Preview shows correct tier points
+6. Confirm to award","Amount input modal shows slab tiers and preview, correct tier points calculated based on amount, points awarded","High","Not Started"
+TC028,Scan,Scan Customer QR,Invalid/Expired QR Code,Scan QR code that is invalid or from wrong app,"1. Navigate to scan customer screen
+2. Scan invalid QR code (e.g., random code, wrong format)","Error message: 'Invalid QR code', Scan fails, option to scan again","High","Not Started"
+TC029,Scan,Scan Customer QR,Duplicate Scan Detection,Same customer QR scanned twice within short interval,"1. Scan valid customer QR
+2. Complete transaction
+3. Scan same QR again within 5 minutes (or configured interval)","Fraud detection warning shown: 'Duplicate scan detected', User can confirm or cancel","Medium","Not Started"
+TC030,Scan,Scan Customer QR,Camera Permission Denied,User denies camera permission; User is on scan screen,"1. Click 'Enable Camera' or similar
+2. Deny camera permission","Error message: 'Camera permission required', User directed to settings or permission prompt","High","Not Started"
+TC031,Scan,Scan Success,View Points Awarded,Points have been successfully awarded,"1. Complete a scan successfully
+2. Observe success screen","Success screen displays: ✓ checkmark animation, points awarded badge, customer name, option to 'Scan Another' or 'Done'","High","Not Started"
+TC032,Scan,Scan Success,Scan Another,User is on success screen,"1. Click 'Scan Another' button
+2. Verify camera resets","Navigated back to camera scan screen, ready for next scan","High","Not Started"
+TC033,Scan,Scan Success,Done/Return to Dashboard,User is on success screen,"1. Click 'Done' button
+2. Verify navigation","Navigated back to dashboard or scan history screen","High","Not Started"
+TC034,Scan,Monthly Scan Limit,Reaches Free Tier Limit (300 scans),Seller has 'free' subscription; Monthly scans = 300,"1. Navigate to scan screen
+2. Attempt to scan when limit reached","Error/warning: 'Monthly scan limit reached (300/300)', Cannot scan, upgrade prompt shown","High","Not Started"
+TC035,Scan,Monthly Scan Limit,Pro Tier Scans (3000 limit),Seller has 'pro' subscription; Monthly scans = 2999,"1. Navigate to scan screen
+2. Perform one more scan","Scan succeeds (3000/3000), next scan shows upgrade prompt or limit reached message","High","Not Started"
+TC036,Scan,Monthly Scan Limit,Premium Tier (Unlimited),Seller has 'premium' subscription,"1. Perform multiple scans throughout month
+2. Track scan count","Scans continue without limit, no limit message shown","High","Not Started"
+TC037,Redemption,Redeem Customer QR,Successful Redemption Scan,Customer has valid redemption QR code; Sufficient points in wallet,"1. Navigate to Redeem QR screen
+2. Scan valid customer redemption QR code
+3. System verifies points","Redemption recognized, customer points deducted, success message shown","High","Not Started"
+TC038,Redemption,Redeem Customer QR,Insufficient Points,Customer redemption QR valid but customer has fewer points than redemption amount,"1. Navigate to Redeem QR screen
+2. Scan customer redemption QR
+3. System checks points","Error message: 'Insufficient points for redemption', Redemption fails","High","Not Started"
+TC039,Redemption,Redeem Customer QR,Already Redeemed,Redemption QR already been used/processed,"1. Scan redemption QR for second time
+2. System checks redemption status","Error message: 'This redemption has already been processed', Scan fails","High","Not Started"
+TC040,Redemption,Redeem Customer QR,Expired Redemption,Redemption QR has expired (past expiry date),"1. Scan expired redemption QR
+2. System verifies expiry","Error message: 'Redemption has expired', Scan fails","Medium","Not Started"
+TC041,Redemptions,View Redemptions History,See All Redemptions,User is on Redemptions screen; Multiple redemptions exist,"1. Navigate to Redemptions screen
+2. Observe redemption list","Redemption history displayed with: redemption ID, customer name, points redeemed, date, status (pending/redeemed/cancelled/expired)","High","Not Started"
+TC042,Redemptions,View Redemptions History,Filter by Status,User is on Redemptions screen,"1. Click status filter (All, Pending, Redeemed, Cancelled, Expired)
+2. Select 'Redeemed'","List filtered to show only 'Redeemed' redemptions","Medium","Not Started"
+TC043,Redemptions,View Redemptions History,Sort by Date,User is on Redemptions screen,"1. Click sort option
+2. Sort by 'Newest First'","Redemptions sorted by date in descending order","Medium","Not Started"
+TC044,Redemptions,View Redemptions History,Empty State,No redemptions in history,"1. Navigate to Redemptions screen
+2. Verify empty state","Empty state message: 'No redemptions yet', Visual encouragement to process redemptions","Medium","Not Started"
+TC045,Redemptions,Redemption Details,View Redemption Details,Redemption exists in history,"1. Click on a redemption item
+2. View details","Displays full redemption details: redemption ID, customer info, points, offer name, date, status","Medium","Not Started"
+TC046,Profile Setup,Account Information,Update Account Info,User is on Profile Setup screen; Account info section visible,"1. Edit name field
+2. Edit email (or show read-only)
+3. Click Save
+4. Verify update","Changes saved, success message shown, data updated in backend","High","Not Started"
+TC047,Profile Setup,Account Information,Change Password,User is on Account Information section,"1. Click 'Change Password'
+2. Enter current password
+3. Enter new password
+4. Confirm new password
+5. Click Save","Success message: 'Password changed successfully', Password updated in backend","High","Not Started"
+TC048,Profile Setup,Account Information,Wrong Current Password,User attempts to change password,"1. Enter incorrect current password
+2. Enter new password
+3. Click Save","Error message: 'Current password is incorrect', Change fails","High","Not Started"
+TC049,Profile Setup,Business Information,Update Business Details,User is on Business Information section,"1. Edit shop name
+2. Edit business type
+3. Edit category
+4. Edit description
+5. Click Save","Changes saved, success message shown","High","Not Started"
+TC050,Profile Setup,Business Information,Established Year Validation,User enters invalid year,"1. Enter year (e.g., 2100 - future year)
+2. Try to save","Validation error: 'Invalid established year', Cannot save","Medium","Not Started"
+TC051,Profile Setup,Location Details,Update Address,User is on Location Details section,"1. Edit street address
+2. Edit city, state, pincode
+3. Click Save","Address saved, success message shown","High","Not Started"
+TC052,Profile Setup,Location Details,Enable Location Services,User disables then enables location,"1. Toggle 'Enable Location Services' ON
+2. Allow permission if prompted
+3. Set location radius
+4. Click Save","Location enabled, coordinates captured, radius set and saved","High","Not Started"
+TC053,Profile Setup,Location Details,Disable Location Services,User has location enabled,"1. Toggle 'Enable Location Services' OFF
+2. Click Save","Location services disabled, coordinates cleared from profile","High","Not Started"
+TC054,Profile Setup,Verification Details,Upload Business Documents,User is on Verification Details section,"1. Click 'Upload GST Certificate'
+2. Select document from gallery
+3. Confirm upload
+4. Repeat for other documents (PAN, Registration)","Documents uploaded successfully, preview shown in profile, verification status updated","High","Not Started"
+TC055,Profile Setup,Verification Details,View Verification Status,Seller has uploaded some documents,"1. Navigate to Verification Details
+2. Check status","Displays verification status: 'Pending', 'Verified', 'Rejected', with reason if rejected","High","Not Started"
+TC056,Profile Setup,Media Information,Upload Store Logo,User is on Media Information section,"1. Click 'Upload Store Logo'
+2. Select image from gallery
+3. Confirm upload","Logo uploaded successfully, thumbnail shown in profile card","High","Not Started"
+TC057,Profile Setup,Media Information,Upload Store Banner,User is on Media Information section,"1. Click 'Upload Store Banner'
+2. Select image from gallery
+3. Confirm upload","Banner uploaded successfully, visible in dashboard header","High","Not Started"
+TC058,Profile Setup,Media Information,Upload Gallery Images,User is on Media Information section,"1. Click 'Add Gallery Images'
+2. Select multiple images
+3. Confirm upload","All images uploaded successfully, gallery preview updated","High","Not Started"
+TC059,Profile Setup,Reward Settings,View Active Reward Type,Seller has reward type configured,"1. Navigate to Reward Settings
+2. Observe reward type display","Active reward type shown in color-coded card (Green=Fixed, Amber=Percentage, Purple=Slab)","High","Not Started"
+TC060,Profile Setup,Reward Settings,Change to Fixed Points,Seller is on Reward Settings,"1. Click 'Edit' on reward settings
+2. Select 'Fixed Points' type
+3. Enter default points value (e.g., 100)
+4. Click Save","Reward type changed to 'Fixed Points', default points set and saved","High","Not Started"
+TC061,Profile Setup,Reward Settings,Change to Percentage,Seller is on Reward Settings,"1. Click 'Edit'
+2. Select 'Percentage' type
+3. Enter percentage value (e.g., 5%)
+4. Click Save","Reward type changed to 'Percentage', percentage value saved","High","Not Started"
+TC062,Profile Setup,Reward Settings,Configure Slab Rules,Seller is on Reward Settings; Slab type selected,"1. Click 'Edit' or expand slab section
+2. Add slab rule (e.g., 100-500: 10 points)
+3. Add another rule (e.g., 500-1000: 20 points)
+4. Click Save","Slab rules created, tiers displayed in order, saved successfully","High","Not Started"
+TC063,Profile Setup,Reward Settings,Add UPI ID,Seller is on Reward Settings,"1. Expand 'Advanced' section
+2. Click 'Add UPI ID'
+3. Enter valid UPI ID (e.g., seller@upi)
+4. Click Add
+5. Click Save","UPI ID added, visible in UPI list, saved to profile","High","Not Started"
+TC064,Profile Setup,Reward Settings,Remove UPI ID,Seller has UPI IDs configured,"1. Navigate to Reward Settings
+2. Find UPI ID
+3. Click delete/remove icon
+4. Confirm deletion
+5. Click Save","UPI ID removed from list, saved successfully","Medium","Not Started"
+TC065,Profile Setup,Reward Settings,Percentage Validation,Seller enters invalid percentage,"1. Select Percentage reward type
+2. Enter percentage > 100 or negative value
+3. Try to save","Validation error: 'Percentage must be between 0-100', Cannot save","Medium","Not Started"
+TC066,Profile Setup,Delete Account,Delete Seller Account,User is on Profile Setup screen,"1. Scroll to bottom of profile
+2. Click 'Delete Account'
+3. Confirm deletion in modal (with warning)
+4. Verify account is deleted","Confirmation modal shown with warning, account deleted after confirmation, user logged out","Medium","Not Started"
+TC067,Subscription,View Plans,See All Subscription Plans,User is on Subscription screen,"1. Navigate to Subscription
+2. Observe all plans displayed","All plans shown: Free (₹0), Pro (₹299/month), Premium (₹2999/year) with features listed","High","Not Started"
+TC068,Subscription,View Plans,See Plan Features,User views subscription plans,"1. Expand/view Pro plan details
+2. Check features listed","Plan features displayed: scan limits, analytics level, support type, etc.","High","Not Started"
+TC069,Subscription,Purchase Plan,Buy Pro Plan (Android - Razorpay),Seller is on Subscription screen; Pro plan available,"1. Click 'Buy Pro'
+2. Select amount (₹299)
+3. Click 'Proceed to Payment'
+4. Razorpay modal opens
+5. Enter payment details (test card: 4111111111111111)
+6. Complete payment","Razorpay payment modal opens, payment processes, success screen shown with order details","High","Not Started"
+TC070,Subscription,Purchase Plan,Buy Premium Plan (iOS - IAP),Seller is on Subscription screen; iOS device,"1. Click 'Buy Premium'
+2. Select billing period (1 year)
+3. IAP purchase sheet opens
+4. Complete purchase in App Store","IAP sheet opens, purchase processed through App Store, subscription activated after verification","High","Not Started"
+TC071,Subscription,Purchase Plan,Payment Failure,Payment gateway returns error,"1. Attempt to buy plan
+2. During payment, simulate failure (invalid card, network error)","Error message: 'Payment failed', User returned to subscription screen with option to retry","High","Not Started"
+TC072,Subscription,Purchase Plan,Apply Coupon Code,Seller is on Checkout screen; Valid coupon exists,"1. Navigate to Checkout
+2. Enter valid coupon code (e.g., 'SUMMER20')
+3. Click 'Apply'
+4. Verify discount applied","Coupon validated, discount amount shown, total amount updated, savings displayed","High","Not Started"
+TC073,Subscription,Purchase Plan,Invalid Coupon Code,Seller is on Checkout screen,"1. Enter invalid coupon code
+2. Click 'Apply'","Error message: 'Coupon code is invalid', Coupon not applied","High","Not Started"
+TC074,Subscription,Purchase Plan,Expired Coupon Code,Coupon code has expired,"1. Enter expired coupon code
+2. Click 'Apply'","Error message: 'Coupon has expired', Coupon not applied","High","Not Started"
+TC075,Subscription,Checkout,View Checkout Summary,Seller is on Checkout screen after selecting plan,"1. Verify plan details shown
+2. Verify pricing details (discount if applicable)","Checkout screen displays: Plan name, base price, discount (if coupon applied), total amount, GST if applicable","High","Not Started"
+TC076,Subscription,Checkout,Payment Verification,Payment completed; Waiting for verification,"1. Complete payment
+2. Observe loading/verification screen","Verification message shown: 'Verifying payment...', spinner/animation playing","High","Not Started"
+TC077,Subscription,Payment Success,View Success Screen,Payment verified successfully,"1. Wait for verification to complete
+2. Observe success screen","Success screen displays: ✓ checkmark, order ID, plan name, subscription expiry date","High","Not Started"
+TC078,Subscription,Payment Success,Navigate to Dashboard,User is on Payment Success screen,"1. Click 'Continue to Dashboard' or 'Done'","Navigated to dashboard, subscription tier updated (Free → Pro/Premium)","High","Not Started"
+TC079,Subscription,Current Subscription,View Active Subscription,Seller has active subscription,"1. Navigate to Subscription screen
+2. Observe current plan section","Current subscription displayed: plan name, expiry date, remaining days/scans, option to upgrade/renew","High","Not Started"
+TC080,Subscription,Subscription History,View Subscription History,Seller has multiple past subscriptions,"1. Navigate to Subscription History screen
+2. Observe history list","All past subscriptions displayed with: date purchased, plan name, price, status (expired/active/cancelled)","High","Not Started"
+TC081,What's New,View Offers,See All Active Offers,Seller is on What's New screen; Active offers exist,"1. Navigate to What's New
+2. Observe 'Active' tab","Active offers displayed as cards: offer title, start/end date, redemptions count, status badge","High","Not Started"
+TC082,What's New,View Offers,See Upcoming Offers,Seller has offers scheduled for future,"1. Navigate to What's New
+2. Click 'Upcoming' tab","Upcoming offers shown: offer title, start date (highlighted), status 'Coming Soon'","High","Not Started"
+TC083,What's New,View Offers,See Expired Offers,Seller has past offers,"1. Navigate to What's New
+2. Click 'Expired' tab","Expired offers shown with 'Expired' badge, date of expiry visible","Medium","Not Started"
+TC084,What's New,Manage Offers,Create New Offer,Seller is on What's New screen; No existing offers being edited,"1. Click 'Create Offer' or 'Add New'
+2. Enter offer title
+3. Enter description
+4. Set date range (start and end dates)
+5. Upload offer image
+6. Enter redemption code (optional)
+7. Set minimum spend requirement
+8. Click Save","Offer created successfully, added to active list, success message shown","High","Not Started"
+TC085,What's New,Manage Offers,Edit Existing Offer,Seller is on What's New; Offer exists,"1. Click 'Edit' on an active offer
+2. Modify title
+3. Modify date range
+4. Click Save","Changes saved, offer updated in list, success message shown","High","Not Started"
+TC086,What's New,Manage Offers,Delete Offer,Seller is on What's New; Offer exists,"1. Click 'Delete' or menu icon on offer
+2. Confirm deletion in modal","Confirmation modal shown, offer deleted after confirmation, removed from list","Medium","Not Started"
+TC087,What's New,Offer Details,View Offer Analytics,Offer is active; Has redemptions,"1. Click on an offer
+2. Observe offer details and analytics","Offer details shown: title, description, image, redemptions count, view count (if tracked)","Medium","Not Started"
+TC088,AI Insights,Dashboard,View Analytics Dashboard,Seller is on AI Insights screen; Has scan history,"1. Navigate to AI Insights
+2. Observe dashboard","Dashboard displays: total scans, total points, customer stats, charts/graphs if available","High","Not Started"
+TC089,AI Insights,Dashboard,Free Tier Limited Analytics,Seller has free subscription,"1. Navigate to AI Insights with free plan","Limited analytics shown: basic scan count, points distributed, upgrade prompt to Pro for advanced analytics","High","Not Started"
+TC090,AI Insights,Dashboard,Pro Tier Advanced Analytics,Seller has pro subscription,"1. Navigate to AI Insights with pro plan","Advanced analytics shown: detailed charts, customer insights, redemption metrics, export options if available","High","Not Started"
+TC091,AI Insights,Dashboard,Premium Tier Full Analytics,Seller has premium subscription,"1. Navigate to AI Insights with premium plan","Full analytics dashboard: all metrics, advanced filters, AI-powered insights (if backend available)","High","Not Started"
+TC092,Notifications,Push Notifications,Receive Scan Notification,Customer scans seller's QR; Seller has notifications enabled,"1. Customer scans seller's QR code
+2. Wait for notification
+3. Check notification panel","Push notification received: 'Customer points awarded - 100 points given'","High","Not Started"
+TC093,Notifications,Push Notifications,Receive Redemption Notification,Customer redeems points; Seller has notifications enabled,"1. Customer redeems offer through customer app
+2. Wait for notification","Push notification received: 'Points redeemed - XXX points deducted'","High","Not Started"
+TC094,Notifications,Navigation,Tap on Notification,Notification received and visible on device,"1. Tap on notification from notification panel
+2. Verify navigation","Navigated to relevant screen (Scan history / Redemptions)","High","Not Started"
+TC095,Navigation,Drawer Menu,Open Drawer,User is anywhere in app,"1. Swipe from left edge or click menu icon
+2. Drawer opens","Navigation drawer opens showing: Dashboard, Profile, Subscriptions, What's New, etc.","High","Not Started"
+TC096,Navigation,Drawer Menu,Navigate to Dashboard,Drawer is open,"1. Click 'Dashboard'","Navigated to dashboard screen, drawer closes","High","Not Started"
+TC097,Navigation,Drawer Menu,Navigate to Profile Setup,Drawer is open,"1. Click 'Profile Setup'","Navigated to profile setup screen, drawer closes","High","Not Started"
+TC098,Navigation,Drawer Menu,Navigate to Subscription,Drawer is open,"1. Click 'Subscription' or 'Plans'","Navigated to subscription screen, drawer closes","High","Not Started"
+TC099,Navigation,Drawer Menu,Logout,Drawer is open,"1. Click 'Logout' or 'Sign Out'
+2. Confirm logout in modal","Logout confirmation modal shown, user logged out, redirected to login screen, all user data cleared","High","Not Started"
+TC100,Navigation,Tab Navigation,Switch Between Tabs,User is on Dashboard tab,"1. Click 'Scan' tab
+2. Verify navigation
+3. Click 'AI Insights' tab
+4. Verify navigation
+5. Click 'Redeem' tab
+6. Verify navigation","Tab switches work correctly, each tab loads its respective screen with data preserved when returning","High","Not Started"
+TC101,Navigation,Back Button,Navigate Back,User is on nested screen (e.g., Profile/Account Info),"1. Click back arrow or use device back gesture
+2. Verify navigation","Navigated to previous screen (parent screen)","High","Not Started"
+TC102,Theme,Light/Dark Mode,Light Mode Display,App theme set to light; Device in light mode,"1. Navigate through app screens
+2. Verify colors and contrast","All screens display in light theme, colors are bright, readable, and consistent","High","Not Started"
+TC103,Theme,Light/Dark Mode,Dark Mode Display,App theme set to dark; Device in dark mode,"1. Navigate through app screens
+2. Verify colors and contrast","All screens display in dark theme, colors are dark, readable, and easy on eyes","High","Not Started"
+TC104,Theme,Light/Dark Mode,Toggle Theme,User changes system theme setting,"1. Change device theme from light to dark (or vice versa)
+2. Return to app
+3. Verify theme change","App theme automatically updates to match system theme, all screens reflect new theme","High","Not Started"
+TC105,Error Handling,Network Error,No Internet Connection,Device has no internet connection,"1. Disconnect internet
+2. Attempt to perform API action (scan, login, etc.)","Error message: 'No internet connection', Graceful error handling, retry option provided","High","Not Started"
+TC106,Error Handling,Network Error,Timeout Error,API request takes too long,"1. With slow network, attempt API call
+2. Wait for timeout","Error message: 'Request timeout', Retry button shown, user can attempt again","Medium","Not Started"
+TC107,Error Handling,Server Error,Backend Server Error,Backend returns 500 error,"1. Perform action that triggers server error
+2. Observe error message","Error message: 'Server error, please try again later', Graceful error shown, retry option available","Medium","Not Started"
+TC108,Error Handling,Validation Error,Invalid Input Handling,User enters invalid data in form,"1. Enter invalid email in form
+2. Try to submit","Validation error shown near field, form not submitted, error message clear","High","Not Started"
+TC109,Performance,App Load,Initial App Launch,App is freshly installed; First launch,"1. Install and open app
+2. Measure launch time
+3. Verify splash screen shown","Splash screen shown, app loads within reasonable time (< 3-5 seconds), no crashes","High","Not Started"
+TC110,Performance,Data Load,Dashboard Data Refresh,Dashboard visible; Fresh data needed,"1. Perform pull-to-refresh
+2. Monitor loading time","Data refreshes within 2-3 seconds, spinner shown during load, data updates","High","Not Started"
+TC111,Performance,Camera,Camera Load Time,Scan screen opened,"1. Navigate to scan screen
+2. Measure camera initialization time","Camera ready within 1-2 seconds, no lag or freezing","High","Not Started"
+TC112,Performance,Image Upload,Large File Upload,User uploads image (>2MB),"1. Attempt to upload large image
+2. Monitor upload progress","Upload progress shown, large files handled (< 10MB), compression applied if needed","Medium","Not Started"
+TC113,Accessibility,Font Size,Read Large Text,User increases system font size,"1. Navigate app with large system font
+2. Read text on various screens","Text remains readable, no text cutoff, layout doesn't break","Medium","Not Started"
+TC114,Accessibility,Color Contrast,Read High Contrast,User has high contrast mode enabled,"1. Navigate app with high contrast
+2. Verify readability","Text and buttons readable with high contrast, colors sufficient","Medium","Not Started"
+TC115,Offline,Offline Mode,View Cached Data,App previously synced; Now offline,"1. Sync app data while online
+2. Disconnect internet
+3. Navigate app
+4. Try to view cached data","Cached data visible (dashboard stats, redemptions if available), clear offline indicator shown","Medium","Not Started"
+TC116,Offline,Offline Mode,Offline Scan Attempt,App is offline; User attempts to scan,"1. Disconnect internet
+2. Attempt to scan customer QR
+3. Observe behavior","Offline message shown: 'Internet required for scanning', User directed to reconnect","Medium","Not Started"
+TC117,Security,Password Storage,Password Securely Stored,User registers with password,"1. Complete registration
+2. Check that password not visible in logs/storage","Password securely hashed/encrypted, not stored in plain text, not visible in app data","High","Not Started"
+TC118,Security,Session Management,Logout Clears Session,User is logged in; Clicks logout,"1. Click logout
+2. Verify all sessions ended
+3. Try to access protected screens without logging in again","Session cleared, all tokens invalidated, cannot access protected screens without re-login","High","Not Started"
+TC119,Security,Data Transmission,HTTPS for API Calls,App makes API requests,"1. Monitor network traffic (use proxy)
+2. Verify API endpoint calls","All API calls use HTTPS, data encrypted in transit","High","Not Started"
+TC120,Storage,Database,Persistent Data After Restart,User has app data (user profile, scans, etc.),"1. Populate app with data
+2. Close app
+3. Restart device
+4. Reopen app","User data persists after restart, user remains logged in (if remember me enabled), data not lost","High","Not Started"
+TC121,Compliance,Terms and Conditions,Accept Terms During Registration,User is on registration step 6,"1. Review terms and conditions
+2. Checkbox for accepting terms visible
+3. Check checkbox
+4. Proceed to register","Terms and conditions checkbox required, cannot proceed without checking, acceptance recorded","High","Not Started"
+TC122,Compliance,Privacy Policy,View Privacy Policy,User navigates to Privacy Policy,"1. Click Privacy Policy link (in drawer or signup)
+2. Verify content opens","Privacy policy link opens in browser or in-app modal, readable and complete","Medium","Not Started"
+TC123,Camera Permissions,iOS Camera Permission,Request Camera Permission on iOS,First scan attempt on iOS; Permission not yet requested,"1. Click to scan
+2. Permission request modal appears
+3. Allow permission","iOS permission prompt shown, user can allow/deny, scan proceeds if allowed","High","Not Started"
+TC124,Camera Permissions,Android Camera Permission,Request Camera Permission on Android,First scan attempt on Android; Permission not yet requested,"1. Click to scan
+2. Permission request dialog appears
+3. Allow permission","Android permission prompt shown, user can allow/deny, scan proceeds if allowed","High","Not Started"
+TC125,Location Permissions,iOS Location Permission,Request Location Permission on iOS,First profile setup with location auto-fill; Permission not requested,"1. Click auto-fill location
+2. Permission request modal appears
+3. Allow permission","iOS location permission prompt shown, location data accessed if allowed, address auto-filled","High","Not Started"
+TC126,Location Permissions,Android Location Permission,Request Location Permission on Android,First profile setup with location auto-fill on Android,"1. Click auto-fill location
+2. Permission request dialog appears
+3. Allow permission","Android location permission prompt shown, location data accessed if allowed, address auto-filled","High","Not Started"
+TC127,Image Picker,Upload Image,Select Image from Gallery,User clicks upload button for profile image,"1. Click upload image
+2. Image picker opens
+3. Select image from gallery
+4. Confirm selection","Image picker opened, image selected, preview shown, upload completes","High","Not Started"
+TC128,Image Picker,Camera Photo,Take Photo with Camera,User clicks camera icon for photo upload,"1. Click camera icon
+2. Camera opens
+3. Take photo
+4. Confirm photo
+5. Verify upload","Camera opened, photo taken, preview shown, upload successful","Medium","Not Started"
+TC129,Date Picker,Select Offer Date Range,Pick dates for offer,"1. Click on offer start date field
+2. Date picker opens
+3. Select start date
+4. Select end date
+5. Confirm","Date picker UI opens, dates selectable, range correctly shows in form","High","Not Started"
+TC130,Date Picker,Validate Date Range,Invalid date range (end before start),"1. Select start date (e.g., 2025-12-31)
+2. Select end date (e.g., 2025-12-01)
+3. Try to save","Validation error: 'End date must be after start date', Cannot save","High","Not Started"
