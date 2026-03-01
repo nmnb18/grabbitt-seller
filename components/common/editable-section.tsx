@@ -20,6 +20,7 @@ interface EditableSectionProps {
     children: React.ReactNode;
     style?: ViewStyle;
     isLocked?: boolean;
+    showEdit?: boolean;
 }
 
 export function EditableSection({
@@ -33,6 +34,7 @@ export function EditableSection({
     children,
     style,
     isLocked = false,
+    showEdit = true,
 }: EditableSectionProps) {
     const theme = useTheme();
 
@@ -48,44 +50,47 @@ export function EditableSection({
                         >
                             {title}
                         </Text>
-
-                        {!isEditing ? (
-                            <PaperButton
-                                mode="text"
-                                onPress={() => !isLocked && onEditToggle(true)}
-                                icon="pencil"
-                                compact
-                            >
-                                Edit
-                            </PaperButton>
-                        ) : (
-                            <View style={styles.editButtons}>
+                        {showEdit && <View>
+                            {!isEditing ? (
                                 <PaperButton
                                     mode="text"
-                                    onPress={() => {
-                                        onCancel?.();
-                                        onEditToggle(false);
-                                    }}
-                                    icon="close"
-                                    disabled={isSaving}
+                                    onPress={() => !isLocked && onEditToggle(true)}
+                                    icon="pencil"
                                     compact
                                 >
-                                    Cancel
+                                    Edit
                                 </PaperButton>
+                            ) : (
+                                <View style={styles.editButtons}>
+                                    <PaperButton
+                                        mode="text"
+                                        onPress={() => {
+                                            onCancel?.();
+                                            onEditToggle(false);
+                                        }}
+                                        icon="close"
+                                        disabled={isSaving}
+                                        compact
+                                    >
+                                        Cancel
+                                    </PaperButton>
 
-                                <PaperButton
-                                    mode="text"
-                                    onPress={onSave}
-                                    icon="content-save-outline"
-                                    disabled={!isDirty || isSaving}
-                                    loading={isSaving}
-                                    compact
-                                >
-                                    Save
-                                </PaperButton>
-                            </View>
-                        )}
+                                    <PaperButton
+                                        mode="text"
+                                        onPress={onSave}
+                                        icon="content-save-outline"
+                                        disabled={!isDirty || isSaving}
+                                        loading={isSaving}
+                                        compact
+                                    >
+                                        Save
+                                    </PaperButton>
+                                </View>
+                            )}
+                        </View>
+                        }
                     </View>
+
 
                     <Divider
                         style={[
@@ -110,7 +115,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        marginBottom: 12,
+        marginVertical: 12,
     },
     cardTitle: {
         flex: 1,
@@ -128,3 +133,4 @@ const styles = StyleSheet.create({
 
 // Import Text from react-native-paper at the top
 import { Text } from "react-native-paper";
+

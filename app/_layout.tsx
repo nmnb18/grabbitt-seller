@@ -1,6 +1,6 @@
 import { ErrorBoundary } from "@/components/shared/error-boundary";
 import { NotificationProvider } from "@/contexts/NotificationContext";
-import { useTheme } from "@/hooks/use-theme-color";
+import { useTheme } from "@/hooks";
 import { endIAP, initIAP } from "@/services/iap";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
@@ -137,7 +137,7 @@ export default function RootLayout() {
   }, []);
 
   useEffect(() => {
-    SystemUI.setBackgroundColorAsync("transparent");
+    SystemUI.setBackgroundColorAsync("#000000");
   }, []);
 
   useEffect(() => {
@@ -161,7 +161,7 @@ export default function RootLayout() {
           <NotificationProvider>
             <QueryClientProvider client={queryClient}>
 
-              <StatusBar translucent backgroundColor={"transparent"} />
+              <StatusBar translucent style={"light"} backgroundColor={"transparent"} />
               <Stack screenOptions={{ headerShown: false }} />
             </QueryClientProvider>
           </NotificationProvider>

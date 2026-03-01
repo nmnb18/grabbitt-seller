@@ -6,7 +6,7 @@
 import { useFocusEffect } from "@react-navigation/native";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { useRouter } from "expo-router";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";
 
 import { useTheme } from "@/hooks/use-theme-color";
@@ -42,6 +42,9 @@ export default function ScanCustomer() {
     pointsAwarded: number;
   } | null>(null);
 
+  // Debounce ref to prevent duplicate scans (iOS camera fires twice)
+  const scanProcessingRef = useRef(false);
+
   const {
     processScan,
     awardPoints,
@@ -65,7 +68,7 @@ export default function ScanCustomer() {
   );
 
   // -----------------------------
-  // MAIN UNIFIED SCAN HANDLER
+  // MAIN UNIFIED SCAN HANDLER (with debounce for iOS double-scan)
   // -----------------------------
   const handleBarcodeScanned = async ({
     data,
@@ -74,8 +77,13 @@ export default function ScanCustomer() {
     data: string;
     type: string;
   }) => {
-    if (scanned || !cameraActive || type !== "qr" || screenState !== "scanning") return;
+    // Prevent duplicate processing (iOS camera fires twice)
+    if (scanProcessingRef.current || scanned || !cameraActive || type !== "qr" || screenState !== "scanning") {
+      return;
+    }
 
+    // Immediately mark as processing to prevent concurrent scans
+    scanProcessingRef.current = true;
     setScanned(true);
     setCameraActive(false);
 
@@ -130,6 +138,9 @@ export default function ScanCustomer() {
       Alert.alert("Scan Failed", e.message, [
         { text: "Scan Again", onPress: handleReset },
       ]);
+    } finally {
+      // Reset debounce flag
+      scanProcessingRef.current = false;
     }
   };
 
@@ -161,6 +172,7 @@ export default function ScanCustomer() {
 
   // -----------------------------
   const handleReset = () => {
+    scanProcessingRef.current = false;
     setCameraActive(true);
     setScanned(false);
     setScreenState("scanning");

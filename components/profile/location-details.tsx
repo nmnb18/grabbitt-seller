@@ -164,6 +164,7 @@ export default function LocationInformation() {
             title="📍 Location Information"
             isEditing={isEditing}
             onEditToggle={setIsEditing}
+            showEdit={false}
             isDirty={isDirty}
             isSaving={saving}
             onSave={handleSave}

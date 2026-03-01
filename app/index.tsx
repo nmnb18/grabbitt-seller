@@ -44,7 +44,7 @@ export default function Index() {
 
   return (
     <LinearGradient
-      colors={['#ffffff', '#ff6b35']}
+      colors={['#000000', '#ffffff']}
       style={styles.content}
     >
       <Image
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
 
 
   logo: {
-    width: 280,
-    height: 120,
+    width: 140,
+    height: 48,
   },
 })

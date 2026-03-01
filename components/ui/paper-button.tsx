@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     containedButtonText: {
-        color: '#FFFFFF',
+        color: '#000000',
         fontSize: 16,
     },
     outlineButtonText: {

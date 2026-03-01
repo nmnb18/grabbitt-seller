@@ -7,6 +7,7 @@ import { Tabs, useRouter } from "expo-router";
 import React from "react";
 import { Dimensions, Platform, TouchableOpacity, View } from "react-native";
 import { Text } from "react-native-paper";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 const { width } = Dimensions.get("window");
 const LOGO_WIDTH = width * 0.4;
 
@@ -108,6 +109,7 @@ export default function SellerLayout() {
   const sellerTheme = useTheme();
   const { unreadCount } = useNotificationStore();
   const router = useRouter();
+  const { bottom } = useSafeAreaInsets();
 
   const backgroundColor = useThemeColor({}, "background");
   const navigation = useNavigation<any>();
@@ -119,13 +121,14 @@ export default function SellerLayout() {
         tabBarInactiveTintColor: sellerTheme.colors.onSurface,
         headerTitleAlign: "center",
 
+        // Fix overlapping tabs on Android with proper padding and sceneContainerStyle
         tabBarStyle: {
           backgroundColor,
           borderTopColor: "transparent",
           borderTopWidth: 1,
-          paddingBottom: 20,
+          paddingBottom: Math.max(bottom, 20),
           paddingTop: 8,
-          height: 80,
+          height: 60 + Math.max(bottom, 0),
         },
         tabBarLabelStyle: {
           fontSize: 12,

@@ -132,6 +132,7 @@ export default function VerificationInformation() {
                         <FormTextInput
                             label="PAN Number"
                             value={pan}
+                            disabled={true}
                             onChangeText={setPan}
                             leftIcon="card-bulleted"
                         />

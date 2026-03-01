@@ -268,8 +268,14 @@ export const useSellerRegistration = () => {
       setLoading(false)
       router.push("/auth/login");
     } catch (error: any) {
-      form.setError("_form" as any, error.message);
-      Alert.alert("Registration Error", error.message);
+      const message =
+        error?.response?.data?.error ||
+        error?.message ||
+        "Registration failed";
+
+      form.setError("_form" as any, message);
+      Alert.alert("Registration Error", message);
+
     }
   }, [formData, register, router, form]);
 

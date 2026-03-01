@@ -4,7 +4,7 @@
  */
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { Colors, DarkTheme, LightTheme } from '@/utils/theme';
+import { Colors, DarkTheme } from '@/utils/theme';
 
 export function useThemeColor(
   props: { light?: string; dark?: string },
@@ -22,5 +22,5 @@ export function useThemeColor(
 
 export const useTheme = () => {
   const colorScheme = useColorScheme();
-  return colorScheme === 'dark' ? DarkTheme : LightTheme;
+  return DarkTheme;
 };

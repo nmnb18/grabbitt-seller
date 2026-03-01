@@ -78,6 +78,7 @@ export default function BusinessInformation() {
             isEditing={isEditing}
             onEditToggle={setIsEditing}
             isDirty={isDirty}
+            showEdit={false}
             isSaving={saving}
             onSave={handleSave}
             onCancel={handleCancel}

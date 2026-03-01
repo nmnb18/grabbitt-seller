@@ -117,32 +117,43 @@ export const RewardTypeSection: React.FC<RewardTypeSectionProps> = ({
                 <View style={{ marginTop: 10 }}>
                     <Text style={styles.sectionLabel}>Slab Rules</Text>
                     {slabRules.map((rule, index) => (
-                        <View key={`slab-${rule.min || index}`} style={styles.slabRuleContainer}>
+                        <View key={`slab-${index}`} style={styles.slabRuleContainer}>
                             <FormTextInput
                                 label="Min Amount"
                                 value={String(rule.min)}
                                 disabled
+                                editable={false}
                             />
                             <FormTextInput
                                 label="Max Amount"
                                 value={rule.max}
                                 onChangeText={(v) => updateSlab(index, "max", v)}
-                                keyboardType="numeric"
+                                keyboardType="decimal-pad"
+                                placeholder="Enter max amount"
                             />
                             <FormTextInput
                                 label="Points"
                                 value={rule.points}
                                 onChangeText={(v) => updateSlab(index, "points", v)}
-                                keyboardType="numeric"
+                                keyboardType="number-pad"
+                                placeholder="Enter points"
                             />
                             <View style={styles.slabActions}>
                                 {slabRules.length > 1 && (
-                                    <Button icon="delete" variant="outlined" onPress={() => removeSlab(index)}>
+                                    <Button 
+                                        icon="delete" 
+                                        variant="outlined" 
+                                        onPress={() => removeSlab(index)}
+                                    >
                                         Remove
                                     </Button>
                                 )}
                                 {index === slabRules.length - 1 && (
-                                    <Button icon="plus" variant="contained" onPress={addSlab}>
+                                    <Button 
+                                        icon="plus" 
+                                        variant="contained" 
+                                        onPress={addSlab}
+                                    >
                                         Add Slab
                                     </Button>
                                 )}
