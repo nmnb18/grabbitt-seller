@@ -450,7 +450,7 @@ export const mediaApi = {
      */
     updateSellerMedia: async (payload: Record<string, any>) => {
         try {
-            const response = await api.patch('/updateSellerMedia', payload);
+            const response = await api.post('/updateSellerMedia', payload);
             return response.data;
         } catch (error) {
             throw handleApiError(error, 'updateSellerMedia');
