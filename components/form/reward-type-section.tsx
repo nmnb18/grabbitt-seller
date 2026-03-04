@@ -140,18 +140,18 @@ export const RewardTypeSection: React.FC<RewardTypeSectionProps> = ({
                             />
                             <View style={styles.slabActions}>
                                 {slabRules.length > 1 && (
-                                    <Button 
-                                        icon="delete" 
-                                        variant="outlined" 
+                                    <Button
+                                        icon="delete"
+                                        variant="outlined"
                                         onPress={() => removeSlab(index)}
                                     >
                                         Remove
                                     </Button>
                                 )}
                                 {index === slabRules.length - 1 && (
-                                    <Button 
-                                        icon="plus" 
-                                        variant="contained" 
+                                    <Button
+                                        icon="plus"
+                                        variant="contained"
                                         onPress={addSlab}
                                     >
                                         Add Slab

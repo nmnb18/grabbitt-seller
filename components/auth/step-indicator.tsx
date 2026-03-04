@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#e0e0e0',
     },
     stepDotActive: {
-        backgroundColor: '#e91e63',
+        backgroundColor: '#D4AF37',
         transform: [{ scale: 1.2 }],
     },
     stepDotCompleted: {

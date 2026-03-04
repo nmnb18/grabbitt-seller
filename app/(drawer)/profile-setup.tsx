@@ -5,7 +5,7 @@ import MediaInformation from '@/components/profile/media-information';
 import NotificationSettings from '@/components/profile/notification-settings';
 import RewardsSettings from '@/components/profile/reward-settings';
 import VerificationDetails from '@/components/profile/verification-details';
-import { AppHeader } from '@/components/shared/app-header';
+import { GradientHeader } from '@/components/shared/app-header';
 import { Button as CustomButton } from '@/components/ui/paper-button';
 import { useTheme } from '@/hooks/use-theme-color';
 import { userApi as fbUserApi } from '@/services';
@@ -120,7 +120,7 @@ export default function SellerProfileSetup() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <AppHeader />
+      <GradientHeader title='Profile' />
       <ScrollView
         style={styles.content}
         showsVerticalScrollIndicator={false}

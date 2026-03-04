@@ -1,5 +1,5 @@
 import { LoadingOverlay } from "@/components/common";
-import { AppHeader } from "@/components/shared/app-header";
+import { GradientHeader } from "@/components/shared/app-header";
 import { StatCard } from "@/components/shared/stats-card";
 import { useSellerRedemptions } from "@/hooks";
 import { useTheme } from "@/hooks/use-theme-color";
@@ -47,7 +47,7 @@ export default function SellerRedemptionsScreen() {
   if (loading) {
     return (
       <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-        <AppHeader />
+        <GradientHeader title="Redemptions" />
         <LoadingOverlay
           visible={loading}
           message="Loading redemption history..."
@@ -131,7 +131,7 @@ export default function SellerRedemptionsScreen() {
 
   return (
     <View style={{ flex: 1 }}>
-      <AppHeader />
+      <GradientHeader title="Redemptions" />
       <FlatList
         data={formattedRedemptions}
         renderItem={renderItem}

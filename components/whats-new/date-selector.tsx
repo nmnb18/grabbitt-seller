@@ -130,8 +130,8 @@ export function DateSelector({
                         marginBottom: 8,
                         borderColor: error ? theme.colors.error : theme.colors.primary,
                     }}
-                    onPress={() => !readOnly && setShowDatePicker(!showDatePicker)}
-                    disabled={readOnly}
+                    onPress={() => !readOnly && !isEditMode && setShowDatePicker(!showDatePicker)}
+                    disabled={readOnly || isEditMode}
                 >
                     <View style={{ flexDirection: "row", alignItems: "center" }}>
                         <MaterialCommunityIcons
@@ -149,7 +149,7 @@ export function DateSelector({
                                 </Text>
                             )}
                         </View>
-                        {!readOnly && (
+                        {!readOnly && !isEditMode && (
                             <MaterialCommunityIcons
                                 name={showDatePicker ? "chevron-up" : "chevron-down"}
                                 size={24}
@@ -160,8 +160,14 @@ export function DateSelector({
                 </TouchableOpacity>
 
                 {error && <HelperText type="error" visible>{error}</HelperText>}
+                
+                {isEditMode && (
+                    <HelperText type="info" visible style={{ color: theme.colors.onSurfaceDisabled }}>
+                        Date cannot be changed in edit mode
+                    </HelperText>
+                )}
 
-                {showDatePicker && !readOnly && (
+                {showDatePicker && !readOnly && !isEditMode && (
                     <DatePicker
                         mode={dateMode}
                         date={dateMode === "single" ? startDate : undefined}

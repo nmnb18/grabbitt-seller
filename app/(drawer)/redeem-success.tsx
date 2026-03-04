@@ -1,5 +1,5 @@
 import { SuccessMessage } from "@/components/common";
-import { AppHeader } from "@/components/shared/app-header";
+import { GradientHeader } from "@/components/shared/app-header";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React from "react";
@@ -14,7 +14,7 @@ export default function RedeemSuccess() {
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-      <AppHeader />
+      <GradientHeader title="Redemption" />
       <SuccessMessage
         title="🎉 Redemption Successful!!!"
         message={message}

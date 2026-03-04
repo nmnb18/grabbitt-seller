@@ -3,19 +3,19 @@
  * Consistent header with proper back navigation handling
  */
 
+import { useTheme } from "@/hooks/use-theme-color";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { DrawerActions } from "@react-navigation/native";
+import { LinearGradient } from "expo-linear-gradient";
+import { useNavigation, useRouter } from "expo-router";
 import React from "react";
 import {
-  View,
+  Platform,
   StyleSheet,
   TouchableOpacity,
-  Platform,
+  View,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { Text } from "react-native-paper";
-import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
-import { useTheme } from "@/hooks/use-theme-color";
-import { useRouter, useNavigation } from "expo-router";
-import { DrawerActions } from "@react-navigation/native";
 import { GradientText } from "../ui/gradient-text";
 
 interface AppHeaderProps {
@@ -57,7 +57,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
           fontSize: 40,
         }}
       >
-        grabbitt
+        yoPERKS
       </GradientText>
 
       {showNotifications ? (
@@ -223,11 +223,9 @@ const styles = StyleSheet.create({
 
   // Gradient Header styles
   gradientHeader: {
-    paddingTop: Platform.OS === "ios" ? 50 : 30,
+    paddingTop: Platform.OS === "ios" ? 50 : 50,
     paddingBottom: 16,
     paddingHorizontal: 16,
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
     elevation: 8,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },

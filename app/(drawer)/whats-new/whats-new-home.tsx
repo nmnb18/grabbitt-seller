@@ -4,7 +4,7 @@
  */
 
 import { LoadingOverlay } from "@/components/common";
-import { AppHeader } from "@/components/shared";
+import { GradientHeader } from "@/components/shared";
 import { CopyOfferModal } from "@/components/whats-new/copy-offer-modal";
 import { OffersContent } from "@/components/whats-new/offers-content";
 import { SubscriptionBanner } from "@/components/whats-new/subscription-banner";
@@ -86,7 +86,7 @@ export default function WhatsNewScreen() {
     // Render loading state
     if (loading) {
         return <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-            <AppHeader />
+            <GradientHeader title="What's New" />
             <LoadingOverlay
                 visible={loading}
                 message="Loading..."
@@ -97,7 +97,7 @@ export default function WhatsNewScreen() {
     // Render subscription banner
     if (showSubscriptionBanner) {
         return <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-            <AppHeader />
+            <GradientHeader title="What's New" />
             <SubscriptionBanner visible={showSubscriptionBanner} />
         </View>;
 
@@ -106,7 +106,7 @@ export default function WhatsNewScreen() {
     return (
         <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
             {/* Tab Switcher */}
-            <AppHeader />
+            <GradientHeader title="What's New" />
             <TabSwitcher
                 activeTab={tab}
                 counts={{ active: active.length, upcoming: upcoming.length, expired: expired.length }}

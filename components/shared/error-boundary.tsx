@@ -135,7 +135,7 @@ export class ErrorBoundary extends Component<Props, State> {
             {/* Support Info */}
             <Text style={styles.supportText}>
               If this keeps happening, please contact{"\n"}
-              <Text style={styles.supportEmail}>support@grabbitt.in</Text>
+              <Text style={styles.supportEmail}>support@yoperks.com</Text>
             </Text>
           </View>
         </SafeAreaView>

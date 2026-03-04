@@ -16,7 +16,7 @@ export default function AuthLayout() {
         <GradientText
           style={{ fontFamily: "JostMedium", fontSize: 80, marginTop: 80 }}
         >
-          grabbitt
+          yoPERKS
         </GradientText>
         <Text style={[styles.subtitle]}>For Business</Text>
       </View>

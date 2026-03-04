@@ -1,19 +1,16 @@
-import { Button } from "@/components/ui/paper-button";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useAuthStore } from "@/store/authStore";
-import { SUBSCRIPTION_PLANS } from "@/utils/constant";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-    Image,
     RefreshControl,
     ScrollView,
     StyleSheet,
     TouchableOpacity,
     View
 } from "react-native";
-import { Card, Chip, Portal, Surface, Text } from "react-native-paper";
+import { Card, Portal, Surface, Text } from "react-native-paper";
 import { StatCard } from "../shared/stats-card";
 import RedeemModal from "../whats-new/redeem-modal";
 
@@ -112,45 +109,7 @@ export default function SellerDashboard({
                 }
             >
 
-                {/* ------------------------------
-            HERO BANNER
-        ------------------------------ */}
-                <View style={styles.heroContainer}>
-                    <Image
-                        source={sellerProfile?.media.banner_url ? { uri: sellerProfile?.media.banner_url } : require("@/assets/images/hero_banner.png")}
-                        style={styles.heroImage}
-                    />
 
-                    <View style={styles.heroOverlay} />
-
-                    <View style={styles.heroContent}>
-                        <Text variant="headlineSmall" style={styles.heroShopName}>
-                            Hello, {sellerProfile?.business?.shop_name}
-                        </Text>
-
-                        <Chip
-                            mode="flat"
-                            icon="star"
-                            style={styles.heroChip}
-                            textStyle={styles.heroChipText}
-                        >
-                            {SUBSCRIPTION_PLANS[sellerProfile?.subscription?.tier ?? "free"].name}
-                        </Chip>
-
-                        <Text variant="bodySmall" style={styles.heroSubLabel}>
-                            Manage your loyalty rewards and grow your customers
-                        </Text>
-
-                        {sellerProfile?.subscription?.tier === "free" && (
-                            <Button
-                                variant="contained"
-                                onPress={() => router.push("/(drawer)/subscription")}
-                            >
-                                Upgrade Plan
-                            </Button>
-                        )}
-                    </View>
-                </View>
 
                 {/* ------------------------------
             STAT CARDS
@@ -251,30 +210,6 @@ const styles = StyleSheet.create({
     content: { flex: 1 },
     scrollContent: { paddingHorizontal: 16, paddingTop: 16 },
 
-    heroContainer: {
-        position: "relative",
-        height: 200,
-        borderRadius: 16,
-        overflow: "hidden",
-        marginBottom: 24,
-    },
-    heroImage: { width: "100%", height: "100%", resizeMode: "cover" },
-    heroOverlay: {
-        position: "absolute",
-        top: 0, left: 0, right: 0, bottom: 0,
-        backgroundColor: "rgba(0,0,0,0.6)",
-    },
-    heroContent: {
-        position: "absolute",
-        top: 0, left: 0, right: 0, bottom: 0,
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 16,
-    },
-    heroShopName: { color: "#FFF", fontWeight: "700", fontSize: 22, marginBottom: 12 },
-    heroChip: { backgroundColor: "rgba(255,255,255,0.8)", marginBottom: 8 },
-    heroChipText: { fontWeight: "600" },
-    heroSubLabel: { color: "#FFF", fontSize: 14, textAlign: "center", fontWeight: "500", marginBottom: 16 },
 
     statsSection: { marginBottom: 24 },
     refreshWrapper: {

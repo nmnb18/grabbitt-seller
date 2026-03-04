@@ -10,7 +10,7 @@ type TabType = "active" | "upcoming" | "expired";
 
 const TAB_NOTES: Record<TabType, string> = {
     active:
-        "Approved offers that are currently live. Once Grabbitt approves and the start date arrives, they appear here.",
+        "Approved offers that are currently live. Once yoPERKS approves and the start date arrives, they appear here.",
     upcoming:
         "Future offers waiting for approval or their start date. These will go live automatically.",
     expired:

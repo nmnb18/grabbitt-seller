@@ -230,6 +230,7 @@ export const AppStyles = {
       string
     ],
     accent: [Colors.light.accent, "#6B7280"] as [string, string],
+    headerDark: ["#1F2937", "#111827"] as [string, string],
   },
 
   // Spacing scale

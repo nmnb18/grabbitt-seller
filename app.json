@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "Grabbitt Seller",
-    "slug": "grabbitt-seller",
+    "name": "yoPerks Business",
+    "slug": "yoperks-seller",
     "version": "2.3.4",
     "orientation": "portrait",
     "icon": "./assets/images/favicon.png",
-    "scheme": "grabbittseller",
+    "scheme": "yoperksbusiness",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -47,7 +47,7 @@
           ],
           "data": [
             {
-              "scheme": "grabbittseller",
+              "scheme": "yoperksseller",
               "host": "*"
             }
           ]

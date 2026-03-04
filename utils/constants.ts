@@ -169,10 +169,10 @@ export const PLACEHOLDER_IMAGES = {
 
 // External links
 export const EXTERNAL_LINKS = {
-  SUPPORT_EMAIL: "support@grabbitt.in",
-  PRIVACY_POLICY: "https://grabbitt.in/privacy",
-  TERMS_CONDITIONS: "https://grabbitt.in/terms",
-  WEBSITE: "https://grabbitt.in",
+  SUPPORT_EMAIL: "support@yoperks.com",
+  PRIVACY_POLICY: "https://yoperks.com/privacy",
+  TERMS_CONDITIONS: "https://yoperks.com/terms",
+  WEBSITE: "https://yoperks.com",
 } as const;
 
 // Feature flags (for gradual rollout)

@@ -263,7 +263,7 @@ export const useSellerRegistration = () => {
       await register(payload);
       Alert.alert(
         "Registration Success",
-        "Please verify you email and wait for Grabbitt Team approval."
+        "Please verify you email and wait for yoPERKS Team approval."
       );
       setLoading(false)
       router.push("/auth/login");

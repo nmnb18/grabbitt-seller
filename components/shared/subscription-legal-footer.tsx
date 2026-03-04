@@ -13,7 +13,7 @@ export const SubscriptionLegalFooter = () => {
             <View style={styles.legalLinks}>
                 <Text
                     style={styles.link}
-                    onPress={() => Linking.openURL("https://grabbitt.in/privacy")}
+                    onPress={() => Linking.openURL("https://yoperks.com/privacy")}
                 >
                     Privacy Policy
                 </Text>

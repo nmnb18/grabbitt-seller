@@ -2,7 +2,7 @@
  * Shared Components Barrel Export
  */
 
-export { AppHeader, BackHeader, GradientHeader } from "./app-header";
+export { BackHeader, GradientHeader } from "./app-header";
 export { ErrorBoundary, withErrorBoundary } from "./error-boundary";
 export { LoadingView } from "./loading-view";
 export { LockedOverlay } from "./locked-overlay";

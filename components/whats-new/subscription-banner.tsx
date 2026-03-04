@@ -1,4 +1,3 @@
-import { AppHeader } from "@/components/shared/app-header";
 import { Button } from "@/components/ui/paper-button";
 import { useTheme } from "@/hooks/use-theme-color";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -19,7 +18,6 @@ export const SubscriptionBanner: React.FC<SubscriptionBannerProps> = ({ visible 
 
     return (
         <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-            <AppHeader />
             <View style={{ flex: 1, justifyContent: "center", alignItems: "center", gap: 12 }}>
                 <MaterialCommunityIcons name="crown" size={64} color={theme.colors.warning} />
                 <Text style={{ fontSize: 20, fontWeight: "700", color: theme.colors.onSurface }}>

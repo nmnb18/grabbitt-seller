@@ -236,7 +236,7 @@ export function CopyOfferModal({
                                         }}
                                     />
 
-                                    <Surface
+                                    {/* <Surface
                                         style={{
                                             flexDirection: "row",
                                             alignItems: "center",
@@ -250,13 +250,13 @@ export function CopyOfferModal({
                                         <MaterialCommunityIcons
                                             name="calendar-arrow-right"
                                             size={20}
-                                            color={theme.colors.primary}
+                                            color={theme.colors.onPrimary}
                                         />
                                         <Text
                                             style={{
                                                 fontSize: 15,
                                                 fontWeight: "600",
-                                                color: theme.colors.primary,
+                                                color: theme.colors.onPrimary,
                                             }}
                                         >
                                             {dateMode === "range" &&
@@ -264,7 +264,7 @@ export function CopyOfferModal({
                                                 ? `${startDate.format("DD MMM")} - ${endDate.format("DD MMM YYYY")}`
                                                 : startDate.format("DD MMM YYYY")}
                                         </Text>
-                                    </Surface>
+                                    </Surface> */}
 
                                     <Divider style={{ marginVertical: 16 }} />
 

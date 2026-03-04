@@ -1,5 +1,5 @@
 import { ButtonRow, PlanCard } from '@/components/common';
-import { AppHeader } from '@/components/shared/app-header';
+import { GradientHeader } from '@/components/shared/app-header';
 import { SubscriptionLegalFooter } from '@/components/shared/subscription-legal-footer';
 import { Button } from '@/components/ui/paper-button';
 import { useTheme } from '@/hooks/use-theme-color';
@@ -120,7 +120,7 @@ export default function SubscriptionScreen() {
 
     return (
         <View style={[styles.screen, { backgroundColor: theme.colors.background }]}>
-            <AppHeader />
+            <GradientHeader title='Subscriptions' />
 
             <FlatList
                 data={sortedPlans}

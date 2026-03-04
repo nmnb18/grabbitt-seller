@@ -1,4 +1,4 @@
-import { AppHeader } from '@/components/shared/app-header';
+import { GradientHeader } from '@/components/shared/app-header';
 import { SubscriptionLegalFooter } from '@/components/shared/subscription-legal-footer';
 import { Button } from '@/components/ui/paper-button';
 import { useTheme } from '@/hooks/use-theme-color';
@@ -39,7 +39,7 @@ export default function CheckoutScreen() {
     if (!selectedPlan || selectedPlan.id === 'free') {
         return (
             <View style={[styles.screen, { backgroundColor: theme.colors.background }]}>
-                <AppHeader />
+                <GradientHeader title='Checkout' />
                 <View style={styles.errorContainer}>
                     <Text variant="titleMedium">Invalid plan selected</Text>
                     <Button
@@ -121,11 +121,11 @@ export default function CheckoutScreen() {
             const { order_id, key_id, amount, currency } = response;
 
             const options = {
-                description: `Grabbitt ${selectedPlan.name} Plan`,
+                description: `yoPERKS ${selectedPlan.name} Plan`,
                 currency,
                 key: key_id,
                 amount: amount.toString(),
-                name: 'Grabbitt',
+                name: 'yoPERKS',
                 order_id,
                 prefill: {
                     email: user?.user.email,
@@ -226,7 +226,7 @@ export default function CheckoutScreen() {
     if (verifying) {
         return (
             <View style={[styles.loaderWrapper]}>
-                <AppHeader />
+                <GradientHeader title='Checkout' />
                 <View style={styles.loaderContainer}>
                     <ActivityIndicator size="large" color={theme.colors.primary} />
                     <Text style={{ color: theme.colors.onBackground }}>
@@ -241,7 +241,7 @@ export default function CheckoutScreen() {
 
     return (
         <View style={[styles.screen, { backgroundColor: theme.colors.background }]}>
-            <AppHeader />
+            <GradientHeader title='Checkout' />
 
             <ScrollView
                 showsVerticalScrollIndicator={false}

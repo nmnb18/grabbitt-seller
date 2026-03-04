@@ -8,7 +8,7 @@
  */
 
 import { LoadingOverlay } from "@/components/common/loading-overlay";
-import { AppHeader } from "@/components/shared/app-header";
+import { GradientHeader } from "@/components/shared/app-header";
 import { Button } from "@/components/ui/paper-button";
 import { DateSelector } from "@/components/whats-new/date-selector";
 import { Offer, OfferForm } from "@/components/whats-new/offer-form";
@@ -17,6 +17,7 @@ import { useOffers, useOfferState, useOfferValidation, useSaveOffer } from "@/ho
 import { useTheme } from "@/hooks/use-theme-color";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import dayjs from "dayjs";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Alert,
@@ -45,6 +46,8 @@ export default function AddOfferScreen() {
     endDate,
     offers,
     setOffers,
+    setStartDate,
+    setEndDate,
     updateOffer,
     addOffer,
     removeOffer,
@@ -90,6 +93,14 @@ export default function AddOfferScreen() {
     async (date: string) => {
       try {
         setLoading(true);
+
+        const parsedDate = dayjs(date);
+        if (parsedDate.isValid()) {
+          setDateMode("single");
+          setStartDate(parsedDate);
+          setEndDate(parsedDate);
+        }
+
         const existingOffer = await loadExistingOffer(date);
 
         if (existingOffer) {
@@ -109,7 +120,7 @@ export default function AddOfferScreen() {
         setLoading(false);
       }
     },
-    [loadExistingOffer, setOffers]
+    [loadExistingOffer, setDateMode, setEndDate, setOffers, setStartDate]
   );
 
   useEffect(() => {
@@ -183,7 +194,7 @@ export default function AddOfferScreen() {
   if (loading) {
     return (
       <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-        <AppHeader />
+        <GradientHeader title="Offers" />
         <LoadingOverlay visible={loading} message="Loading offer..." />
       </View>
     );
@@ -191,7 +202,7 @@ export default function AddOfferScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-      <AppHeader />
+      <GradientHeader title="Offers" />
       {saving && <LoadingOverlay visible={saving} message="Saving offers..." />}
 
       <KeyboardAvoidingView
@@ -237,6 +248,7 @@ export default function AddOfferScreen() {
             onDateChange={handleDateChangeWithErrorClear}
             error={errors.date}
             isEditMode={isEditMode}
+            readOnly={isEditMode}
           />
 
           {/* Offer Form Component */}

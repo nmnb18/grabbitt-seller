@@ -1,88 +1,19 @@
-import { GradientText } from "@/components/ui/gradient-text";
 import { useTheme, useThemeColor } from "@/hooks/use-theme-color";
+import { useAuthStore } from "@/store/authStore";
 import { useNotificationStore } from "@/store/notificationStore";
+import { AppStyles } from "@/utils";
+import { SUBSCRIPTION_PLANS } from "@/utils/constant";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { DrawerActions, useNavigation } from "@react-navigation/native";
+import { LinearGradient } from "expo-linear-gradient";
 import { Tabs, useRouter } from "expo-router";
 import React from "react";
-import { Dimensions, Platform, TouchableOpacity, View } from "react-native";
-import { Text } from "react-native-paper";
+import { Dimensions, Platform, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Chip, Text } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 const { width } = Dimensions.get("window");
 const LOGO_WIDTH = width * 0.4;
 
-function HeaderTitle() {
-  return (
-    <GradientText
-      style={{
-        fontFamily: "JostMedium",
-        fontSize: 40,
-        textAlignVertical: "center",
-        includeFontPadding: false,
-      }}
-    >
-      grabbitt
-    </GradientText>
-  );
-}
-
-function HeaderMenuButton({ sellerTheme }: { sellerTheme: any }) {
-  const navigation = useNavigation<any>();
-  return (
-    <TouchableOpacity
-      onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
-      style={{ marginLeft: 16 }}
-    >
-      <Ionicons
-        name="menu"
-        size={26}
-        color={sellerTheme.colors.onSurface}
-      />
-    </TouchableOpacity>
-  );
-}
-
-function NotificationBadge({
-  unreadCount,
-  sellerTheme,
-  router,
-}: {
-  unreadCount: number;
-  sellerTheme: any;
-  router: any;
-}) {
-  return (
-    <TouchableOpacity
-      onPress={() => router.push("/(drawer)/notifications")}
-      style={{ marginRight: 16 }}
-    >
-      <Ionicons
-        name="notifications-outline"
-        size={24}
-        color={sellerTheme.colors.onSurface}
-      />
-      {unreadCount > 0 && (
-        <View
-          style={{
-            position: "absolute",
-            top: -4,
-            right: -6,
-            backgroundColor: sellerTheme.colors.primary,
-            borderRadius: 10,
-            minWidth: 18,
-            height: 18,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Text style={{ color: "white", fontSize: 11, fontWeight: "bold" }}>
-            {unreadCount}
-          </Text>
-        </View>
-      )}
-    </TouchableOpacity>
-  );
-}
 
 const TABS_CONFIG = [
   {
@@ -107,6 +38,8 @@ const TABS_CONFIG = [
 
 export default function SellerLayout() {
   const sellerTheme = useTheme();
+  const user = useAuthStore((state) => state.user);
+  const sellerProfile = user?.user.seller_profile;
   const { unreadCount } = useNotificationStore();
   const router = useRouter();
   const { bottom } = useSafeAreaInsets();
@@ -119,7 +52,6 @@ export default function SellerLayout() {
       screenOptions={{
         tabBarActiveTintColor: sellerTheme.colors.secondary,
         tabBarInactiveTintColor: sellerTheme.colors.onSurface,
-        headerTitleAlign: "center",
 
         // Fix overlapping tabs on Android with proper padding and sceneContainerStyle
         tabBarStyle: {
@@ -134,22 +66,101 @@ export default function SellerLayout() {
           fontSize: 12,
           fontWeight: "600",
         },
-        headerStyle: {
-          height: Platform.OS === "ios" ? 120 : 90,
-          backgroundColor,
-          elevation: 0,
-          shadowOpacity: 0,
-          borderBottomWidth: 0,
-        },
+        header: ({ }) => (
+          <LinearGradient
+            colors={AppStyles.gradients.headerDark}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={{
+              paddingTop: Platform.OS === "ios" ? 60 : 40,
+              paddingBottom: 20,
+              paddingHorizontal: 16,
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              {/* LEFT SIDE — LOGO + GREETING */}
+              <View style={{ flexDirection: "column", gap: 8 }}>
 
-        headerTitle: () => <HeaderTitle />,
-        headerLeft: () => <HeaderMenuButton sellerTheme={sellerTheme} />,
-        headerRight: () => (
-          <NotificationBadge
-            unreadCount={unreadCount}
-            sellerTheme={sellerTheme}
-            router={router}
-          />
+
+                <Text
+                  style={{
+                    color: sellerTheme.colors.onSurface,
+                    fontSize: 15,
+                    marginTop: 2,
+                    opacity: 0.9,
+                  }}
+                >
+                  Hello, {sellerProfile?.business?.shop_name} 👋
+                </Text>
+                <Chip
+                  mode="flat"
+                  icon="star"
+                  style={styles.heroChip}
+                  textStyle={styles.heroChipText}
+                >
+                  {SUBSCRIPTION_PLANS[sellerProfile?.subscription?.tier ?? "free"].name}
+                </Chip>
+              </View>
+
+              {/* RIGHT SIDE — ICONS */}
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 18,
+                }}
+              >
+                {/* Notifications */}
+                <TouchableOpacity
+                  onPress={() => router.push("/(drawer)/notifications")}
+                >
+                  <Ionicons
+                    name="notifications-outline"
+                    size={26}
+                    color={sellerTheme.colors.onSurface}
+                  />
+                  {unreadCount > 0 && (
+                    <View
+                      style={{
+                        position: "absolute",
+                        top: -4,
+                        right: -6,
+                        backgroundColor: sellerTheme.colors.primary,
+                        borderRadius: 10,
+                        minWidth: 18,
+                        height: 18,
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Text style={{ color: "white", fontSize: 11, fontWeight: "bold" }}>
+                        {unreadCount}
+                      </Text>
+                    </View>
+                  )}
+                </TouchableOpacity>
+
+                {/* Menu */}
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.dispatch(DrawerActions.openDrawer())
+                  }
+                >
+                  <Ionicons
+                    name="menu"
+                    size={28}
+                    color={sellerTheme.colors.onSurface}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </LinearGradient>
         ),
       }}
     >
@@ -173,3 +184,7 @@ export default function SellerLayout() {
     </Tabs>
   );
 }
+const styles = StyleSheet.create({
+  heroChip: { backgroundColor: "rgba(255,255,255,0.8)", marginBottom: 8 },
+  heroChipText: { fontWeight: "600" },
+})

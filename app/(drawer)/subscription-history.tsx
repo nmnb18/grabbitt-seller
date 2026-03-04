@@ -1,5 +1,5 @@
 import { LoadingOverlay } from "@/components/common";
-import { AppHeader } from '@/components/shared/app-header';
+import { GradientHeader } from '@/components/shared/app-header';
 import { GradientText } from '@/components/ui/gradient-text';
 import { useSubscriptionHistory } from '@/hooks';
 import { useTheme } from '@/hooks/use-theme-color';
@@ -113,7 +113,7 @@ export default function SubscriptionHistoryScreen() {
     if (loading) {
         return (
             <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-                <AppHeader />
+                <GradientHeader title="Subscription History" />
                 <LoadingOverlay visible={loading} message="Loading subscription history..." />
             </View>
         );
@@ -227,7 +227,7 @@ export default function SubscriptionHistoryScreen() {
 
     return (
         <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-            <AppHeader />
+            <GradientHeader title="Subscription History" />
             <FlatList
                 data={formattedHistory}
                 renderItem={renderItem}

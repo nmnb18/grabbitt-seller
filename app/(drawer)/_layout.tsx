@@ -146,7 +146,7 @@ function CustomDrawerContent() {
           <Text style={styles.footerText}>
             Version {version}
             {"\n"}
-            Maintained & Developed by <Text style={styles.footerHighlight}>Grabbitt Team</Text>
+            Maintained & Developed by <Text style={styles.footerHighlight}>yoPERKS Team</Text>
           </Text>
         </View>
       </View>
