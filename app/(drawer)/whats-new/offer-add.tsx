@@ -16,8 +16,8 @@ import { OfferPreview } from "@/components/whats-new/offer-preview";
 import { useOffers, useOfferState, useOfferValidation, useSaveOffer } from "@/hooks";
 import { useTheme } from "@/hooks/use-theme-color";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { useLocalSearchParams, useRouter } from "expo-router";
 import dayjs from "dayjs";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Alert,

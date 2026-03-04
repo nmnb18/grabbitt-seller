@@ -160,7 +160,7 @@ export function DateSelector({
                 </TouchableOpacity>
 
                 {error && <HelperText type="error" visible>{error}</HelperText>}
-                
+
                 {isEditMode && (
                     <HelperText type="info" visible style={{ color: theme.colors.onSurfaceDisabled }}>
                         Date cannot be changed in edit mode
