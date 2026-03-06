@@ -13,7 +13,7 @@ export default function MediaInformation() {
   const user = useAuthStore((state) => state.user);
   const fetchUserDetails = useAuthStore((state) => state.fetchUserDetails);
 
-  const uid = user?.uid;
+  const uid = user?.user?.uid;
 
   const media = user?.user?.seller_profile?.media || ({} as SellerMedia);
 

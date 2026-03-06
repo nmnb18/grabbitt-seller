@@ -43,7 +43,7 @@ export function usePushNotifications(): UsePushNotificationsReturn {
   const appStateRef = useRef<AppStateStatus>(AppState.currentState);
 
   const refreshUnreadCount = useCallback(async () => {
-    if (!user?.uid) return;
+    if (!user?.user.uid) return;
 
     try {
       const count = await getUnreadNotificationCount();
@@ -51,7 +51,7 @@ export function usePushNotifications(): UsePushNotificationsReturn {
     } catch (err) {
       console.warn("[usePushNotifications] Failed to fetch unread count", err);
     }
-  }, [user?.uid, setUnreadCount]);
+  }, [user?.user.uid, setUnreadCount]);
 
   /**
    * Handle notification navigation
@@ -140,7 +140,7 @@ export function usePushNotifications(): UsePushNotificationsReturn {
         setIsPermissionGranted(true);
 
         // Register with backend if user is logged in
-        if (user?.uid) {
+        if (user?.user.uid) {
           await registerPushToken(token);
         }
       } else {
@@ -152,7 +152,7 @@ export function usePushNotifications(): UsePushNotificationsReturn {
     } finally {
       setIsLoading(false);
     }
-  }, [user?.uid]);
+  }, [user?.user.uid]);
 
   /**
    * Initialize notifications on mount

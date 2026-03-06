@@ -31,7 +31,7 @@ export const SlabConfig = React.memo(function SlabConfig({
         const min = index === 0 ? 0 : prevMax + 1;
 
         return (
-            <View key={`slab-${min}-${rule.max}`} style={styles.slabRow}>
+            <View key={`slab-${min}`} style={styles.slabRow}>
                 <View style={styles.slabRangeCol}>
                     <Text style={[styles.slabFieldLabel, { color: theme.colors.onSurfaceDisabled }]}>
                         ₹{min} to

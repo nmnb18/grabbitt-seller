@@ -10,7 +10,7 @@ export default function BusinessInformation() {
     const user = useAuthStore((state) => state.user);
     const fetchUserDetails = useAuthStore((state) => state.fetchUserDetails);
 
-    const uid = user?.uid;
+    const uid = user?.user?.uid;
 
     const profile = user?.user?.seller_profile?.business;
     const subscriptionTier = user?.user?.seller_profile?.subscription.tier || "free";

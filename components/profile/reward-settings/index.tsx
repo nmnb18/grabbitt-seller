@@ -22,8 +22,7 @@ export default function RewardsSettings() {
     const theme = useTheme();
     const user = useAuthStore((state) => state.user);
     const fetchUserDetails = useAuthStore((state) => state.fetchUserDetails);
-
-    const uid = user?.uid;
+    const uid = user?.user.uid;
     const rewards = user?.user?.seller_profile?.rewards;
     const upiFromProfile = useMemo(() => rewards?.upi_ids || [], [rewards]);
 
@@ -189,7 +188,6 @@ export default function RewardsSettings() {
                 upi_ids: upiIds,
                 payment_reward_enabled: upiIds?.length > 0,
             } as any);
-
             if (uid) await fetchUserDetails(uid, "seller");
             setIsEditing(false);
             setShowAdvanced(false);

@@ -48,7 +48,7 @@ export function SuccessMessage({
             {message && (
                 <Text
                     variant="bodyMedium"
-                    style={[styles.message, { color: theme.colors.onSurfaceVariant }]}
+                    style={[styles.message, { color: theme.colors.text }]}
                 >
                     {message}
                 </Text>

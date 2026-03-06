@@ -174,7 +174,6 @@ export const userApi = {
      */
     refreshToken: async (refreshToken: string) => {
         try {
-            console.log('here', refreshToken)
             const response = await api.post('/refreshToken', { refreshToken: refreshToken });
             return response.data;
         } catch (error) {
@@ -194,10 +193,10 @@ export const notificationApi = {
      */
     registerToken: async (payload: Record<string, any>) => {
         try {
-            const response = await api.post('/registerToken', payload);
+            const response = await api.post('/registerPushToken', payload);
             return response.data;
         } catch (error) {
-            throw handleApiError(error, 'registerToken');
+            throw handleApiError(error, 'registerPushToken');
         }
     },
 

@@ -9,6 +9,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { useCallback } from "react";
 import { View } from "react-native";
 import { Card, Chip, HelperText, IconButton, Surface, Text, TextInput } from "react-native-paper";
+import { FormTextInput } from "../form/form-text-input";
 
 export interface Offer {
     id: string;
@@ -196,49 +197,33 @@ const OfferRow = React.memo(function OfferRow({
                 )}
             </View>
 
-            <TextInput
+            <FormTextInput
                 label="Offer Title *"
                 placeholder="e.g., Free Coffee"
                 value={offer.title}
                 onChangeText={handleTitleChange}
-                mode="outlined"
-                error={!!titleError}
+                autoCapitalize="words"
+                leftIcon="gift"
                 style={{ marginBottom: 8 }}
-                outlineColor={theme.colors.outline}
-                activeOutlineColor={theme.colors.onSurface}
-                left={<TextInput.Icon icon="gift" color={theme.colors.onSurface} />}
-                theme={{
-                    colors: {
-                        primary: theme.colors.primary,
-                        onSurfaceVariant: theme.colors.onSurface,
-                    },
-                }}
             />
+
             {titleError && (
                 <HelperText type="error" visible>
                     {titleError}
                 </HelperText>
             )}
 
-            <TextInput
+            <FormTextInput
                 label="Minimum Spend (₹) *"
                 placeholder="e.g., 300"
                 value={offer.min_spend}
                 onChangeText={handleMinSpendChange}
-                mode="outlined"
-                style={{ marginBottom: 8 }}
-                outlineColor={theme.colors.outline}
-                activeOutlineColor={theme.colors.onSurface}
-                left={<TextInput.Icon icon="currency-inr" color={theme.colors.onSurface} />}
-                theme={{
-                    colors: {
-                        primary: theme.colors.primary,
-                        onSurfaceVariant: theme.colors.onSurface,
-                    },
-                }}
                 keyboardType="numeric"
+                leftIcon="currency-inr"
+                style={{ marginBottom: 8 }}
                 error={!!minSpendError}
             />
+
             {minSpendError && (
                 <HelperText type="error" visible>
                     {minSpendError}

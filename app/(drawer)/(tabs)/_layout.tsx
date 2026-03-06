@@ -82,6 +82,7 @@ export default function SellerLayout() {
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "space-between",
+                paddingTop: 5
               }}
             >
               {/* LEFT SIDE — LOGO + GREETING */}
@@ -100,12 +101,13 @@ export default function SellerLayout() {
                 </Text>
                 <Chip
                   mode="flat"
-                  icon="star"
+                  icon="crown"
                   style={styles.heroChip}
                   textStyle={styles.heroChipText}
                 >
                   {SUBSCRIPTION_PLANS[sellerProfile?.subscription?.tier ?? "free"].name}
                 </Chip>
+
               </View>
 
               {/* RIGHT SIDE — ICONS */}

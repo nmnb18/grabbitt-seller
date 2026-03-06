@@ -45,7 +45,6 @@ export default function SellerProAnalyticsInsightsContainer() {
         setError(response?.error || "Failed to load advanced analytics");
         return;
       }
-
       setData(response.data || response);
     } catch (error: any) {
       console.error(error);

@@ -15,7 +15,7 @@ export default function AccountInformation({
   const user = useAuthStore((state) => state.user);
   const fetchUserDetails = useAuthStore((state) => state.fetchUserDetails);
 
-  const uid = user?.uid;
+  const uid = user?.user?.uid;
 
   const profile = user?.user?.seller_profile?.account;
 
