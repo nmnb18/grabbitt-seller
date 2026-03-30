@@ -7,7 +7,7 @@ import { Ionicons } from "@expo/vector-icons";
 import Constants from "expo-constants";
 import { useRouter } from "expo-router";
 import { Drawer } from "expo-router/drawer";
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import {
   Alert,
   Linking,
@@ -17,8 +17,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function DrawerLayout() {
   const theme = useTheme();
@@ -44,6 +44,7 @@ export default function DrawerLayout() {
             ),
           }}
         />
+        <Drawer.Screen name="payment-qr" options={{ headerShown: false, title: "Payment QR" }} />
       </Drawer>
     </GestureHandlerRootView>
   );
@@ -102,6 +103,13 @@ function CustomDrawerContent() {
             icon="account" 
             testID="drawer-profile"
             onPress={() => router.push("/(drawer)/profile-setup")} 
+          />
+
+          <MenuItem
+            label="Payment QR"
+            icon="qrcode"
+            testID="drawer-payment-qr"
+            onPress={() => router.push("/(drawer)/payment-qr")}
           />
 
           <MenuItem 
