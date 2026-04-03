@@ -83,11 +83,6 @@ export default function SellerRedeemQR() {
         redemption_id: parsed.redemption_id,
       });
 
-      if (!response.data.success) {
-        throw new Error(response.data.error || "Redemption failed");
-      }
-
-      // ✅ SUCCESS → Navigate to Seller Success Screen
       router.replace({
         pathname: "/(drawer)/redeem-success",
         params: {

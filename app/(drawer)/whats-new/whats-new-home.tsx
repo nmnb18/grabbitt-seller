@@ -46,11 +46,9 @@ export default function SellerWhatsNewScreen() {
             setLoading(true);
             const resp = await api.get("/getSellerOffers");
 
-            if (resp.data.success) {
-                setActive(resp.data.active || []);
-                setUpcoming(resp.data.upcoming || []);
-                setExpired(resp.data.expired || []);
-            }
+            setActive(resp.data.active ?? []);
+                setUpcoming(resp.data.upcoming ?? []);
+                setExpired(resp.data.expired ?? []);
 
             await fetchRedeemedPerks();
         } catch (err) {
@@ -63,9 +61,7 @@ export default function SellerWhatsNewScreen() {
 
     const fetchRedeemedPerks = async () => {
         const resp = await api.get("/getSellerRedeemedPerks");
-        if (resp.data.success) {
-            setRedeemedPerks(resp.data.perks);
-        }
+        setRedeemedPerks(resp.data.perks ?? []);
     };
 
     useFocusEffect(

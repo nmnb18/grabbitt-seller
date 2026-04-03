@@ -1,16 +1,21 @@
+/**
+ * Axios Instance
+ * Authenticated API client — wraps apiClient with auth interceptors.
+ *
+ * Adds:
+ *  - Request: attach Bearer token from auth store
+ *  - Response: handle 401 with deduped token refresh + auto-logout
+ */
+
 import { useAuthStore } from "@/store/authStore";
-import axios from "axios";
+import apiClient from "./apiClient";
 
-const API_URL =
-  process.env.EXPO_PUBLIC_BACKEND_URL;
+// Single in-flight refresh promise — prevents token rotation race condition when
+// multiple concurrent requests all get 401 and try to refresh simultaneously.
+let refreshingPromise: Promise<string | null> | null = null;
 
-const api = axios.create({
-  baseURL: API_URL,
-  timeout: 15000,
-});
-
-// Request interceptor - Attach auth token (sync, no proactive refresh to avoid parallel race)
-api.interceptors.request.use(
+// ── Request: attach auth token ────────────────────────────────────────────────
+apiClient.interceptors.request.use(
   (config) => {
     const { idToken } = useAuthStore.getState();
     if (idToken) {
@@ -21,23 +26,34 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor - Refresh token reactively on 401, then retry once
-api.interceptors.response.use(
+// ── Response: 401 → refresh → retry, or logout ───────────────────────────────
+apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response?.status === 401) {
-      const { refreshToken, logout, user } = useAuthStore.getState();
+      const { logout, user } = useAuthStore.getState();
 
-      // Don't trigger auto-logout if the failing request is logout itself
-      const isLogoutRequest = error.config?.url?.includes('/logout');
+      // Don't trigger auto-logout for the logout request itself
+      const isLogoutRequest = error.config?.url?.includes("/logout");
       if (isLogoutRequest) return Promise.reject(error);
 
-      const newToken = await refreshToken();
-      if (newToken && error.config) {
-        error.config.headers.Authorization = `Bearer ${newToken}`;
-        return api.request(error.config);
+      // Deduplicate concurrent 401s — all share one in-flight refresh
+      if (!refreshingPromise) {
+        refreshingPromise = useAuthStore
+          .getState()
+          .refreshToken()
+          .finally(() => {
+            refreshingPromise = null;
+          });
       }
 
+      const newToken = await refreshingPromise;
+      if (newToken && error.config) {
+        error.config.headers.Authorization = `Bearer ${newToken}`;
+        return apiClient.request(error.config);
+      }
+
+      // Refresh failed — log out once
       if (user?.uid) {
         await logout(user.uid);
       }
@@ -47,4 +63,4 @@ api.interceptors.response.use(
   }
 );
 
-export default api;
+export default apiClient;
