@@ -6,7 +6,6 @@ import NotificationSettings from '@/components/profile/notification-settings';
 import RewardsSettings from '@/components/profile/reward-settings';
 import VerificationDetails from '@/components/profile/verification-details';
 import { GradientHeader } from '@/components/shared/app-header';
-import { VpaScannerModal } from '@/components/scan/VpaScannerModal';
 import { Button as CustomButton } from '@/components/ui/paper-button';
 import { useTheme } from '@/hooks/use-theme-color';
 import { userApi as fbUserApi } from '@/services';
@@ -27,7 +26,6 @@ import {
   Dialog,
   Divider,
   HelperText,
-  IconButton,
   Modal,
   Portal,
   Text,
@@ -63,25 +61,15 @@ export default function SellerProfileSetup() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
 
-  // UPI VPA
+  // UPI VPA (read-only — set during onboarding)
   const sellerRewards = user?.user?.seller_profile?.rewards as any;
   const existingVpas: string[] = sellerRewards?.upi_ids || [];
-  const [upiVpa, setUpiVpa] = useState(existingVpas[0] || '');
-  const [isEditingUpi, setIsEditingUpi] = useState(false);
-  const [savingUpi, setSavingUpi] = useState(false);
-  const [isScanningVpa, setIsScanningVpa] = useState(false);
-
   // DELETE ACCOUNT
   const handleDeleteAccount = async () => {
     try {
       setDeleting(true);
 
       const resp = await fbUserApi.deleteSellerAccount();
-
-      if (!resp?.success) {
-        Alert.alert("Delete Failed", resp?.error || "Unable to delete account");
-        return;
-      }
 
       await logout(user?.uid ?? '');
       router.replace("/auth/login");
@@ -92,26 +80,6 @@ export default function SellerProfileSetup() {
       Alert.alert("Error", err.response?.data?.error || "Something went wrong.");
     } finally {
       setDeleting(false);
-    }
-  };
-
-  const handleSaveUpiVpa = async () => {
-    const vpa = upiVpa.trim();
-    if (!vpa.includes('@')) {
-      return Alert.alert('Validation', 'Enter a valid UPI VPA (e.g. shop@bank)');
-    }
-    try {
-      setSavingUpi(true);
-      await api.patch('/updateSellerProfile', {
-        section: 'payment',
-        data: { upi_vpa: vpa },
-      });
-      setIsEditingUpi(false);
-      Alert.alert('Saved', 'UPI address saved. Customers can now earn points via Scan & Pay.');
-    } catch (err: any) {
-      Alert.alert('Error', err?.response?.data?.error || 'Failed to save UPI address.');
-    } finally {
-      setSavingUpi(false);
     }
   };
 
@@ -168,61 +136,17 @@ export default function SellerProfileSetup() {
         {/* UPI VPA CARD */}
         <Card style={[styles.card, { backgroundColor: surface }]} elevation={3}>
           <Card.Content>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-              <Text variant="titleMedium" style={[styles.cardTitle, { color: textColor }]}>
-                💳 UPI Address (Turbo Pay)
-              </Text>
-              {!isEditingUpi ? (
-                <Button
-                  mode="text"
-                  icon="pencil"
-                  compact
-                  onPress={() => setIsEditingUpi(true)}
-                >
-                  {existingVpas.length > 0 ? 'Edit' : 'Add'}
-                </Button>
-              ) : (
-                <View style={{ flexDirection: 'row' }}>
-                  <Button mode="text" icon="close" compact disabled={savingUpi} onPress={() => { setUpiVpa(existingVpas[0] || ''); setIsEditingUpi(false); }}>
-                    Cancel
-                  </Button>
-                  <Button mode="text" icon="content-save-outline" compact loading={savingUpi} disabled={!upiVpa.includes('@') || savingUpi} onPress={handleSaveUpiVpa}>
-                    Save
-                  </Button>
-                </View>
-              )}
-            </View>
+            <Text variant="titleMedium" style={[styles.cardTitle, { color: textColor }]}>
+              💳 UPI Address (Turbo Pay)
+            </Text>
 
             <Divider style={[styles.divider, { backgroundColor: outlineColor + '55' }]} />
 
-            {!isEditingUpi ? (
-              <Text style={{ color: existingVpas.length > 0 ? textColor : outlineColor, marginTop: 4 }}>
-                {existingVpas.length > 0 ? existingVpas.join(', ') : 'No UPI address set. Add one so customers earn points when they pay you.'}
-              </Text>
-            ) : (
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <TextInput
-                  label="UPI VPA *"
-                  value={upiVpa}
-                  onChangeText={setUpiVpa}
-                  mode="outlined"
-                  autoCapitalize="none"
-                  keyboardType="email-address"
-                  placeholder="yourshop@bank"
-                  outlineColor={outlineColor}
-                  activeOutlineColor={accent}
-                  left={<TextInput.Icon icon="bank-transfer" />}
-                  style={{ flex: 1 }}
-                />
-                <IconButton
-                  icon="qrcode-scan"
-                  iconColor={accent}
-                  size={28}
-                  onPress={() => setIsScanningVpa(true)}
-                  style={{ marginLeft: 4 }}
-                />
-              </View>
-            )}
+            <Text style={{ color: existingVpas.length > 0 ? textColor : outlineColor, marginTop: 4 }}>
+              {existingVpas.length > 0
+                ? existingVpas.join(', ')
+                : 'No UPI address configured. Contact support to set up Turbo Pay.'}
+            </Text>
           </Card.Content>
         </Card>
 
@@ -296,12 +220,6 @@ export default function SellerProfileSetup() {
 
       {/* MODALS & DIALOGS */}
       <Portal>
-        {/* UPI VPA SCANNER */}
-        <VpaScannerModal
-          visible={isScanningVpa}
-          onClose={() => setIsScanningVpa(false)}
-          onVpaScanned={(vpa) => setUpiVpa(vpa)}
-        />
         {/* DELETE CONFIRMATION */}
         <Dialog
           visible={showDeleteModal}
