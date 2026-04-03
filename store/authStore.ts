@@ -125,6 +125,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   },
 
   logout: async (uid: string) => {
+    set({ loading: true });
     try {
       set({ isLoggingOut: true });
       const { user } = get();

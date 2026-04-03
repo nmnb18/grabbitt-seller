@@ -1,5 +1,5 @@
 import { useAuthStore } from "@/store/authStore";
-import axios, { AxiosRequestConfig } from "axios";
+import axios from "axios";
 
 const API_URL =
   process.env.EXPO_PUBLIC_BACKEND_URL;
@@ -12,68 +12,37 @@ const api = axios.create({
   },
 });
 
-/**
- * Request interceptor to attach Bearer token from authStore
- * Automatically includes idToken in Authorization header
- */
+// Request interceptor - Attach auth token (sync, no proactive refresh to avoid parallel race)
 api.interceptors.request.use(
-  async (config) => {
-    try {
-      const authStore = useAuthStore.getState();
-      const token = authStore.idToken;
-
-      // Attach bearer token if available
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-
-      return config;
-    } catch (error) {
-      console.warn("Error attaching token to request", error);
-      return config;
+  (config) => {
+    const { idToken } = useAuthStore.getState();
+    if (idToken) {
+      config.headers.Authorization = `Bearer ${idToken}`;
     }
+    return config;
   },
   (error) => Promise.reject(error)
 );
 
-/**
- * Response interceptor to handle token refresh on 401
- * Automatically attempts to refresh token if it's expired
- */
+// Response interceptor - Refresh token reactively on 401, then retry once
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
+    if (error.response?.status === 401) {
+      const { refreshToken, logout, user } = useAuthStore.getState();
 
-    // If 401 Unauthorized and we haven't already retried
-    if (
-      error.response?.status === 401 &&
-      !originalRequest._retry
-    ) {
-      originalRequest._retry = true;
+      // Don't trigger auto-logout if the failing request is logout itself
+      const isLogoutRequest = error.config?.url?.includes('/logout');
+      if (isLogoutRequest) return Promise.reject(error);
 
-      try {
-        const authStore = useAuthStore.getState();
-        const refreshToken = authStore.refreshTokenValue;
+      const newToken = await refreshToken();
+      if (newToken && error.config) {
+        error.config.headers.Authorization = `Bearer ${newToken}`;
+        return api.request(error.config);
+      }
 
-        if (!refreshToken) {
-          // No refresh token available, user needs to login again
-          return Promise.reject(error);
-        }
-
-        // Try to refresh the token
-        const newToken = await authStore.refreshToken();
-
-        if (newToken) {
-          // Update the original request with new token
-          originalRequest.headers!.Authorization = `Bearer ${newToken}`;
-          // Retry the original request
-          return api(originalRequest);
-        }
-      } catch (refreshError) {
-        console.error("Token refresh failed", refreshError);
-        // If refresh fails, reject the original request
-        return Promise.reject(error);
+      if (user?.uid) {
+        await logout(user.uid);
       }
     }
 
