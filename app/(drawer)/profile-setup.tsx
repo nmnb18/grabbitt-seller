@@ -6,6 +6,7 @@ import NotificationSettings from '@/components/profile/notification-settings';
 import RewardsSettings from '@/components/profile/reward-settings';
 import VerificationDetails from '@/components/profile/verification-details';
 import { GradientHeader } from '@/components/shared/app-header';
+import { VpaScannerModal } from '@/components/scan/VpaScannerModal';
 import { Button as CustomButton } from '@/components/ui/paper-button';
 import { useTheme } from '@/hooks/use-theme-color';
 import { userApi as fbUserApi } from '@/services';
@@ -26,6 +27,7 @@ import {
   Dialog,
   Divider,
   HelperText,
+  IconButton,
   Modal,
   Portal,
   Text,
@@ -67,6 +69,7 @@ export default function SellerProfileSetup() {
   const [upiVpa, setUpiVpa] = useState(existingVpas[0] || '');
   const [isEditingUpi, setIsEditingUpi] = useState(false);
   const [savingUpi, setSavingUpi] = useState(false);
+  const [isScanningVpa, setIsScanningVpa] = useState(false);
 
   // DELETE ACCOUNT
   const handleDeleteAccount = async () => {
@@ -197,18 +200,28 @@ export default function SellerProfileSetup() {
                 {existingVpas.length > 0 ? existingVpas.join(', ') : 'No UPI address set. Add one so customers earn points when they pay you.'}
               </Text>
             ) : (
-              <TextInput
-                label="UPI VPA *"
-                value={upiVpa}
-                onChangeText={setUpiVpa}
-                mode="outlined"
-                autoCapitalize="none"
-                keyboardType="email-address"
-                placeholder="yourshop@bank"
-                outlineColor={outlineColor}
-                activeOutlineColor={accent}
-                left={<TextInput.Icon icon="bank-transfer" />}
-              />
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <TextInput
+                  label="UPI VPA *"
+                  value={upiVpa}
+                  onChangeText={setUpiVpa}
+                  mode="outlined"
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                  placeholder="yourshop@bank"
+                  outlineColor={outlineColor}
+                  activeOutlineColor={accent}
+                  left={<TextInput.Icon icon="bank-transfer" />}
+                  style={{ flex: 1 }}
+                />
+                <IconButton
+                  icon="qrcode-scan"
+                  iconColor={accent}
+                  size={28}
+                  onPress={() => setIsScanningVpa(true)}
+                  style={{ marginLeft: 4 }}
+                />
+              </View>
             )}
           </Card.Content>
         </Card>
@@ -283,6 +296,12 @@ export default function SellerProfileSetup() {
 
       {/* MODALS & DIALOGS */}
       <Portal>
+        {/* UPI VPA SCANNER */}
+        <VpaScannerModal
+          visible={isScanningVpa}
+          onClose={() => setIsScanningVpa(false)}
+          onVpaScanned={(vpa) => setUpiVpa(vpa)}
+        />
         {/* DELETE CONFIRMATION */}
         <Dialog
           visible={showDeleteModal}

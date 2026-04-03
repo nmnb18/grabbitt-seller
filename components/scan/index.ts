@@ -4,4 +4,5 @@
 
 export { OrderAmountInput } from "./order-amount-input";
 export { ScanSuccess } from "./scan-success";
+export { VpaScannerModal } from "./VpaScannerModal";
 

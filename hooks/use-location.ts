@@ -1,3 +1,4 @@
+import { USE_MOCK_LOCATION } from '@/config/env';
 import * as Location from 'expo-location';
 import { useEffect, useState } from 'react';
 import { Alert } from 'react-native';
@@ -89,6 +90,16 @@ export const useLocation = ({ formData, updateFormData }: LocationHookProps) => 
     const getCurrentLocation = async (): Promise<{ latitude: number; longitude: number } | null> => {
         try {
             setLocationLoading(true);
+
+            // In dev/Expo Go, skip real GPS and use a placeholder Bengaluru coord.
+            if (USE_MOCK_LOCATION) {
+                const latitude = 12.9716;
+                const longitude = 77.5946;
+                updateFormData('latitude', latitude);
+                updateFormData('longitude', longitude);
+                setIsAutoFilled(true);
+                return { latitude, longitude };
+            }
 
             if (locationPermission !== 'granted') {
                 const hasPermission = await requestLocationPermission();
