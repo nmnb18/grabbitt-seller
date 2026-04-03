@@ -133,28 +133,24 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   },
 
   logout: async (uid: string) => {
+    set({ loading: true });
     try {
-      const { idToken, user } = get();
-
-      // Prefer passed token, or fallback to stored one
-      const token = idToken || user?.idToken;
-      set({ loading: true });
-      await axios.post(
-        `${API_URL}/logout`,
-        {
-          uid,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      // Try to get a non-expired token before calling the API.
+      // If the current token is expired and refresh fails, skip the
+      // server-side revocation — the local session is still cleared below.
+      const freshToken = await get().refreshToken();
+      if (freshToken) {
+        await axios.post(
+          `${API_URL}/logout`,
+          { uid },
+          { headers: { Authorization: `Bearer ${freshToken}` } }
+        );
+      }
+    } catch (err) {
+      console.error("Logout API error (non-fatal):", err);
+    } finally {
       await AsyncStorage.removeItem("user");
       set({ user: null, loading: false });
-    } catch (err) {
-      set({ loading: false });
-      console.error("Logout error:", err);
     }
   },
 

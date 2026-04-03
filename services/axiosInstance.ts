@@ -9,24 +9,42 @@ const api = axios.create({
   timeout: 15000,
 });
 
-// 🔄 Interceptor to refresh token if needed
+// Request interceptor - Attach auth token (sync, no proactive refresh to avoid parallel race)
 api.interceptors.request.use(
-  async (config) => {
-    const { refreshToken, idToken } = useAuthStore.getState();
-    let token = idToken;
-    try {
-      const fresh = await refreshToken();
-      if (fresh) token = fresh;
-    } catch (err) {
-      console.warn("Token refresh failed before request", err);
-    }
-
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+  (config) => {
+    const { idToken } = useAuthStore.getState();
+    if (idToken) {
+      config.headers.Authorization = `Bearer ${idToken}`;
     }
     return config;
   },
   (error) => Promise.reject(error)
+);
+
+// Response interceptor - Refresh token reactively on 401, then retry once
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.response?.status === 401) {
+      const { refreshToken, logout, user } = useAuthStore.getState();
+
+      // Don't trigger auto-logout if the failing request is logout itself
+      const isLogoutRequest = error.config?.url?.includes('/logout');
+      if (isLogoutRequest) return Promise.reject(error);
+
+      const newToken = await refreshToken();
+      if (newToken && error.config) {
+        error.config.headers.Authorization = `Bearer ${newToken}`;
+        return api.request(error.config);
+      }
+
+      if (user?.uid) {
+        await logout(user.uid);
+      }
+    }
+
+    return Promise.reject(error);
+  }
 );
 
 export default api;
