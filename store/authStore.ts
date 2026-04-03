@@ -147,7 +147,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         );
       }
     } catch (err) {
-      console.error("Logout API error (non-fatal):", err);
+      console.warn("Logout API error (non-fatal):", err);
     } finally {
       await AsyncStorage.removeItem("user");
       set({ user: null, loading: false });

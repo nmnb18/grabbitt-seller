@@ -1,7 +1,8 @@
 import { useThemeColor } from '@/hooks/use-theme-color';
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Chip, IconButton, RadioButton, Text } from 'react-native-paper';
+import { VpaScannerModal } from '../scan/VpaScannerModal';
 import { Button } from '../ui/paper-button';
 import { FormTextInput } from './form-text-input';
 
@@ -41,6 +42,7 @@ export const RewardTypeSection: React.FC<RewardTypeSectionProps> = ({
     onNewUpiIdChange,
 }) => {
     const accentColor = useThemeColor({}, 'accent');
+    const [isScanningVpa, setIsScanningVpa] = useState(false);
 
     const updateSlab = (index: number, field: "max" | "points", value: string) => {
         const updated = [...slabRules];
@@ -164,12 +166,24 @@ export const RewardTypeSection: React.FC<RewardTypeSectionProps> = ({
                         leftIcon="bank"
                     />
                     <IconButton
+                        icon="qrcode-scan"
+                        iconColor={accentColor}
+                        size={28}
+                        onPress={() => setIsScanningVpa(true)}
+                    />
+                    <IconButton
                         icon="plus-circle"
                         iconColor={accentColor}
                         size={32}
                         onPress={addUpiId}
                     />
                 </View>
+
+                <VpaScannerModal
+                    visible={isScanningVpa}
+                    onClose={() => setIsScanningVpa(false)}
+                    onVpaScanned={(vpa) => onNewUpiIdChange(vpa)}
+                />
 
                 {upiIds.map((upi, idx) => (
                     <View key={idx} style={styles.upiChipContainer}>
