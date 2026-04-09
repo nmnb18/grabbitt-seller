@@ -7,7 +7,7 @@ import { Ionicons } from "@expo/vector-icons";
 import Constants from "expo-constants";
 import { useRouter } from "expo-router";
 import { Drawer } from "expo-router/drawer";
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import {
   Alert,
   Linking,
@@ -46,6 +46,7 @@ export default function DrawerLayout() {
             ),
           }}
         />
+        <Drawer.Screen name="payment-qr" options={{ headerShown: false, title: "Payment QR" }} />
       </Drawer>
     </GestureHandlerRootView>
   );
@@ -105,6 +106,7 @@ function CustomDrawerContent() {
   const DRAWER_MENU_ITEMS = [
     { label: "Dashboard", icon: "grid", testID: "drawer-dashboard", route: "/(drawer)/(tabs)/dashboard" },
     { label: "Profile", icon: "account", testID: "drawer-profile", route: "/(drawer)/profile-setup" },
+    { label: "Payment QR", icon: "qrcode", testID: "drawer-payment-qr", route: "/(drawer)/payment-qr" },
     { label: "Plans", icon: "star", testID: "drawer-plans", route: "/(drawer)/subscription" },
     { label: "Plans History", icon: "history", testID: "drawer-plans-history", route: "/(drawer)/subscription-history" },
     { label: "Redemption", icon: "star-four-points-outline", testID: "drawer-redemption", route: "/(drawer)/redemptions" },

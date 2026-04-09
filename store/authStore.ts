@@ -47,11 +47,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     try {
       set({ loading: true });
 
-      const response = await userApi.registerSeller(payload as any);
-
-      if (!response?.success) {
-        throw new Error(response?.error || "Registration failed");
-      }
+      await userApi.registerSeller(payload as any);
 
     } catch (err: any) {
       set({ loading: false });
@@ -65,10 +61,6 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       set({ loading: true });
 
       const response = await userApi.loginSeller({ email, password, role });
-
-      if (!response?.success) {
-        throw new Error(response?.error || "Login failed");
-      }
 
       const fullUser: User = response as any;
       const token = response.idToken || response.user?.idToken;
@@ -125,6 +117,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   },
 
   logout: async (uid: string) => {
+    set({ loading: true });
     try {
       set({ isLoggingOut: true });
       const { user } = get();

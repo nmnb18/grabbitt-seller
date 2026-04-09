@@ -1,81 +1,61 @@
-import { useAuthStore } from "@/store/authStore";
-import axios, { AxiosRequestConfig } from "axios";
-import Constants from "expo-constants";
-
-const API_URL =
-  Constants.expoConfig?.extra?.EXPO_PUBLIC_BACKEND_URL ||
-  process.env.EXPO_PUBLIC_BACKEND_URL;
-
-const api = axios.create({
-  baseURL: API_URL,
-  timeout: 15000,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
-
 /**
- * Request interceptor to attach Bearer token from authStore
- * Automatically includes idToken in Authorization header
+ * Axios Instance
+ * Authenticated API client — wraps apiClient with auth interceptors.
+ *
+ * Adds:
+ *  - Request: attach Bearer token from auth store
+ *  - Response: handle 401 with deduped token refresh + auto-logout
  */
-api.interceptors.request.use(
-  async (config) => {
-    try {
-      const authStore = useAuthStore.getState();
-      const token = authStore.idToken;
 
-      // Attach bearer token if available
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
+import { useAuthStore } from "@/store/authStore";
+import apiClient from "./apiClient";
 
-      return config;
-    } catch (error) {
-      console.warn("Error attaching token to request", error);
-      return config;
+// Single in-flight refresh promise — prevents token rotation race condition when
+// multiple concurrent requests all get 401 and try to refresh simultaneously.
+let refreshingPromise: Promise<string | null> | null = null;
+
+// ── Request: attach auth token ────────────────────────────────────────────────
+apiClient.interceptors.request.use(
+  (config) => {
+    const { idToken } = useAuthStore.getState();
+    if (idToken) {
+      config.headers.Authorization = `Bearer ${idToken}`;
     }
+    return config;
   },
   (error) => Promise.reject(error)
 );
 
-/**
- * Response interceptor to handle token refresh on 401
- * Automatically attempts to refresh token if it's expired
- */
-api.interceptors.response.use(
+// ── Response: 401 → refresh → retry, or logout ───────────────────────────────
+apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
+    if (error.response?.status === 401) {
+      const { logout, user } = useAuthStore.getState();
 
-    // If 401 Unauthorized and we haven't already retried
-    if (
-      error.response?.status === 401 &&
-      !originalRequest._retry
-    ) {
-      originalRequest._retry = true;
+      // Don't trigger auto-logout for the logout request itself
+      const isLogoutRequest = error.config?.url?.includes("/logout");
+      if (isLogoutRequest) return Promise.reject(error);
 
-      try {
-        const authStore = useAuthStore.getState();
-        const refreshToken = authStore.refreshTokenValue;
+      // Deduplicate concurrent 401s — all share one in-flight refresh
+      if (!refreshingPromise) {
+        refreshingPromise = useAuthStore
+          .getState()
+          .refreshToken()
+          .finally(() => {
+            refreshingPromise = null;
+          });
+      }
 
-        if (!refreshToken) {
-          // No refresh token available, user needs to login again
-          return Promise.reject(error);
-        }
+      const newToken = await refreshingPromise;
+      if (newToken && error.config) {
+        error.config.headers.Authorization = `Bearer ${newToken}`;
+        return apiClient.request(error.config);
+      }
 
-        // Try to refresh the token
-        const newToken = await authStore.refreshToken();
-
-        if (newToken) {
-          // Update the original request with new token
-          originalRequest.headers!.Authorization = `Bearer ${newToken}`;
-          // Retry the original request
-          return api(originalRequest);
-        }
-      } catch (refreshError) {
-        console.error("Token refresh failed", refreshError);
-        // If refresh fails, reject the original request
-        return Promise.reject(error);
+      // Refresh failed — log out once
+      if (user?.uid) {
+        await logout(user.uid);
       }
     }
 
@@ -83,8 +63,4 @@ api.interceptors.response.use(
   }
 );
 
-export default api;
-
-
-
-
+export default apiClient;

@@ -12,7 +12,7 @@ import { userApi as fbUserApi } from '@/services';
 import { useAuthStore } from '@/store/authStore';
 import { isValidPassword } from '@/utils/helper';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Alert,
   ScrollView,
@@ -61,17 +61,15 @@ export default function SellerProfileSetup() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
 
+  // UPI VPA (read-only — set during onboarding)
+  const sellerRewards = user?.user?.seller_profile?.rewards as any;
+  const existingVpas: string[] = sellerRewards?.upi_ids || [];
   // DELETE ACCOUNT
   const handleDeleteAccount = async () => {
     try {
       setDeleting(true);
 
       const resp = await fbUserApi.deleteSellerAccount();
-
-      if (!resp?.success) {
-        Alert.alert("Delete Failed", resp?.error || "Unable to delete account");
-        return;
-      }
 
       await logout(user?.uid ?? '');
       router.replace("/auth/login");
@@ -134,6 +132,23 @@ export default function SellerProfileSetup() {
         <VerificationDetails />
         <RewardsSettings />
         <NotificationSettings />
+
+        {/* UPI VPA CARD */}
+        <Card style={[styles.card, { backgroundColor: surface }]} elevation={3}>
+          <Card.Content>
+            <Text variant="titleMedium" style={[styles.cardTitle, { color: textColor }]}>
+              💳 UPI Address (Turbo Pay)
+            </Text>
+
+            <Divider style={[styles.divider, { backgroundColor: outlineColor + '55' }]} />
+
+            <Text style={{ color: existingVpas.length > 0 ? textColor : outlineColor, marginTop: 4 }}>
+              {existingVpas.length > 0
+                ? existingVpas.join(', ')
+                : 'No UPI address configured. Contact support to set up Turbo Pay.'}
+            </Text>
+          </Card.Content>
+        </Card>
 
         {/* SUBSCRIPTION CARD */}
         <Card style={[styles.card, { backgroundColor: surface }]} elevation={3}>
