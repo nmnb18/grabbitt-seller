@@ -11,7 +11,7 @@ import api from '@/services/axiosInstance';
 import { useAuthStore } from '@/store/authStore';
 import { isValidPassword } from '@/utils/helper';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import {
   Alert,
   ScrollView,
@@ -59,9 +59,6 @@ export default function SellerProfileSetup() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
 
-  // UPI VPA (read-only — set during onboarding)
-  const sellerRewards = user?.user?.seller_profile?.rewards as any;
-  const existingVpas: string[] = sellerRewards?.upi_ids || [];
   // DELETE ACCOUNT
   const handleDeleteAccount = async () => {
     try {
@@ -71,6 +68,11 @@ export default function SellerProfileSetup() {
       const resp = await api.delete("/deleteSellerAccount", {
         headers: { Authorization: `Bearer ${idToken}` }
       });
+
+      if (!resp.data.success) {
+        Alert.alert("Delete Failed", resp.data.error || "Unable to delete account");
+        return;
+      }
 
       await logout(user?.uid ?? '');
       router.replace("/auth/login");
@@ -133,23 +135,6 @@ export default function SellerProfileSetup() {
         <MediaInformation />
         <VerificationDetails />
         <RewardsSettings />
-
-        {/* UPI VPA CARD */}
-        <Card style={[styles.card, { backgroundColor: surface }]} elevation={3}>
-          <Card.Content>
-            <Text variant="titleMedium" style={[styles.cardTitle, { color: textColor }]}>
-              💳 UPI Address (Turbo Pay)
-            </Text>
-
-            <Divider style={[styles.divider, { backgroundColor: outlineColor + '55' }]} />
-
-            <Text style={{ color: existingVpas.length > 0 ? textColor : outlineColor, marginTop: 4 }}>
-              {existingVpas.length > 0
-                ? existingVpas.join(', ')
-                : 'No UPI address configured. Contact support to set up Turbo Pay.'}
-            </Text>
-          </Card.Content>
-        </Card>
 
         {/* SUBSCRIPTION CARD */}
         <Card style={[styles.card, { backgroundColor: surface }]} elevation={3}>

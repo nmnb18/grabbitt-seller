@@ -44,7 +44,11 @@ export default function SubscriptionHistoryScreen() {
             setLoading(true);
             const response = await api.get(`/getSubscriptionHistory?sellerId=${user.user.uid}`);
 
-            setHistory(response.data.history ?? []);
+            if (response.data.success) {
+                setHistory(response.data.history);
+            } else {
+                Alert.alert('Error', 'Failed to fetch subscription history');
+            }
         } catch (error: any) {
             console.error('Subscription history error:', error);
             Alert.alert('Error', 'Failed to load subscription history');
