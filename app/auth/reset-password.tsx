@@ -53,11 +53,6 @@ export default function ResetPasswordScreen() {
             setLoading(true);
             const resp = await api.post('/confirmPasswordReset', { oobCode, newPassword: password });
 
-            if (!resp.data.success) {
-                Alert.alert('Error', resp.data.error);
-                return;
-            }
-
             router.replace(`/auth/reset-success`);
 
         } catch (err: any) {

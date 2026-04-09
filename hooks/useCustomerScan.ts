@@ -150,12 +150,6 @@ export function useCustomerScan(options?: UseCustomerScanOptions) {
           amount: orderAmount,
         });
 
-        if (!response.data.success) {
-          const error = response.data.error || "Failed to award points";
-          options?.onError?.(error);
-          return { success: false, error };
-        }
-
         const result: AwardResult = {
           success: true,
           points_awarded: response.data.points_earned,

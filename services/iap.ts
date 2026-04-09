@@ -1,8 +1,16 @@
 // services/iap.ts
 import api from "@/services/axiosInstance";
 import { Platform } from "react-native";
-import * as RNIap from "react-native-iap";
 import { notifyIAPError, notifyIAPSuccess, notifyIAPVerifying } from "./iapState";
+
+// react-native-iap requires TurboModules (native build) — not available in Expo Go.
+// Lazy-require with fallback so the app doesn't crash in dev/Expo Go.
+let RNIap: typeof import("react-native-iap") | null = null;
+try {
+    RNIap = require("react-native-iap");
+} catch {
+    console.warn("[IAP] react-native-iap unavailable (Expo Go / non-native build) — IAP disabled");
+}
 
 /**
  * iOS subscription product IDs
@@ -21,7 +29,7 @@ let purchaseErrorSub: any = null;
  * Initialize IAP (call once, e.g. in RootLayout)
  */
 export async function initIAP() {
-    if (Platform.OS !== "ios") return;
+    if (Platform.OS !== "ios" || !RNIap) return;
 
     try {
         await RNIap.initConnection();
@@ -85,7 +93,7 @@ export async function initIAP() {
  * Cleanup (call on unmount / logout)
  */
 export async function endIAP() {
-    if (Platform.OS !== "ios") return;
+    if (Platform.OS !== "ios" || !RNIap) return;
 
     try {
         purchaseUpdateSub?.remove();
@@ -105,7 +113,7 @@ export async function endIAP() {
  * Start Apple subscription purchase
  */
 export async function requestIOSPurchase(productId: string) {
-    if (Platform.OS !== "ios") return;
+    if (Platform.OS !== "ios" || !RNIap) return;
 
     try {
         await RNIap.requestPurchase({
@@ -127,7 +135,7 @@ export async function requestIOSPurchase(productId: string) {
  * REQUIRED by Apple — Restore purchases
  */
 export async function restoreIOSPurchases() {
-    if (Platform.OS !== "ios") return;
+    if (Platform.OS !== "ios" || !RNIap) return;
 
     try {
         /**

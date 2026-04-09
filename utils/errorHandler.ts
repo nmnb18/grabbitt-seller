@@ -10,7 +10,12 @@ export interface ApiError {
   response?: {
     status?: number;
     data?: {
-      error?: string;
+      success?: boolean;
+      error?: string | {
+        code?: string;
+        message?: string;
+        statusCode?: number;
+      };
       message?: string;
     };
   };
@@ -38,10 +43,14 @@ export const getErrorMessage = (error: ApiError | Error | unknown): string => {
     }
 
     // Get error message from response
+    // Support new standardized format: { success: false, error: { code, message, statusCode } }
+    // AND legacy formats: { error: "string" } or { message: "string" }
+    const errorData = apiError.response?.data?.error;
     const message =
-      apiError.response?.data?.error ||
-      apiError.response?.data?.message ||
-      apiError.message;
+      (typeof errorData === "object" && errorData?.message) || // New standard format
+      (typeof errorData === "string" ? errorData : undefined) || // Legacy format 1
+      apiError.response?.data?.message || // Legacy format 2
+      apiError.message; // Axios error message
 
     if (message) return message;
   }
