@@ -71,9 +71,11 @@ export default function CheckoutScreen() {
                 sellerId: user?.user.uid,
             });
 
-            if (response.data.coupon) {
+            if (response.data.success) {
                 setAppliedCoupon(response.data.coupon);
                 Alert.alert('Success', `Coupon applied! ${response.data.coupon.discountValue} discount`);
+            } else {
+                Alert.alert('Invalid Coupon', response.data.message);
             }
         } catch (error: any) {
             console.error('Coupon error:', error);
@@ -156,21 +158,27 @@ export default function CheckoutScreen() {
                         couponCode: appliedCoupon?.code,
                     });
 
-                    await fetchUserDetails(user?.user.uid ?? '', 'seller');
+                    if (verifyRes.data.success) {
+                        await fetchUserDetails(user?.user.uid ?? '', 'seller');
 
-                    setLoading(false);
-                    setVerifying(false);
+                        setLoading(false);
+                        setVerifying(false);
 
-                    router.replace({
-                        pathname: '/(drawer)/payment-sucess',
-                        params: {
-                            orderId: verifyRes.data.subscription.order_id,
-                            plan: selectedPlan.id,
-                            expiresAt: verifyRes.data.subscription.expires_at,
-                            finalAmount: finalAmount.toString(),
-                            couponUsed: appliedCoupon?.code || 'none',
-                        },
-                    });
+                        router.replace({
+                            pathname: '/(drawer)/payment-sucess',
+                            params: {
+                                orderId: verifyRes.data.subscription.order_id,
+                                plan: selectedPlan.id,
+                                expiresAt: verifyRes.data.subscription.expires_at,
+                                finalAmount: finalAmount.toString(),
+                                couponUsed: appliedCoupon?.code || 'none',
+                            },
+                        });
+                    } else {
+                        setLoading(false);
+                        setVerifying(false);
+                        Alert.alert('Verification Failed', verifyRes.data.error);
+                    }
                 })
                 .catch((error) => {
                     setLoading(false);

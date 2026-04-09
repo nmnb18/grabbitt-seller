@@ -49,8 +49,12 @@ export default function RedeemModal({
                 redeem_code,
             });
 
-            setSuccessData(resp.data.redemption);
+            if (resp.data.success) {
+                setSuccessData(resp.data.redemption);
                 onSuccess?.();
+            } else {
+                setError(resp.data.error || "Invalid redeem code");
+            }
         } catch (err: any) {
             setError(err.response?.data?.error || "Failed to verify code");
         } finally {

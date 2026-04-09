@@ -1,8 +1,13 @@
-import apiClient from "@/services/apiClient";
 import { LoginResponse as User, UserPayload } from "@/types/auth";
 import { startSubscriptionWatcher } from "@/utils/subscription-watcher";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+import Constants from "expo-constants";
 import { create } from "zustand";
+
+const API_URL =
+  Constants.expoConfig?.extra?.EXPO_PUBLIC_BACKEND_URL ||
+  process.env.EXPO_PUBLIC_BACKEND_URL;
 
 interface AuthStore {
   user: User | null;
@@ -31,7 +36,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     try {
       set({ loading: true });
 
-      await apiClient.post("/registerSeller", payload);
+      await axios.post(`${API_URL}/registerSeller`, payload);
       // Fetch full structured seller profile
     } catch (err: any) {
       set({ loading: false });
@@ -43,7 +48,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   login: async (email, password, role) => {
     try {
       set({ loading: true });
-      const response = await apiClient.post("/loginSeller", {
+      const response = await axios.post(`${API_URL}/loginSeller`, {
         email,
         password,
         role,
@@ -52,10 +57,12 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       const { uid, idToken, refreshToken } = response.data;
 
       // Fetch full structured profile
-      const details = await apiClient.get("/getSellerDetails", {
-        params: { uid },
-        headers: { Authorization: `Bearer ${idToken}` },
-      });
+      const details = await axios.get(
+        `${API_URL}/getSellerDetails?uid=${uid}`,
+        {
+          headers: { Authorization: `Bearer ${idToken}` },
+        }
+      );
 
       const fullUser: User = {
         success: true,
@@ -91,10 +98,14 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         throw new Error("Not authenticated.");
       }
       set({ loading: true });
-      const response = await apiClient.get("/getSellerDetails", {
-        params: { uid },
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(
+        `${API_URL}/getSellerDetails?uid=${uid}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       const updatedUser: User = {
         ...user!,
         success: true,
@@ -122,20 +133,28 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   },
 
   logout: async (uid: string) => {
-    set({ loading: true });
     try {
-      // Try to get a non-expired token before calling the API.
-      // If the current token is expired and refresh fails, skip the
-      // server-side revocation — the local session is still cleared below.
-      const freshToken = await get().refreshToken();
-      if (freshToken) {
-        await apiClient.post("/logout", { uid });
-      }
-    } catch (err) {
-      console.warn("Logout API error (non-fatal):", err);
-    } finally {
+      const { idToken, user } = get();
+
+      // Prefer passed token, or fallback to stored one
+      const token = idToken || user?.idToken;
+      set({ loading: true });
+      await axios.post(
+        `${API_URL}/logout`,
+        {
+          uid,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       await AsyncStorage.removeItem("user");
       set({ user: null, loading: false });
+    } catch (err) {
+      set({ loading: false });
+      console.error("Logout error:", err);
     }
   },
 
@@ -166,9 +185,14 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     try {
       const { user } = get();
       if (!user?.refreshToken) return null;
-      const response = await apiClient.post("/refreshToken", {
+      const response = await axios.post(`${API_URL}/refreshToken`, {
         refreshToken: user.refreshToken,
       });
+
+      if (!response.data.success) {
+        console.warn("Token refresh failed:", response.data.error);
+        return null;
+      }
 
       const { idToken, refreshToken } = response.data;
       const updatedUser = { ...user, idToken, refreshToken };
