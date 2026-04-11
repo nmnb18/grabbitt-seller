@@ -2,7 +2,7 @@
   "expo": {
     "name": "yoPerks Business",
     "slug": "grabbitt-seller",
-    "version": "2.4.4",
+    "version": "2.5.0",
     "orientation": "portrait",
     "icon": "./assets/images/favicon.png",
     "scheme": "yoperksbusiness",
