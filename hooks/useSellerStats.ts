@@ -17,13 +17,13 @@ export function useSellerStats() {
     const query = useQuery<SellerStats>({
         queryKey: ["seller-stats"], // 🔥 shared cache key
         queryFn: async () => {
-            const response = await analyticsApi.sellerStats();
+            const data = await analyticsApi.sellerStats();
 
-            if (!response?.success) {
-                throw new Error(response?.error || "Failed to load stats");
+            if (!data || typeof data !== "object") {
+                throw new Error("Failed to load stats");
             }
 
-            return response.data || response;
+            return data as SellerStats;
         },
 
         // ------------------------------

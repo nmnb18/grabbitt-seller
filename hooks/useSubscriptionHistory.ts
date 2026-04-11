@@ -47,11 +47,7 @@ export function useSubscriptionHistory(): UseSubscriptionHistoryReturn {
             setLoading(true);
             const response = await subscriptionApi.getSubscriptionHistory(userId);
 
-            if (response?.success) {
-                setHistory(response.history || response.data || []);
-            } else {
-                Alert.alert("Error", "Failed to fetch subscription history");
-            }
+            setHistory(response?.history || response || []);
         } catch (error: any) {
             console.error("Subscription history error:", error);
             Alert.alert("Error", "Failed to load subscription history");

@@ -12,6 +12,7 @@
  */
 
 import { ENABLE_NETWORK_LOGGING } from "@/config/env";
+import { clientLogger } from "@/utils/clientLogger";
 import { API_TIMEOUT } from "@/utils/constants";
 import axios from "axios";
 
@@ -58,18 +59,37 @@ if (ENABLE_NETWORK_LOGGING) {
   );
 }
 
-// ── Envelope unwrap: { success: true, data: {...} } → {...} ──────────────────
-// Applied after logging so the raw shape is visible in dev logs.
-apiClient.interceptors.response.use((response) => {
-  if (
-    response.data &&
-    typeof response.data === "object" &&
-    "success" in response.data &&
-    "data" in response.data
-  ) {
-    response.data = response.data.data;
-  }
-  return response;
-});
+// ── Envelope unwrap + error capture ─────────────────────────────────────────
+// Applied after DEV logging so the raw shape is visible in dev logs.
+// The error handler here covers ALL callers of apiClient (axiosInstance users
+// AND direct callers such as authStore). This is the single source of truth
+// for network error capture — axiosInstance.ts does NOT duplicate this.
+// 401s are skipped: axiosInstance handles token refresh; they are not app bugs.
+// /logout errors are intentional flows — not worth reporting.
+apiClient.interceptors.response.use(
+  (response) => {
+    if (
+      response.data &&
+      typeof response.data === "object" &&
+      "success" in response.data &&
+      "data" in response.data
+    ) {
+      response.data = response.data.data;
+    }
+    return response;
+  },
+  (error) => {
+    const status = error.response?.status as number | undefined;
+    const isLogoutUrl = (error.config?.url ?? "").includes("/logout");
+    if (status !== 401 && !isLogoutUrl) {
+      clientLogger.captureNetworkError(
+        error.config?.url ?? "unknown",
+        status,
+        error.message ?? "Network error",
+      );
+    }
+    return Promise.reject(error);
+  },
+);
 
 export default apiClient;

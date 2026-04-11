@@ -123,16 +123,10 @@ export function useCustomerScan(options?: UseCustomerScanOptions) {
 
         const response = await qrCodeApi.scanUserQRCode({ token, amount: orderAmount } as any);
 
-        if (!response?.success) {
-          const error = response?.error || response?.message || "Failed to award points";
-          options?.onError?.(error);
-          return { success: false, error };
-        }
-
         const result: AwardResult = {
           success: true,
-          points_awarded: response.points_earned || response.data?.points_earned,
-          customer_name: response.customer_name || response.data?.customer_name,
+          points_awarded: response.points_earned,
+          customer_name: response.customer_name,
         };
 
         options?.onAwardSuccess?.(result);

@@ -3,15 +3,16 @@
  * Catches React errors and displays a friendly recovery screen
  */
 
+import { clientLogger } from "@/utils/clientLogger";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { Component, ErrorInfo, ReactNode } from "react";
 import {
-  Platform,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
+    Platform,
+    SafeAreaView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View
 } from "react-native";
 
 // expo-updates types - may not be available in dev builds
@@ -48,14 +49,14 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    // Log error to console (in production, send to error tracking service)
+    // Log error to console
     console.error("ErrorBoundary caught an error:", error);
     console.error("Component stack:", errorInfo.componentStack);
 
     this.setState({ errorInfo });
 
-    // TODO: Send to error tracking service like Sentry
-    // Sentry.captureException(error, { extra: { componentStack: errorInfo.componentStack } });
+    // Ship to backend error_logs collection
+    clientLogger.captureErrorBoundary(error, errorInfo.componentStack ?? "");
   }
 
   handleRestart = async () => {
